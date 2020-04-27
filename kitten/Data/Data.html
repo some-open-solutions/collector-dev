@@ -178,8 +178,12 @@ encrypt_obj = {
                       console.dir("this_decrypted_message");
                       console.dir(this_decrypted_message);
                       this_decrypted_message = this_decrypted_message.map(function(row){
-                        row["username"] = default_filename;
-                        all_decrypted.push(row);
+                        try{
+													row["username"] = default_filename;
+													all_decrypted.push(row);
+												} catch(error){
+													//nothing
+												}
                       });
                     });
                     if(encrypt_obj.current_batch.length > 1){
