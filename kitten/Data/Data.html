@@ -399,6 +399,9 @@ encrypt_obj = {
   },
   save_script_url:function(){
 		//check the user is logged in
+		if(typeof(master_json.data.scripts) == "undefined"){
+			master_json.data.scripts = {};
+		}
 		if(window.localStorage.getItem("session_code") !== null){
 			//give them the main script url
 			master_json.data.scripts["free"] = [
