@@ -720,7 +720,7 @@ function parse_sheets(){
     case "github":
       if(typeof(Study.get_vars.dropbox) !== "undefined" && Study.get_vars.dropbox){
         exp_json.parsed_proc = collectorPapaParsed(exp_json.all_procs[proc_sheet_name]);
-        exp_json.parsed_stim = collectorPapaParsed(exp_json.all_stims[stim_sheet_name]);
+        exp_json.parsed_stim = [null,null].concat(collectorPapaParsed(exp_json.all_stims[stim_sheet_name]));
         Study.activate_pipe();
       } else {
         var proc_url = "../User/Experiments/" +
