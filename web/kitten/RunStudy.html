@@ -753,7 +753,7 @@ function parse_sheets(){
       if(proc_stim_loaded.join("-") == "stimuli-procedure"){
         Study.activate_pipe();
       }
-      exp_json.parsed_stim = collectorPapaParsed(exp_json.all_stims[stim_sheet_name]);
+      exp_json.parsed_stim = [null,null].concat(collectorPapaParsed(exp_json.all_stims[stim_sheet_name]));
       proc_stim_loaded[0] = "stimuli";
       if(proc_stim_loaded.join("-") == "stimuli-procedure"){
         Study.activate_pipe();
