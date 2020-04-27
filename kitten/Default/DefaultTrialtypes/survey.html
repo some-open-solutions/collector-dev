@@ -292,7 +292,11 @@ function load_survey(survey){
       survey_content = parent.parent.exp_json.surveys[survey];
       survey_obj.boosts = parent.parent.exp_json.boosts;                     //take boosts from exp_json
 
-    } else {
+    } else if(typeof(parent.parent.exp_json.surveys) !== "undefined" && 
+							typeof(parent.parent.exp_json.surveys[survey.replace(".csv","")]){
+			survey_content = parent.parent.exp_json.surveys[survey.replace(".csv","")];
+      survey_obj.boosts = parent.parent.exp_json.boosts;                     //take boosts from exp_json
+		}	else {
       bootbox.alert("Survey " + survey  + " doesn't appear to exist");
     }
   }
@@ -330,10 +334,9 @@ function likert_update(this_element,this_response,this_value){
   $("#survey_"+item_name+"_response").val(this_response);
   response_check(this_element);
 }
-  console.dir("breaking near here? huh?");
+	
 
 function process_item_score(survey_obj,row_no,values_col,this_response,item,values_reverse){
-  console.dir("breaking near here?");
   item_values       = survey_obj.data[row_no][values_col].split("|");
   if(typeof(values_reverse) !== "undefined" && values_reverse == "r"){
     item_values.reverse();
