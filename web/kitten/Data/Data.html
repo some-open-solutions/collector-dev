@@ -241,8 +241,9 @@ encrypt_obj = {
               if(typeof(master_json.keys.archived) == "undefined"){
                 master_json.keys.archived = [];
               }
-              var all_private_keys = master_json.keys.archived.map(function(row){
-                return row.encrypted_private_key
+							var all_private_keys = []
+              master_json.keys.archived.forEach(function(row){
+                all_private_keys.push(row.encrypted_private_key);
               });
               all_private_keys.push(master_json.keys.encrypted_private_key);
               combine_password_key(all_private_keys,user_password);
