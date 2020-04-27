@@ -231,6 +231,9 @@ function load_master_json(link_created){
     } else {
 			list_keys();
 		}
+		if(typeof(master_json.data) == "undefined"){
+			master_json.data = {};
+		}
     if(typeof(master_json.data.scripts)== "undefined" || Object.keys(master_json.data.scripts).length == 0){
       encrypt_obj.save_script_url();
     }
