@@ -116,7 +116,7 @@ function check_authenticated(){
     dbx.usersGetCurrentAccount()
     .then(function(account_info){
       $("#dropbox_account_email").html(account_info.email);
-      $("#startup_prog").html("Dropbox account: <a href='https://www.dropbox.com/home/Apps/Open-Collector' target='_blank'>" + account_info.email + "</a> <button class='btn btn-info' id='intro_switch_dbx'>Switch account</button>");
+      $("#startup_prog").html("Dropbox account: <a href='https://www.dropbox.com/home/Apps/Collector-SOS' target='_blank'>" + account_info.email + "</a> <button class='btn btn-info' id='intro_switch_dbx'>Switch account</button>");
       $("#intro_switch_dbx").on("click",function(){
         force_reauth_dbx();
       });
