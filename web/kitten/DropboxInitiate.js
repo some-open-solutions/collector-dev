@@ -1,5 +1,5 @@
 // get dropbox token for user
-var CLIENT_ID = '6xumb4iloq9sz1u';
+var CLIENT_ID = '2u3y3zc7wn1bnkn';
 
 (function(window){
 	window.utils = {
