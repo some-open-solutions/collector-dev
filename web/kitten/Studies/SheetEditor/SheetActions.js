@@ -27,7 +27,7 @@ $("#delete_exp_btn").on("click",function(){
 	if(exp_name == null){
 		bootbox.alert("You need to select a study to delete it");
 	} else {
-		bootbox.confirm("Are you sure you want to delete your experiment? <br><br> If you delete it you can go to your <a href='https://www.dropbox.com/home/Apps/Open-Collector' target='blank'>dropbox folder</a> to look up previous versions of your study.", function(result) {
+		bootbox.confirm("Are you sure you want to delete your experiment? <br><br> If you delete it you can go to your <a href='https://www.dropbox.com/home/Apps/Collector-SOS' target='blank'>dropbox folder</a> to look up previous versions of your study.", function(result) {
 			if(result){
 				//delete from master_json
 				delete (master_json.exp_mgmt.experiments[exp_name]);
