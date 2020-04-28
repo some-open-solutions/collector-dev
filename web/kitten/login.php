@@ -82,7 +82,7 @@ function email_user($email_type,
 
   switch($email_type){		
     case "registration":
-      $msg = "Dear $user_email <br><br>Thank you for registering with Open-Collector. Before you can use your new profile, we need to confirm this is a valid address. Please proceed to the following link to confirm: <br> $imploded_url/confirm.php?email=$user_email&confirm_code=$email_confirm_code <br>Many thanks, <br>Some Open Solutions";
+      $msg = "Dear $user_email <br><br>Thank you for registering with Collector hosted by Some Open Solutions. Before you can use your new profile, we need to confirm this is a valid address. Please proceed to the following link to confirm: <br> $imploded_url/confirm.php?email=$user_email&confirm_code=$email_confirm_code <br>Many thanks, <br>Some Open Solutions";
 
       // use wordwrap() if lines are longer than 70 characters
       //$msg = wordwrap($msg,70);
