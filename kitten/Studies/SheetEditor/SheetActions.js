@@ -393,11 +393,14 @@ $("#save_btn").on("click", function(){
 		 typeof(master_json.keys.public_key) == "undefined"){
 			 encrypt_obj.generate_keys();
 	}
+  
 	var experiment 						= master_json.exp_mgmt.experiment;
   var this_exp 							= master_json.exp_mgmt.experiments[experiment];
+  
+  if(typeof(this_exp) !== "undefined"){
       this_exp.public_key   = master_json.keys.public_key;
       this_exp.data_scripts	= master_json.data.scripts;
-
+  }
 	//parse procs for survey saving next
 	if($("#experiment_list").val() !== null) {
     this_exp.parsed_procs = {};
@@ -586,6 +589,8 @@ $("#save_btn").on("click", function(){
         },
         "filesUpload");
     }
+  } else {
+    update_master_json();
   }
   if(dev_obj.context == "localhost"){
     eel.save_master_json(master_json);

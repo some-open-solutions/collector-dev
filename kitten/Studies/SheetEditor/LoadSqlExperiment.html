@@ -37,7 +37,7 @@ $.get(collector_map["default_experiment.json"],function(new_experiment_json){
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Upload a new experiment</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="close_upload_experiment_modal">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -73,6 +73,12 @@ $.get(collector_map["default_experiment.json"],function(new_experiment_json){
     </div>
   </div>
 </div>
+
+<script>
+$("#close_upload_experiment_modal").on("click",function(){
+  $("#upload_experiment_modal").hide();
+});
+</script>
 
 <div id="load_toolbar">
 	<table>

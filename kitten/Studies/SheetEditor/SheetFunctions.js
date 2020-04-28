@@ -499,20 +499,22 @@ function upload_exp_contents(these_contents,this_filename){
               if(new_name){
                 unique_experiment(new_name,content);
               } else {
-                upload_to_master_json(exp_name,parsed_contents);
+                //upload_to_master_json(exp_name,parsed_contents);
               }
             });
           } else {
+            master_json.exp_mgmt.experiment = suggested_name;
             master_json.exp_mgmt.experiments[suggested_name] = content;
             list_experiments();
-            upload_to_master_json(exp_name,parsed_contents);
+            $("#upload_experiment_modal").hide();
+            //upload_to_master_json(exp_name,parsed_contents);
           }
         }
         unique_experiment(exp_name,parsed_contents);
         $("#save_btn").click();
 
       } else {
-        upload_to_master_json(exp_name,parsed_contents);
+        //upload_to_master_json(exp_name,parsed_contents);
       }
 		}
 	});
