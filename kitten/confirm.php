@@ -41,7 +41,7 @@ if($result->num_rows>1 | $result->num_rows == 0){
 	if(password_verify($confirm_code, $row['hashed_code'])){
 		$sql = "UPDATE `users` SET `account_status` = 'V' WHERE email='$user_email'";
 		if ($conn->query($sql) === TRUE) {
-			$_SESSION['login_error'] = "You have succesfully registered. Click <a href='index.html'>here</a> to redirect to the main page.";
+			$_SESSION['login_error'] = "You have succesfully registered. Please go back to the website you registered on to continue.";
 		} else {
 			$_SESSION['login_error'] = "You have NOT confirmed registration. Please go back <a href='index.html'>here</a> to try again";
 		}
