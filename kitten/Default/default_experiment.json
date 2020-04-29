@@ -1,12 +1,12 @@
 {
   "all_procs":{
-    "procedure_1.csv": [["Item","Trial Type","Max Time","Text",                                  "Shuffle 1"],
-                      ["2",   "Instruct",  "user",    "This is the start of a new experiment.",        "off"]]
+    "procedure_1.csv": [["item","trial type","max time","text",                                  "Shuffle 1"],
+                      ["2",   "instruct",  "user",    "This is the start of a new experiment.",        "off"]]
   },
-  "cond_array":[["Name",
-                 "Notes",
-                 "Stimuli",
-                 "Procedure",
+  "cond_array":[["name",
+                 "notes",
+                 "stimuli",
+                 "procedure",
                  "fullscreen",
                  "welcome",
                  "participant_id",
@@ -25,7 +25,7 @@
                  5]],
   "all_stims":{
     "stimuli_1.csv":[
-      ["Cue","Answer"],
+      ["cue","answer"],
       ["A","Apple"],
       ["B","Banana"]
     ]

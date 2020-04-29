@@ -632,7 +632,7 @@ $("#versions_btn").on("click",function(){
 		bootbox.alert("If you login a dropbox account, it'll automatically backup your experiment files");
 	} else {
 		experiment = master_json.exp_mgmt.experiment;
-		var version_address = "https://www.dropbox.com/history/Apps/Open-Collector/experiments/"+experiment+".json?_subject_uid="+ $_GET.uid +"&undelete=1";
+		var version_address = "https://www.dropbox.com/history/Apps/Collector-SOS/experiments/"+experiment+".json?_subject_uid="+ $_GET.uid +"&undelete=1";
 
 		$("#synch_btn").on("click",function(){
 			alert("hi there");
