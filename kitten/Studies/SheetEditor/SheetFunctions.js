@@ -136,6 +136,7 @@ function list_experiments(){
       clean_conditions();
       $("#dropbox_inputs").show();
       update_handsontables();
+      update_server_table();
     });
   }
 	//do longer synch with dropbox if the user is using dropbox
@@ -232,6 +233,7 @@ function renderItems() {
   list_surveys();
 	list_trialtypes();
 	list_graphics();
+  list_servers();
 
 	var published_list = dev_obj.published_links;
 	master_json.exp_mgmt.published_ids = {};

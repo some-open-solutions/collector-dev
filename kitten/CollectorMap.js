@@ -5,17 +5,17 @@
 //Publicly available libraries
 window.jQuery        || document.write('<script src="../libraries/jquery-3.3.1.min><\/script>');
 
-window.bootstrap || document.write('<script src="../libraries/bootstrap.4.0.min"><\/script><link href="../libraries/bootstrapCollector.min.css" rel="stylesheet">');
+window.bootstrap || document.write('<script src="../libraries/bootstrap.4.0.min.js"><\/script><link href="../libraries/bootstrapCollector.css" rel="stylesheet">');
 
-window.Papa          || document.write('<script src="../libraries/papaparse.4.3.6.min"><\/script>');
+window.Papa          || document.write('<script src="../libraries/papaparse.4.3.6.min.js"><\/script>');
 
 // Collector specific
 
-window.Handsontable || document.write('<link rel="stylesheet" href="https://anthonyhaffey.github.io/my-collector/kitten/Studies/handsontables/handsontables.full.css">' +
-'<script type="text/javascript" charset="utf-8" src="https://anthonyhaffey.github.io/my-collector/kitten/Studies/handsontables/handsontables.full.js">' + 
-'<\/script><script type="text/javascript" charset="utf-8" src="https://anthonyhaffey.github.io/my-collector/kitten/Studies/HandsontableFunctions.js"><\/script>');
+window.Handsontable || document.write('<link rel="stylesheet" href="Studies/handsontables/handsontables.full.css">' +
+'<script type="text/javascript" charset="utf-8" src="Studies/handsontables/handsontables.full.js">' + 
+'<\/script><script type="text/javascript" charset="utf-8" src="Studies/HandsontableFunctions.js"><\/script>');
 
-window.clean_obj_keys || document.write('<script src="https://anthonyhaffey.github.io/my-collector/kitten/jsFunctions.js"><\/script>');
+window.clean_obj_keys || document.write('<script src="jsFunctions.js"><\/script>');
 
 
 var isolation_map = {

@@ -62,8 +62,11 @@ function dropbox_login(message){
 function force_reauth_dbx(){
   dbx.setClientId(CLIENT_ID); // i think is necessary
 
-  var return_url = document.URL.split("#access_token")[0];
 
+  
+
+  var return_url = document.URL.split("#access_token")[0];
+  
   authUrl = dbx.getAuthenticationUrl(return_url);
   authUrl += "&force_reauthentication=true";
   document.getElementById('authlink').href = authUrl;
@@ -234,9 +237,7 @@ function load_master_json(link_created){
 		if(typeof(master_json.data) == "undefined"){
 			master_json.data = {};
 		}
-    if(typeof(master_json.data.scripts)== "undefined" || Object.keys(master_json.data.scripts).length == 0){
-      encrypt_obj.save_script_url();
-    }
+    
 
 
 		$("#startup_btn").fadeIn(500);

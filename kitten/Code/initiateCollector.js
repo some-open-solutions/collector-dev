@@ -125,9 +125,12 @@ function custom_alert(msg,duration) {
 
 
 function detect_context(){
-  var dropbox_developer = true;                                                 //turn to false to make use of eel and python
+  
+  
+  //turn to false to make use of eel and python
   if(document.URL.indexOf("localhost") !== -1){
-    if(dropbox_developer){
+    if(typeof(parent.dropbox_developer) !== "undefined" &&
+              parent.dropbox_developer  ==  true){
       return "github";
     } else {
       return "localhost";
@@ -195,5 +198,4 @@ String.prototype.replaceAll = function(str1, str2, ignore) //by qwerty at https:
 {
   return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }
-
 initiate_collector();

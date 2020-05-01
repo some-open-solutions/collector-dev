@@ -245,7 +245,10 @@ $("#run_btn").on("click",function(){
 		select_html += "<option>" + condition.name + "</option>";
 	});
 	select_html += "</select>";
+  
+  
 
+  
 	switch(dev_obj.context){
 		case "github":
 		case "server":
@@ -284,13 +287,20 @@ $("#run_btn").on("click",function(){
 
 						}
 					},
-					cancel: {
+					publish: {
+						label: "Publish",
+						className: 'btn-primary',
+						callback: function(){
+              $("#login_modal").fadeIn();
+						}
+					},
+          cancel: {
 						label: "Cancel",
 						className: 'btn-secondary',
 						callback: function(){
 							//nada;
 						}
-					}
+          }
 				}
 			});
 			break;
