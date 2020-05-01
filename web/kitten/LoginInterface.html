@@ -31,10 +31,21 @@
 #ocollector_login{
   display:none;
 }
+.create_account_btn,
+.delete_account_btn,
+.forgot_password_btn{
+  margin:2px;
+  width:100%;
+}
 .login_register_card{
   margin: 0 auto; /* Added */
   float: none; /* Added */
   margin-bottom: 10px; /* Added */
+}
+.publish_btn,
+.unpublish_btn{
+  margin:2px;
+  width:100%;
 }
 </style>
 
@@ -62,7 +73,7 @@ function check_errors(){
 		<div class="card text-primary bg-white align-middle login_register_card" style="max-width: 36rem; position: relative; top: 50%; transform: translateY(-50%); ">
 			<div class="card-header bg-primary text-white">				
 				<button type="button" class="close" id="dismiss_login_btn">&times;</button>
-				<h4 class="modal-title">Register Experiment</h4>
+				<h4 class="modal-title">Register  </h4>
 			</div>
 			<div class="card-body">
         <div id="server_table_div"></div>
@@ -76,19 +87,6 @@ function check_errors(){
 				</div>
 				<div class="row">
 					<div class="g-recaptcha" data-sitekey="6LelCO4UAAAAAFEh_KGJlAQ5lthFI-kDY4_kv33_"></div>
-				</div>
-				<div class="row">
-					<input class="btn btn-primary" type="button" style="margin:3px" id="login_button" 		value="login">
-					<button type="button" class="btn btn-primary" style="display:none" data-toggle="modal" data-target="#institute_div" onclick="list_institutes()" id="register_map_button"> Register </button>
-					<input class="btn btn-primary" type="button" style="margin:3px" id="register_button" value="register" style="display:none">
-
-					<input class="btn btn-primary" type="button" style="margin:3px" id="forgot_button" 	value="forgot password">
-
-
-					<!-- hidden inputs -->
-					<input type="submit" class="collectorButton" id="forgot_button_submit" name='login_type' value="forgot" style="display:none">
-					<input  type="submit" class="collectorButton" id="login_button_submit" name='login_type' value="login" style="display:none">
-
 				</div>
 			</div>
 		</div>
@@ -123,28 +121,17 @@ function update_server_table(){
         users: [],
         experiments : {}
       }
-      var user_button = "<button class='create_account_btn btn btn-primary'>Create Account<span style='display:none'>" + server_row.publish_url + "</span></button>";
-    } else {
-      if(servers[server_row.server].users.indexOf($("#username_input").val()) == -1){
-        var user_button = "<button class='create_account_btn btn btn-primary'>Create Account<span style='display:none'>" + server_row.publish_url + "</span></button>";
-      } else {
-        var user_button = "<button class='delete_account_btn btn btn-primary'>Delete Account<span style='display:none'>" + server_row.publish_url + "</span></button>";      
-      }
     }
     
     
     //check if the server is in the list of exp.data_scripts
     if(typeof(exp_json) == "undefined"){
-      var published_with_server = "no experiment selected";
       var publish_btn_html      = "no experiment selected";      
     } else if(typeof(exp_json.data_scripts[server_row.server]) == "undefined"){
-      var published_with_server = "No";
-      var publish_btn_html = "<button class='btn btn-primary publish_btn'>Publish<span style='display:none'>" + server_row.publish_url + "</span></button>";
-    } else {
-      var published_with_server = "Yes";
-      var publish_btn_html      = "<button class='btn btn-primary unpublish_btn'>Unpublish<span style='display:none'>" + server_row.publish_url + "</span></button>";
+      var publish_btn_html = "<button class='btn btn-primary publish_btn'>Publish<span style='display:none'>" + server_row.publish_url + "</span></button><button class='btn btn-danger unpublish_btn'>Unpublish<span style='display:none'>" + server_row.publish_url + "</span></button>";
     }
     
+    var user_button = "<button class='create_account_btn btn btn-primary'>Create Account<span style='display:none'>" + server_row.publish_url + "</span></button><button class='delete_account_btn btn btn-danger'>Delete Account<span style='display:none'>" + server_row.publish_url + "</span></button><button class='forgot_password_btn btn btn-info'>Forgot password<span style='display:none'>" + server_row.publish_url + "</span></button>";
     
     
     server_table += "<tr>"+ 
@@ -157,43 +144,107 @@ function update_server_table(){
   $("#server_table_div").html(server_table);
   
   $(".create_account_btn").on("click",function(){
-    var register_url = $(this).find("span")[0].innerHTML;
-    alert(register_url);
+    if($("#username_input").val().length == 0 ||
+       $("#password_input").val().length == 0){
+      bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
+    } else {
+      var register_url = $(this).find("span")[0].innerHTML;
+      alert(register_url);
+      
+      $.post(register_url,{
+				action: 					      "register",
+				email: 					        $("#username_input").val(),
+				password: 				      $("#password_input").val(),
+				"g-recaptcha-response": $("#g-recaptcha-response").val()
+			},function(error_msg){
+				bootbox.alert(error_msg);
+				if(error_msg == "Robot verification failed, please try again."){
+					grecaptcha.reset();
+				} else if(error_msg == "user already exists"){
+          master_json.data.servers[server_row.server].users.push($("#username_input").val());
+        } else if(error_msg == "You have succesfully logged in."){
+				
+					window.localStorage.setItem("session_code",
+																			login_obj.session_code);
+					window.localStorage.setItem("user_email",
+																			login_obj.user_email);
+
+					$("#collector_account_email").html(login_obj.user_email);
+				}				
+			});
+    }
   });
   $(".delete_account_btn").on("click",function(){
-    var register_url = $(this).find("span")[0].innerHTML;
-    alert(register_url);
-    
-    
-    
+    if($("#username_input").val().length == 0 ||
+       $("#password_input").val().length == 0){
+      bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
+    } else {
+      var register_url = $(this).find("span")[0].innerHTML;
+      bootbox.confirm("Are you sure you want to delete your account on this server? This will remove your contribution to all experiments, and all experiments in which you are the only researcher!",function(result){
+        if(result){
+          $.post(register_url,{
+            action: 					      "unregister",
+            email: 					        $("#username_input").val(),
+            password: 				      $("#password_input").val(),
+            "g-recaptcha-response": $("#g-recaptcha-response").val()
+          },function(server_response){
+            bootbox.alert(server_response);
+          }); 
+        }
+      });
+    }
   });
   
+  $(".unpublish_btn").on("click",function(){
+    if($("#username_input").val().length == 0 ||
+       $("#password_input").val().length == 0){
+      bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
+    } else {
+      var register_url = $(this).find("span")[0].innerHTML;
+      var experiment = master_json.exp_mgmt.experiment;
+      var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+    	
+      $.post(register_url,{
+        location:               this_exp.location,
+        experiment:             experiment,
+        action:                 "unregister_experiment",
+        email:                  $("#username_input").val(),
+        password:               $("#password_input").val(),
+        "g-recaptcha-response": $("#g-recaptcha-response").val()
+      },function(returned_message){
+        bootbox.alert(returned_message);
+        if(returned_message == "Robot verification failed, please try again."){
+					grecaptcha.reset();
+				} else if(returned_message == "Your request to be a collaborator has been sent."){
+        
+        }
+      });
+    }
+  });
   $(".publish_btn").on("click",function(){
     if($("#username_input").val().length == 0 ||
        $("#password_input").val().length == 0){
       bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
     } else {
-      console.dir($(this));
-      console.dir($(this).find("span")[0]);
-      var publish_url = $(this).find("span")[0].innerHTML;
-      
-      
+      var register_url = $(this).find("span")[0].innerHTML;
       var experiment = master_json.exp_mgmt.experiment;
       var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
-      
-      
-      $.post(publish_url,{
+    	
+      $.post(register_url,{
         location:               this_exp.location,
         experiment:             experiment,
         action:                 "update_experiment",
         email:                  $("#username_input").val(),
         password:               $("#password_input").val(),
         "g-recaptcha-response": $("#g-recaptcha-response").val()
-      },function(returned_message){											
+      },function(returned_message){
+        bootbox.alert(returned_message);
         if(returned_message == "Robot verification failed, please try again."){
 					grecaptcha.reset();
 				} else if(returned_message == "Your request to be a collaborator has been sent."){
           
+          
+          /*
           var script_url = server_info.filter(function(server_row){
             return server_row.publish_url == publish_url;
           })[0].script_url;
@@ -243,6 +294,7 @@ function update_server_table(){
           bootbox.alert(returned_data);
         }
         */
+        }
       })
       .catch(function(error){
         bootbox.alert("error here");
@@ -259,110 +311,9 @@ function list_servers(){
 }
 </script>
 
-<!--
-To Do:
-
--when clicking on submit, update the hidden inputs or trigger APIs depending on context
-
--->
 
 <script>
 $("#dismiss_login_btn").on("click",function(){
 	$("#login_modal").fadeOut();
-});
-$("#forgot_button").on("click",function(){
-	var email_val = $("#username_input").val();
-	bootbox.prompt({
-		title: "Please confirm your email:",
-		value: email_val,
-		callback: function (result) {
-			$("#forgot_button_submit").click();
-		}
-	});
-});
-$("#login_button").on("click",function(){
-  switch(dev_obj.context){
-    case "server":	
-		case "github":				
-			$.post("https://ocollector.org/kitten/login.php",{
-				login_type: 					  "login",
-				user_email: 					  $("#username_input").val(),
-				user_password: 				  $("#password_input").val(),
-				"g-recaptcha-response": $("#g-recaptcha-response").val()
-			},function(login_obj){
-				console.dir(login_obj);
-				login_obj = JSON.parse(login_obj);
-				
-				var error_msg = login_obj.error_msg;				
-				
-				bootbox.alert(error_msg);
-				if(error_msg == "Robot verification failed, please try again."){
-					grecaptcha.reset();
-				} else if(error_msg == "You have succesfully logged in."){
-				
-					window.localStorage.setItem("session_code",
-																			login_obj.session_code);
-					window.localStorage.setItem("user_email",
-																			login_obj.user_email);
-
-					$("#collector_account_email").html(login_obj.user_email);
-					$("#login_modal").fadeOut();
-					$("#login_btn").hide();
-					$("#logout_btn").show();
-				}				
-			});      
-      break;
-    case "gitpod":
-		case "localhost":
-			bootbox.alert("You need to be on an official collector webpage to login either on: <br><br> <a href='https://some-open-solutions.github.io'>https://some-open-solutions.github.io</a> <br><br> or <br><br> <a href='https://ocollector.org/web/'>https://ocollector.org/web/</a>");
-      break;			
-  }
-});
-
-
-
-$("#register_button").on("click",function(){
-  // checks
-	// password long enough?
-	if($("#password_input").val().length < 8){
-		bootbox.alert("Your password is too short. Please make a password of at least 8 characters. Ideally with a mixture of capital letters, numbers and characters.");
-	} else {
-		bootbox.confirm("Making sure you don't lose your password is extremely important! Your password is used as part of the encryption and decryption of your data. <br><br>In short, if you lose your password then you lose your data. <br><br> Once you've made sure your password will not be lost, click on <b>OK</b> to proceed",function(result){
-			if(result){
-				bootbox.prompt({
-					title: "Please confirm your password:",
-					inputType: 'text',
-					callback: function (result) {
-						
-						if(result == $("#password_input").val()){
-							$.post("https://ocollector.org/kitten/login.php",{
-								login_type: 					  "register",
-								user_email: 					  $("#username_input").val(),
-								user_password: 				  $("#password_input").val(),
-								"g-recaptcha-response": $("#g-recaptcha-response").val()
-							},function(login_obj){
-								console.dir(login_obj);
-								login_obj = JSON.parse(login_obj);								
-								bootbox.alert(login_obj.error_msg);
-								if(login_obj.error_msg == "Robot verification failed, please try again."){								
-									grecaptcha.reset();									
-								} else {
-									$("#login_modal").fadeOut();
-								}
-							});
-						} else {
-							alert("Passwords did not match.");
-						}						
-					}
-				});
-			}
-		});
-	}
-});
-$("#register_proceed_button").on("click",function(){
-  $("#country_selected").click();
-});
-$("#skip_map_button").on("click",function(){
-  $("#register_submit").click();
 });
 </script>
