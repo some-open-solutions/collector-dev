@@ -402,21 +402,6 @@ encrypt_obj = {
       }
     });
   },
-  save_script_url:function(){
-		//check the user is logged in
-		if(typeof(master_json.data.scripts) == "undefined"){
-			master_json.data.scripts = {};
-		}
-		if(window.localStorage.getItem("session_code") !== null){
-			//give them the main script url
-			master_json.data.scripts["free"] = [
-				"https://ocollector.org/StoreData.php"
-			];
-		} else {
-			$("#login_btn").click();
-			bootbox.alert("You will need to be registered with Collector to be able to have your data e-mailed to you");
-		}
-  }
 }
 
 function list_keys(){
