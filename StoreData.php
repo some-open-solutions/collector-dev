@@ -1,5 +1,7 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+
 require_once "../sqlConnect.php";
 
 ini_set("allow_url_fopen", 1);
@@ -12,7 +14,6 @@ use PHPMailer\PHPMailer\Exception;
 require '../PHPMailer/src/Exception.php';
 require '../PHPMailer/src/PHPMailer.php';
 require '../PHPMailer/src/SMTP.php';
-
 
 
 //need the dropbox location 
@@ -81,15 +82,14 @@ if(isset($_POST['dropbox_location'])){
 		}
 	}
 	
-	//loop through scripts
 	
 	// Passing `true` enables exceptions
 	$mail = new PHPMailer(true);
 	try {
 		//Server settings
+		$mail = new PHPMailer(true);                          // Passing `true` enables exceptions
 		$mail->SMTPDebug = 0;                                 // Enable verbose debug output
-		$mail->isSMTP();                                      // Set mailer to use SMTP
-		$mail->Host = 'ocollector.org';  											// smtp2.example.com, Specify main and backup SMTP servers
+		$mail->Host = "$mailer_host";												  // smtp2.example.com, Specify main and backup SMTP servers
 		$mail->SMTPAuth = true;                               // Enable SMTP authentication
 		$mail->Username = "$mailer_user";											// SMTP username
 		$mail->Password = "$mailer_password";                 // SMTP password
@@ -102,8 +102,8 @@ if(isset($_POST['dropbox_location'])){
 			)
 		);                            // Enable TLS encryption, `ssl` also accepted
 		$mail->Port = 587;                                    // TCP port to connect to
-		$mail->setFrom('no-reply@ocollector.org', 'Open-Collector');
-
+		$mail->setFrom("$mailer_from", 'Collector');
+		$mail->isHTML(true);  
 
 		$participant 		 = $_POST['participant_id'];
 		$completion_code = $_POST['completion_code'];
@@ -112,7 +112,6 @@ if(isset($_POST['dropbox_location'])){
 
 		$body_alt_body = "Hello, <br><br> Participant $participant has just completed the task. <br><br> Their completion code was $completion_code. <br><br> To decrypt the data, please go to www.ocollector.org and upload the attached file using the 'data' tab. <br><br> Best wishes, <br><br> The open-collector team.";
 
-		//Content
 		$mail->isHTML(true);                                  // Set email format to HTML
 		$mail->Subject = "Collector - $participant completed with code: $completion_code";
 		$mail->Body    = $body_alt_body;
@@ -132,8 +131,6 @@ if(isset($_POST['dropbox_location'])){
 	} catch (Exception $e) {
 		echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
 	}
-	
-		
-	
 }
+
 ?>

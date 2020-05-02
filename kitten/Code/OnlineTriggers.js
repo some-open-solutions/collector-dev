@@ -34,41 +34,48 @@ function online_save(experiment_id,
 		dropbox_location: exp_json.location
   };
 	
+	
 	//work your way through all the save scripts
-	Object.keys(data_scripts).forEach(function(data_script){
-		function until_successful_script(script_list,
-																		 data,
-																		 after_function){
-			if(script_list.length > 0){
-				var save_script_url = script_list.shift();
-				$.ajax({
-					type: 'POST',
-					url: save_script_url,
-					data: data,
-					crossDomain: true,
-					timeout: 120000,
-					success:function(result){
-						console.dir(result);
-						//as it stands, this will never happen as Collector doesn't allow posts to it.
-						after_function();
-					}
-				})
-				.catch(function(error){
-					console.dir("error");
-					console.dir(error);
-					until_successful_script(script_list,																	
-																	data,
-																	after_function);
-				});
-			} else {
-				after_function();
-			}			
-		}
-		var script_list = data_scripts[data_script];
-		until_successful_script(script_list,
-														data,
-														after_function);
-	});	
+	function until_successful_script(script_list,
+																	 data,
+																	 after_function){
+		if(script_list.length > 0){
+			var save_script_url = script_list.shift();
+			
+			console.dir("save_script_url");
+			console.dir(save_script_url);
+			
+			$.ajax({
+				type: 'POST',
+				url: save_script_url,
+				data: data,
+				crossDomain: true,
+				timeout: 120000,
+				success:function(result){
+					console.dir(result);
+					//as it stands, this will never happen as Collector doesn't allow posts to it.
+					after_function();
+				}
+			})
+			.catch(function(error){
+				console.dir("error");
+				console.dir(error);
+				until_successful_script(script_list,																	
+																data,
+																after_function);
+			});
+		} else {
+			after_function();
+		}			
+	}
+	var script_list = [];
+	Object.keys(data_scripts).forEach(function(server){
+		script_list.push(data_scripts[server]);
+	});
+	until_successful_script(script_list,
+													data,
+													after_function);
+
 }
 
 

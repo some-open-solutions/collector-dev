@@ -273,6 +273,9 @@ function update_server_table(){
 					});
 					var experiment = master_json.exp_mgmt.experiment;
 					var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+					if(typeof(this_exp.data_scripts) == "undefined"){
+						this_exp.data_scripts = {};
+					}
 					this_exp.data_scripts[server_name] = script_url;
 					$("#save_btn").click();
         }
@@ -293,8 +296,4 @@ function list_servers(){
 $("#dismiss_login_btn").on("click",function(){
 	$("#login_modal").fadeOut();
 });
-$("#login_modal").on("show fadeIn",function(){
-	update_server_table();
-});
-
 </script>
