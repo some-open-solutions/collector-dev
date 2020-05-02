@@ -41,11 +41,11 @@ function generateRandomString($length = 10) {
 	return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
 }
 
-/*
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-*/
+
 
 $action 	= $_POST['action'];
 if(isset($_POST['location'])){
@@ -191,7 +191,7 @@ function email_user($email_type,
 	$mail = new PHPMailer(true);                          // Passing `true` enables exceptions
 	$mail->SMTPDebug = 0;                                 // Enable verbose debug output
 	//$mail->isSMTP();                                    // Set mailer to use SMTP
-	$mail->Host = 'ocollector.org';  											// smtp2.example.com, Specify main and backup SMTP servers
+	$mail->Host = 'open-collector.org';										// smtp2.example.com, Specify main and backup SMTP servers
 	$mail->SMTPAuth = true;                               // Enable SMTP authentication
 	$mail->Username = "$mailer_user";											// SMTP username
 	$mail->Password = "$mailer_password";                 // SMTP password
@@ -204,15 +204,15 @@ function email_user($email_type,
 		)
 	);                            // Enable TLS encryption, `ssl` also accepted
 	$mail->Port = 587;                                    // TCP port to connect to
-	$mail->setFrom('no-reply@ocollector.org', 'Collector');
+	$mail->setFrom('no-reply@open-collector.org', 'Collector');
 	$mail->isHTML(true);                                  // Set email format to HTML
 			
 	//identify the website this is coming from
 	$exploded_url = explode("/",$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']);
 	array_pop($exploded_url);
 	$imploded_url = "https://".implode("/",$exploded_url);
-
-  switch($email_type){		
+	
+	switch($email_type){		
     case "registration":
       $msg = "Dear $email <br><br>Thank you for registering with Collector hosted by Some Open Solutions. Before you can use your new profile, we need to confirm this is a valid address. Please proceed to the following link to confirm: <br> $imploded_url/confirm.php?email=$email&confirm_code=$email_confirm_code <br>Many thanks, <br>Some Open Solutions";
 
@@ -220,12 +220,16 @@ function email_user($email_type,
       //$msg = wordwrap($msg,70);
 
       // send email
+			
+			
+			
 			$mail->Subject = "Confirmation code for Registering with Collector";
 			$mail->Body    = $msg;
 			$mail->AltBody = $msg;
 
 			$mail->addAddress($email);     // Add a recipient
 			$mail->send();			
+			
       break;
     case "forgot": 
 			$msg = "Dear $email \n \nThere has been a request to reset the password for your account. Please go to the following link to set your new password: \n $imploded_url/UpdatePassword.php?email=$email&confirm_code=$email_confirm_code \nMany thanks, \nThe Open-Collector team";
@@ -272,10 +276,8 @@ function insert_row($email,
 	$sql = "INSERT INTO `users` (`email`, `password`, `hashed_code`, `salt`,`pepper`,`account_status`) VALUES('$email', '$hashed_password', '$hashed_code','$salt','$pepper','u');";
 	if ($conn->query($sql) === TRUE) {			
 		if(validate_captcha($captcha_secret, $_POST['g-recaptcha-response'])){
-			$success_fail = "fail";  //not really, but need to confirm with e-mail code first
-			$return_obj->error_msg = "E-mail not sent. Please contact team @ someopen dot solutions."; 
-
-			email_user( "registration",
+			
+			email_user("registration",
 									$email,
 									$prehashed_code,
 									$mailer_user,
@@ -397,12 +399,32 @@ if($_POST["action"] == "register") {
 		} else {
 			$sql = "DELETE FROM `users` WHERE `email` = '$email';";
 			if ($conn->query($sql) === TRUE) {
-			  echo insert_row($email, 
-																						$password, 
-																						$conn, 
-																						$captcha_secret, 	
-																						$mailer_user,
-																						$mailer_password);
+			  
+				$valid_extensions =  array_map('str_getcsv', file('../ValidExtensions.csv'));
+				array_walk($valid_extensions, function(&$a) use ($valid_extensions) {			
+					$a = array_combine($valid_extensions[0], $a);			
+				});
+				array_shift($valid_extensions); # remove column header
+				
+				//check if a valid extension
+				$valid_extension_found = false;
+				foreach($valid_extensions as $valid_extension_row){
+					if(substr_compare($email, $valid_extension_row['email'], -strlen($valid_extension_row['email'])) === 0){
+		//			if (substr($email, -1) == $valid_extension_row['email']) {
+						$valid_extension_found = true;
+						echo insert_row($email, 
+														$password, 
+														$conn, 
+														$captcha_secret, 	
+														$mailer_user,
+														$mailer_password);
+					}
+				}
+				if($valid_extension_found == false){
+					echo "You cannot register $email on this server, because the extension associated with your address isn't registered with us. If you are from a University please e-mail team@someopen.solutions to discuss joining our network. Alternately, you could set-up your own server by cloning the repository at https://github.com/some-open-solutions/collector onto your own server. This will allow you to manage how data is stored/e-mailed from there.";
+				}
+				
+				
 			} else {
 				echo "Error deleting old version of the user: " . $conn->error;
 			}
@@ -419,14 +441,15 @@ if($_POST["action"] == "register") {
 		//check if a valid extension
 		$valid_extension_found = false;
 		foreach($valid_extensions as $valid_extension_row){
-			if (substr($email, -1) == $valid_extension_row['email']) {
+			if(substr_compare($email, $valid_extension_row['email'], -strlen($valid_extension_row['email'])) === 0){
+//			if (substr($email, -1) == $valid_extension_row['email']) {
 				$valid_extension_found = true;
 				echo insert_row($email, 
-                    $password, 
-                    $conn, 
-                    $captcha_secret, 	
-                    $mailer_user,
-                    $mailer_password);
+												$password, 
+												$conn, 
+												$captcha_secret, 	
+												$mailer_user,
+												$mailer_password);
 			}
 		}
 		if($valid_extension_found == false){
@@ -481,7 +504,7 @@ if($_POST['action'] == "unregister_experiment"){
   $result = $conn->query($sql);
 	
 	if($result->num_rows > 1){
-		$return_obj->error_msg = 'Please contact team@someopen.solutions -  there are multiple instances of this e-mail address registered.';				
+		echo 'Please contact team@someopen.solutions -  there are multiple instances of this e-mail address registered.';
   } else if($result->num_rows == 1){
     $row = mysqli_fetch_array($result);
     $user_id = $row['user_id'];
@@ -536,7 +559,7 @@ if($_POST["action"] == "update_experiment"){
   $result = $conn->query($sql);
 	
 	if($result->num_rows > 1){
-		$return_obj->error_msg = 'Please contact team@someopen.solutions -  there are multiple instances of this e-mail address registered.';				
+		echo 'Please contact team@someopen.solutions -  there are multiple instances of this e-mail address registered.';
   } else if($result->num_rows == 1){
     $row = mysqli_fetch_array($result);
     if($row['account_status'] == 'V'){  
@@ -565,4 +588,5 @@ if($_POST["action"] == "update_experiment"){
 	}
 }
 mysqli_close($conn);
+
 ?>

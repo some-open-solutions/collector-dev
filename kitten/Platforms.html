@@ -24,9 +24,7 @@
 	width:30px;
 }
 #collector_logo,
-#github_logo,
-#login_btn,
-#logout_btn{
+#github_logo{
   display:none;
 }
 </style>
@@ -52,44 +50,26 @@
     <td>
 			<img class='logo' style="border-radius: 50%; background-color:white; padding:2px" src="../logos/Github.png" id="github_logo">
 		</td>
-    <td>
-			<button id="logout_btn" class="btn btn-primary">Log out</button>
-			<button id="login_btn" class="btn btn-primary">Log in</button>
-    </td>
 	</tr>
 </table>
 
 <script>
-$("#login_btn").on("click",function(){
-	$("#login_modal").fadeIn();
-});
-$("#logout_btn").on("click",function(){	
-	window.localStorage.removeItem("local_key");
-	window.localStorage.removeItem("user_email");
-	$("#collector_account_email").html("");
-	bootbox.alert("You have succesfully logged out");
-});
 
 switch(dev_obj.context){
   
   case "localhost":
     //show the github icon
     $("#github_logo").show();
+		$("#collector_logo").show();
     break;
 	case "github":
   case "server":
 		if(window.localStorage.getItem("user_email") !== null){
-			$("#collector_account_email").html(window.localStorage.getItem("user_email"));
-			$("#login_btn").hide();
-			$("#logout_btn").show();
-		} else {
-			$("#login_btn").show();
-			$("#logout_btn").hide();
-		}
+			$("#collector_account_email").html(window.localStorage.getItem("user_email"));			
+		} 
     $("#collector_logo").show();
     break;
-  default:
-    $("#logout_btn").show();     //this might be redundant
+  default:    
     $("#collector_logo").show(); //this might be redundant
     break;
 };
@@ -129,16 +109,9 @@ $(".logo").hover(function(){
   },500);
 });
 
-$("#collector_logo").on("click", function(){																		//check if there is a local key 
-	if(window.localStorage.getItem("local_key") == null){   											//if not - try to get one 
-		$("#login_modal").fadeIn();
-	} else {																																			// if so, ask to log out
-		bootbox.confirm("Are you sure you want to log-out?",function(response){
-			if(response){
-				$("#logout_btn").click();
-			}
-		});
-	}
+$("#collector_logo").on("click", function(){
+	update_server_table();
+	$("#login_modal").fadeIn();
 });
 
 $("#github_logo").on("click",function(){

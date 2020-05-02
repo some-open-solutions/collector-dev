@@ -291,6 +291,7 @@ $("#run_btn").on("click",function(){
 						label: "Publish",
 						className: 'btn-primary',
 						callback: function(){
+							update_server_table();
               $("#login_modal").fadeIn();
 						}
 					},
