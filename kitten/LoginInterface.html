@@ -110,11 +110,11 @@ function update_server_table(){
     if($("#experiment_list").val() == undefined || 
        $("#experiment_list").val() == null){
       var publish_btn_html      = "no experiment selected";      
-    } else if(typeof(exp_json.data_scripts[server_row.server]) == "undefined"){
-      var publish_btn_html = "<button class='btn btn-primary publish_btn'>Publish<span style='display:none'>" + server_row.publish_url + "</span></button><button class='btn btn-danger unpublish_btn'>Unpublish<span style='display:none'>" + server_row.publish_url + "</span></button>";
+    } else {
+      var publish_btn_html = "<button class='btn btn-primary publish_btn'>Publish<span style='display:none'>" + server_row.register_url + "</span></button><button class='btn btn-danger unpublish_btn'>Unpublish<span style='display:none'>" + server_row.register_url + "</span></button>";
     }
     
-    var user_button = "<button class='create_account_btn btn btn-primary'>Create Account<span style='display:none'>" + server_row.publish_url + "</span></button><button class='delete_account_btn btn btn-danger'>Delete Account<span style='display:none'>" + server_row.publish_url + "</span></button><button class='forgot_password_btn btn btn-info'>Forgot password<span style='display:none'>" + server_row.publish_url + "</span></button>";
+    var user_button = "<button class='create_account_btn btn btn-primary'>Create Account<span style='display:none'>" + server_row.register_url + "</span></button><button class='delete_account_btn btn btn-danger'>Delete Account<span style='display:none'>" + server_row.register_url + "</span></button><button class='forgot_password_btn btn btn-info'>Forgot password<span style='display:none'>" + server_row.register_url + "</span></button>";
     
     
     server_table += "<tr>"+ 
@@ -222,8 +222,18 @@ function update_server_table(){
         bootbox.alert(returned_message);
         if(returned_message == "Robot verification failed, please try again."){
 					grecaptcha.reset();
-				} else if(returned_message == "Your request to be a collaborator has been sent."){
-        
+				} else if(returned_message.indexOf("Succesfully deleted an experiment you were the only contributor to") !== -1){
+					var server_name;
+					var script_url; 
+					server_info.forEach(function(row){
+						if(row.register_url == register_url){
+							server_name = row.server;
+							script_url  = row.script_url;
+						}
+					});
+					var experiment = master_json.exp_mgmt.experiment;
+					var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+					delete(this_exp.data_scripts[server_name]);
         }
       });
     }
@@ -235,7 +245,7 @@ function update_server_table(){
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
       var experiment = master_json.exp_mgmt.experiment;
-      var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+      var this_exp   = master_json.exp_mgmt.experiments[experiment];
     	
       $.post(register_url,{
         location:               this_exp.location,
@@ -248,59 +258,23 @@ function update_server_table(){
         bootbox.alert(returned_message);
         if(returned_message == "Robot verification failed, please try again."){
 					grecaptcha.reset();
-				} else if(returned_message == "Your request to be a collaborator has been sent."){
+				} else if(returned_message == "Your request to be a collaborator has been sent." |
+									returned_message == "success" |
+									returned_message == "You are already registered with this experiment." |
+									returned_message == "Still awaiting confirmation that you are a collaborator. Do contact your colleague who originally created this experiment"){
           
-          
-          /*
-          var script_url = server_info.filter(function(server_row){
-            return server_row.publish_url == publish_url;
-          })[0].script_url;
-          
-          
-          if(typeof(master_json.data.experiments) == "undefined"){
-            master_json.data.experiments = {};
-          }
-          if(typeof(master_json.data.experiments[experiment]) !== "exist"){
-            master_json.data.experiments[experiment] = {};
-          }
-          if(typeof(master_json.data.experiments[experiment][script_url]) == "undefined"){
-            master_json.data.experiments[experiment][script_url] = [];
-          }
-          if(master_json.data.experiments[experiment][script_url].indexOf($("#username_input").val()) == -1){
-            master_json.data.experiments[experiment][script_url].push($("#username_input").val());
-          } 
-          
-          
-        } else if(returned_message == "success"){
-          var script_url = server_info.filter(function(server_row){
-            return server_row.publish_url == publish_url;
-          })[0].script_url;
-          
-          
-          if(typeof(master_json.data.experiments) == "undefined"){
-            master_json.data.experiments = {};
-          }
-          if(typeof(master_json.data.experiments[master_json.exp_mgmt.experiment]) !== "exist"){
-            master_json.data.experiments[master_json.exp_mgmt.experiment] = {};
-          }
-          if(typeof(master_json.data.experiments[master_json.exp_mgmt.experiment][script_url]) == "undefined"){
-            master_json.data.experiments[master_json.exp_mgmt.experiment][script_url] = [];
-          }
-          if(master_json.data.experiments[master_json.exp_mgmt.experiment][script_url].indexOf($("#username_input").val()) == -1){
-            master_json.data.experiments[master_json.exp_mgmt.experiment][script_url].push($("#username_input").val());
-          } 
-        } else {
-          bootbox.alert(returned_message);
-        }
-        
-        
-        /*
-        if(returned_data.indexOf("Error:") == -1){
-          custom_alert(returned_data);												
-        } else {
-          bootbox.alert(returned_data);
-        }
-        */
+					var server_name;
+					var script_url; 
+					server_info.forEach(function(row){
+						if(row.register_url == register_url){
+							server_name = row.server;
+							script_url  = row.script_url;
+						}
+					});
+					var experiment = master_json.exp_mgmt.experiment;
+					var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+					this_exp.data_scripts[server_name] = script_url;
+					$("#save_btn").click();
         }
       })
       .catch(function(error){

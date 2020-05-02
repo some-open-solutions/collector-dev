@@ -409,7 +409,6 @@ $("#save_btn").on("click", function(){
   
   if(typeof(this_exp) !== "undefined"){
       this_exp.public_key   = master_json.keys.public_key;
-      this_exp.data_scripts	= master_json.data.scripts;
   }
 	//parse procs for survey saving next
 	if($("#experiment_list").val() !== null) {
