@@ -129,38 +129,40 @@ function update_server_table(){
   $(".create_account_btn").on("click",function(){
     if($("#username_input").val().length == 0 ||
        $("#password_input").val().length == 0){
-      bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
+      bootbox.alert("You are either missing your email address or password (or both) to register with.");
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
-      alert(register_url);
-      
-      $.post(register_url,{
-				action: 					      "register",
-				email: 					        $("#username_input").val(),
-				password: 				      $("#password_input").val(),
-				"g-recaptcha-response": $("#g-recaptcha-response").val()
-			},function(error_msg){
-				bootbox.alert(error_msg);
-				if(error_msg == "Robot verification failed, please try again."){
-					grecaptcha.reset();
-				} else if(error_msg == "user already exists"){
-          master_json.data.servers[server_row.server].users.push($("#username_input").val());
-        } else if(error_msg == "You have succesfully logged in."){
-				
-					window.localStorage.setItem("session_code",
-																			login_obj.session_code);
-					window.localStorage.setItem("user_email",
-																			login_obj.user_email);
+      if($("#password_input").val().length < 8){
+				bootbox.alert("Your password should be at least 8 characters");
+			} else {
+				$.post(register_url,{
+					action: 					      "register",
+					email: 					        $("#username_input").val(),
+					password: 				      $("#password_input").val(),
+					"g-recaptcha-response": $("#g-recaptcha-response").val()
+				},function(error_msg){
+					bootbox.alert(error_msg);
+					if(error_msg == "Robot verification failed, please try again."){
+						grecaptcha.reset();
+					} else if(error_msg == "user already exists"){
+						master_json.data.servers[server_row.server].users.push($("#username_input").val());
+					} else if(error_msg == "You have succesfully logged in."){
+					
+						window.localStorage.setItem("session_code",
+																				login_obj.session_code);
+						window.localStorage.setItem("user_email",
+																				login_obj.user_email);
 
-					$("#collector_account_email").html(login_obj.user_email);
-				}				
-			});
+						$("#collector_account_email").html(login_obj.user_email);
+					}				
+				});
+			}
     }
   });
   $(".delete_account_btn").on("click",function(){
     if($("#username_input").val().length == 0 ||
        $("#password_input").val().length == 0){
-      bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
+      bootbox.alert("You are either missing your email address or password (or both) to delete the account. If you've forgotten your password, click on the 'forgot password' button.");
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
       bootbox.confirm("Are you sure you want to delete your account on this server? This will remove your contribution to all experiments, and all experiments in which you are the only researcher!",function(result){
@@ -179,7 +181,7 @@ function update_server_table(){
   });
   $(".forgot_password_btn").on("click",function(){
     if($("#username_input").val().length == 0){
-      bootbox.alert("You are missing your email address to register the experiment");
+      bootbox.alert("You are missing your email address");
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
       bootbox.confirm("Just confirming that you want to request to replace your password?",function(result){
@@ -189,18 +191,21 @@ function update_server_table(){
             email: 					        $("#username_input").val(),
             "g-recaptcha-response": $("#g-recaptcha-response").val()
           },function(server_response){
-            bootbox.alert(server_response);
+						bootbox.alert(server_response);
+						if(server_response == "Robot verification failed, please try again."){
+							grecaptcha.reset();
+						}
           }); 
         }
       });
     }
-  }
+  });
   
   
   $(".unpublish_btn").on("click",function(){
     if($("#username_input").val().length == 0 ||
        $("#password_input").val().length == 0){
-      bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
+      bootbox.alert("You are either missing your email address or password (or both) to delete the experiment");
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
       var experiment = master_json.exp_mgmt.experiment;
