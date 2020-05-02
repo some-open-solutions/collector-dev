@@ -23,6 +23,8 @@
 
 header("Access-Control-Allow-Origin: *");
 
+ini_set("allow_url_fopen", 1);
+
 require_once "../oCollector_captcha_keys.php";
 require_once "../sqlConnect.php";
 
@@ -85,9 +87,9 @@ function experiment_exists($location,
 	
 	$result = $conn->query($check_exists_sql);
 	
-    
+  if($result -> num_rows == 0){
+		
 	
-	if($result -> num_rows == 0){
 		return create_experiment($location,$conn,$email);
 	} else {		
   
@@ -154,6 +156,7 @@ function experiment_exists($location,
       return "error: something has gone wrong with the mysql databases, please contact your admin";
     }
 	}
+	
 }
 
 function unique_published_id($conn){
@@ -225,10 +228,14 @@ function email_user($email_type,
 			$mail->send();			
       break;
     case "forgot": 
-      $msg = "Dear $email \n \nThere has been a request to reset the password for your account. Please go to the following link to set your new password: \n $imploded_url/UpdatePassword.php?email=$email&confirm_code=$email_confirm_code \nMany thanks, \nThe Open-Collector team";
+			$msg = "Dear $email \n \nThere has been a request to reset the password for your account. Please go to the following link to set your new password: \n $imploded_url/UpdatePassword.php?email=$email&confirm_code=$email_confirm_code \nMany thanks, \nThe Open-Collector team";
 
-      $msg = wordwrap($msg,70); // use wordwrap() if lines are longer than 70 characters        
-      mail($email,"Resetting password with Open-Collector",$msg); // send email
+			$mail->addAddress($email);     // Add a recipient
+			$mail->Subject = "Resetting password with Collector";
+			$mail->Body    = $msg;
+			$mail->AltBody = $msg;
+			$mail->send();			
+			return "Request for password reset sent to $email";
       break;
   }
 }
@@ -285,27 +292,39 @@ function insert_row($email,
 }
 
 if($_POST["action"] == "forgot_password"){
-  $sql="SELECT * FROM users WHERE email='$email'";
+	$sql="SELECT * FROM users WHERE email='$email'";
   $result = $conn->query($sql);
+	
 	if($result->num_rows == 0){
     echo "You don't appear to have registered on this server";
   } if($result->num_rows > 1){
     echo "You appear to have registered multiple times on this server. Please contact admin";
   } else {
     
-    $row = mysqli_fetch_array($result)
-    //need to generate a new confirm code
-    $prehashed_code = create_random_code(20);
-    $hashed_code = password_hash($prehashed_code, PASSWORD_BCRYPT);
-    
-    $sql = "INSERT INTO `users` (`email`, `hashed_code`) VALUES('$email', '$hashed_code');";
-    if ($conn->query($sql) === TRUE) {
-      email_user("forgot",
-                 $email,
-                 $prehashed_code,
-                 $mailer_user,
-                 $mailer_password);
-    }
+		//add capcha check
+		if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){
+			if(validate_captcha($captcha_secret, $_POST['g-recaptcha-response'])){
+        
+				//need to generate a new confirm code
+				$prehashed_code = create_random_code(20);
+				$hashed_code = password_hash($prehashed_code, PASSWORD_BCRYPT);
+				
+				$sql = "UPDATE `users` set `hashed_code` = '$hashed_code' WHERE `email` = '$email';";
+				if ($conn->query($sql) === TRUE) {
+					echo email_user("forgot",
+													$email,
+													$prehashed_code,
+													$mailer_user,
+													$mailer_password);
+				} else {
+					echo "Failed to update you confirmation code. Please contact admin";
+				}
+			} else {
+				echo 'Robot verification failed, please try again.';
+			}             
+		} else { 
+			echo 'Please check on the reCAPTCHA box.';
+		}
   }
 }
 
@@ -314,52 +333,56 @@ if($_POST["action"] == "unregister") {
   $result = $conn->query($sql);
 	$row = mysqli_fetch_array($result);
   if($result->num_rows > 0){
-    if (password_verify($row['salt'].$password.$row['pepper'], $row['password'])){
-      $user_id = $row['user_id'];
-			echo "Identifying experiments you contribute to:<br>";
-      $sql    = "SELECT * FROM `view_experiment_users` WHERE `email`='".$email."';";
-      $result = $conn->query($sql);
-      
-      $exp_counts = array();
-      while($row    = mysqli_fetch_array($result)){
-        $exp_id = $row['experiment_id'];
-        $inner_sql = "SELECT * FROM `view_experiment_users` WHERE `experiment_id` = '$exp_id'";
-        $inner_result = $conn->query($inner_sql);
-        while($inner_row = mysqli_fetch_array($inner_result)){
-          if(isset($exp_counts[$exp_id])){
-            $exp_counts[$exp_id]++;
-          } else {
-            $exp_counts[$exp_id] = 1;
-          }
-        } 
-      }
-      foreach($exp_counts as $exp_id => $this_count){
-        echo "$exp_counts -> $exp_id -> $this_count<br>";
-        if($this_count == 1){
-          //delete experiment from experiments
-          $sql = "DELETE FROM `experiments` WHERE `experiment_id` = '$exp_id';";
-          if ($conn->query($sql) === TRUE) {
-            echo "Succesfully deleted an experiment you were the only contributor to<br>";
-          } else {
-            echo "Error deleting an experiment you were the only contributor to: " . $conn->error;
-          }
-        } 
-        $sql = "DELETE FROM `contributors` WHERE `user_id` = '$user_id';";
-        if ($conn->query($sql) === TRUE) {
-          echo "Succesfully removed yourself as a contributor to an experiment<br>";
-        } else {
-          echo "Error removing you as a contributor from an experiment: " . $conn->error;
-        }
-      }
-      $sql = "DELETE FROM `users` WHERE `email` = '$email';";
-			if ($conn->query($sql) === TRUE) {
-				echo "Succesfully deleted your account";
-			} else {
-				echo "Error deleting user: " . $conn->error;
+		if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){
+			if(validate_captcha($captcha_secret, $_POST['g-recaptcha-response'])){
+				if (password_verify($row['salt'].$password.$row['pepper'], $row['password'])){
+					$user_id = $row['user_id'];
+					echo "Identifying experiments you contribute to:<br>";
+					$sql    = "SELECT * FROM `view_experiment_users` WHERE `email`='".$email."';";
+					$result = $conn->query($sql);
+					
+					$exp_counts = array();
+					while($row    = mysqli_fetch_array($result)){
+						$exp_id = $row['experiment_id'];
+						$inner_sql = "SELECT * FROM `view_experiment_users` WHERE `experiment_id` = '$exp_id'";
+						$inner_result = $conn->query($inner_sql);
+						while($inner_row = mysqli_fetch_array($inner_result)){
+							if(isset($exp_counts[$exp_id])){
+								$exp_counts[$exp_id]++;
+							} else {
+								$exp_counts[$exp_id] = 1;
+							}
+						} 
+					}
+					foreach($exp_counts as $exp_id => $this_count){
+						echo "$exp_counts -> $exp_id -> $this_count<br>";
+						if($this_count == 1){
+							//delete experiment from experiments
+							$sql = "DELETE FROM `experiments` WHERE `experiment_id` = '$exp_id';";
+							if ($conn->query($sql) === TRUE) {
+								echo "Succesfully deleted an experiment you were the only contributor to<br>";
+							} else {
+								echo "Error deleting an experiment you were the only contributor to: " . $conn->error;
+							}
+						} 
+						$sql = "DELETE FROM `contributors` WHERE `user_id` = '$user_id';";
+						if ($conn->query($sql) === TRUE) {
+							echo "Succesfully removed yourself as a contributor to an experiment<br>";
+						} else {
+							echo "Error removing you as a contributor from an experiment: " . $conn->error;
+						}
+					}
+					$sql = "DELETE FROM `users` WHERE `email` = '$email';";
+					if ($conn->query($sql) === TRUE) {
+						echo "Succesfully deleted your account";
+					} else {
+						echo "Error deleting user: " . $conn->error;
+					}
+				} else {
+					echo "Wrong password. Click the <b>Forgot Password</b> to get an e-mail with to create a new one.";
+				}
 			}
-		} else {
-      echo "Wrong password. Click the <b>Forgot Password</b> to get an e-mail with to create a new one.";
-    }
+		}    
   }
 }
 
@@ -385,16 +408,73 @@ if($_POST["action"] == "register") {
 			}
 		}
   } else {
-    echo insert_row($email, 
+		
+		//read the csv with all the servers
+		$valid_extensions =  array_map('str_getcsv', file('../ValidExtensions.csv'));
+		array_walk($valid_extensions, function(&$a) use ($valid_extensions) {			
+			$a = array_combine($valid_extensions[0], $a);			
+		});
+		array_shift($valid_extensions); # remove column header
+		
+		//check if a valid extension
+		$valid_extension_found = false;
+		foreach($valid_extensions as $valid_extension_row){
+			if (substr($email, -1) == $valid_extension_row['email']) {
+				$valid_extension_found = true;
+				echo insert_row($email, 
                     $password, 
                     $conn, 
                     $captcha_secret, 	
                     $mailer_user,
                     $mailer_password);
+			}
+		}
+		if($valid_extension_found == false){
+			echo "You cannot register $email on this server, because the extension associated with your address isn't registered with us. If you are from a University please e-mail team@someopen.solutions to discuss joining our network. Alternately, you could set-up your own server by cloning the repository at https://github.com/some-open-solutions/collector onto your own server. This will allow you to manage how data is stored/e-mailed from there.";
+		}
   }
 }
 
-
+if($_POST['action'] == "update_password"){
+	$sql = "SELECT * FROM users WHERE email='$email'";    
+  $result = $conn->query($sql);
+	
+	if($result->num_rows == 0){
+		echo "This account isn't on our database. Please go back and register it.";
+	} else if($result->num_rows > 1){
+		echo "There are more than 1 occurrences of this account. Please contact admin to fix this";
+	} else {
+		$row = mysqli_fetch_array($result);
+    $user_id = $row['user_id'];
+		if(isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])){
+			if(validate_captcha($captcha_secret, $_POST['g-recaptcha-response'])){
+				
+				if(strlen($password)>7){
+					//update password
+					//also update verification to verified
+					
+					$salt = create_random_code(20);
+					$pepper = create_random_code(20);	
+					$prehashed_code = create_random_code(20);
+					$hashed_password = password_hash($salt.$password.$pepper, PASSWORD_BCRYPT);
+					
+					$sql = "UPDATE `users` SET `password`='$hashed_password', `salt`='$salt',`pepper`='$pepper',`account_status`='V' WHERE `email`= '$email'";
+					if ($conn->query($sql) === TRUE) {
+						echo "Succesfully updated your password!";
+					} else {
+						echo "error:". $conn->error;
+					}
+				} else {
+					echo "Your password should be at least 8 characters";
+				}				
+			} else {
+				echo 'Robot verification failed, please try again.';
+			}             
+		} else { 
+			echo 'Please check on the reCAPTCHA box.';
+		}	
+	}
+}
 
 if($_POST['action'] == "unregister_experiment"){
   $sql = "SELECT * FROM users WHERE email='$email'";    
