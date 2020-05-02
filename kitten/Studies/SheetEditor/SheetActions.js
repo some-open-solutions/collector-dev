@@ -560,28 +560,6 @@ $("#save_btn").on("click", function(){
             .then(function(returned_link){
               this_exp.location = returned_link.url;
 							dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},function(location_saved){
-									switch(dev_obj.context){
-										case "github":
-										case "server":
-											$.post("https://ocollector.org/kitten/AjaxMySQL.php",
-												{
-													location:     this_exp.location,
-													experiment:   experiment,
-													action:       "update_experiment",
-													session_code: window.localStorage.getItem("session_code"),
-													email: 				window.localStorage.getItem("user_email")
-												},
-												function(returned_data){											
-													if(returned_data.indexOf("Error:") == -1){
-														custom_alert(returned_data);												
-													} else {
-														bootbox.alert(returned_data);
-													}
-												}
-											);
-											break;
-									}
-
 									$("#run_link").attr("href","../"+ master_json.exp_mgmt.version + "/RunStudy.html?location="+this_exp.location);
 									update_master_json();
 								},function(error){

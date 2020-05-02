@@ -50,23 +50,6 @@
 </style>
 
 
-<script>
-function check_errors(){
-  switch(dev_obj.context){
-    case "server":
-      $.post("checkErrors.php",{
-        //nothing
-      },function(error_message){
-        if(error_message !== ""){
-          bootbox.alert(error_message);
-        }
-      });
-      break;
-  }
-}
-</script>
-
-
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <div class="modal" tabindex="-1" role="dialog" id="login_modal">
 	<div id="login_register_span"  style="height:90%">
@@ -122,10 +105,10 @@ function update_server_table(){
         experiments : {}
       }
     }
-    
-    
+     
     //check if the server is in the list of exp.data_scripts
-    if(typeof(exp_json) == "undefined"){
+    if($("#experiment_list").val() == undefined || 
+       $("#experiment_list").val() == null){
       var publish_btn_html      = "no experiment selected";      
     } else if(typeof(exp_json.data_scripts[server_row.server]) == "undefined"){
       var publish_btn_html = "<button class='btn btn-primary publish_btn'>Publish<span style='display:none'>" + server_row.publish_url + "</span></button><button class='btn btn-danger unpublish_btn'>Unpublish<span style='display:none'>" + server_row.publish_url + "</span></button>";
@@ -194,6 +177,25 @@ function update_server_table(){
       });
     }
   });
+  $(".forgot_password_btn").on("click",function(){
+    if($("#username_input").val().length == 0){
+      bootbox.alert("You are missing your email address to register the experiment");
+    } else {
+      var register_url = $(this).find("span")[0].innerHTML;
+      bootbox.confirm("Just confirming that you want to request to replace your password?",function(result){
+        if(result){
+          $.post(register_url,{
+            action: 					      "forgot_password",
+            email: 					        $("#username_input").val(),
+            "g-recaptcha-response": $("#g-recaptcha-response").val()
+          },function(server_response){
+            bootbox.alert(server_response);
+          }); 
+        }
+      });
+    }
+  }
+  
   
   $(".unpublish_btn").on("click",function(){
     if($("#username_input").val().length == 0 ||
@@ -309,10 +311,6 @@ function list_servers(){
     update_server_table();
   });
 }
-</script>
-
-
-<script>
 $("#dismiss_login_btn").on("click",function(){
 	$("#login_modal").fadeOut();
 });
