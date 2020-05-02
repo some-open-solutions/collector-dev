@@ -293,4 +293,8 @@ function list_servers(){
 $("#dismiss_login_btn").on("click",function(){
 	$("#login_modal").fadeOut();
 });
+$("#login_modal").on("show fadeIn",function(){
+	update_server_table();
+});
+
 </script>
