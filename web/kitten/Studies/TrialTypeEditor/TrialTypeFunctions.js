@@ -58,16 +58,18 @@ trialtypes_obj = {
     
 		var trialtype = master_json.trialtypes.trialtype;
     
-    eel.expose(python_trialtype);
-    function python_trialtype(content){
-      console.dir("content");
-      console.dir(content);
-      if(content == ""){
-        content = master_json.trialtypes[user_default+"s"][trialtype];
-      }
-      editor.setValue(content);
-    }
-
+		if(typeof(eel) !== "undefined"){
+			eel.expose(python_trialtype);
+			function python_trialtype(content){
+				console.dir("content");
+				console.dir(content);
+				if(content == ""){
+					content = master_json.trialtypes[user_default+"s"][trialtype];
+				}
+				editor.setValue(content);
+			}
+		}
+		
     //python load if localhost
     switch(dev_obj.context){
       case "localhost":
@@ -150,7 +152,9 @@ trialtypes_obj = {
 			bootbox.alert("error: "+error.error+"<br> try saving again after waiting a little");
 		},
 		"filesUpload");
-    eel.save_trialtype(name.toLowerCase().replace(".html","") + ".html",content);
+		if(typeof(eel) !== "undefined"){
+			eel.save_trialtype(name.toLowerCase().replace(".html","") + ".html",content);
+		}
 	},
 	synchTrialtypesFolder:function(){
 		if(dropbox_check()){

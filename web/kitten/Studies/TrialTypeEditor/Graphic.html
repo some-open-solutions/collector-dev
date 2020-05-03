@@ -1563,10 +1563,19 @@ graphic_editor_obj = {
 		var these_elements 				 = this_trialtype.elements;
 		var element_timeline_html  = "<table style='width:100%'>";
 
-		var max_value = 0;
+		var max_value 			= 0;
+		var endless_element = false;
 		Object.keys(these_elements).forEach(function(element){
 			max_value = these_elements[element].hide.value > max_value ? parseFloat(these_elements[element].hide.value) : max_value;
+			max_value = these_elements[element].show.value > max_value ? parseFloat(these_elements[element].show.value) : max_value;
+			if(these_elements[element].hide.value == ""){
+				endless_element = true;			
+			}
 		});
+		
+		if(endless_element){
+			max_value += 500;
+		}
 
 		// calculate max duration
 		/////////////////////////
