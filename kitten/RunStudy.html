@@ -525,6 +525,10 @@ function final_trial(){
             online_data_obj.finished_and_stored = true;
             $("#google_progress").css("width","100%");
             setTimeout(function(){
+							if(typeof(exp_json.this_condition.forward_at_end) !== "undefined" && 
+												exp_json.this_condition.forward_at_end  !== ""){
+								bootbox.alert("The next phase of your experiment is <a class='btn btn-primary' style='margin:2px' href='"+ exp_json.this_condition.forward_at_end +"' target='_blank'>here</a> - please continue there.");
+							}
               if(exp_json.this_condition.download_at_end !== "off"){
                 var download_at_end_html = " If you'd like to download your raw data <span id='download_json'>click here</span></h1>";
               } else {
