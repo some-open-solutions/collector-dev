@@ -110,8 +110,7 @@ function initiate_actions(){
                 };
                 master_json.trialtypes.trialtype = new_name;
                 graphic_editor_obj.update_main_settings();
-                graphic_editor_obj.clean_canvas();
-
+                graphic_editor_obj.clean_canvas();								
               }
             }
 					}
