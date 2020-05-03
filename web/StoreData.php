@@ -110,7 +110,7 @@ if(isset($_POST['dropbox_location'])){
 		$encrypted_data  = $_POST['encrypted_data'];
 		$experiment_id 	 = $_POST['experiment_id'];
 
-		$body_alt_body = "Hello, <br><br> Participant $participant has just completed the task. <br><br> Their completion code was $completion_code. <br><br> To decrypt the data, please go to www.ocollector.org and upload the attached file using the 'data' tab. <br><br> Best wishes, <br><br> The open-collector team.";
+		$body_alt_body = "Hello, <br><br> Participant $participant has just completed the task. <br><br> Their completion code was $completion_code. <br><br> To decrypt the data, please go to www.ocollector.org and upload the attached file using the 'data' tab. <br><br> Best wishes, <br><br> $mailer_team_name.";
 
 		$mail->isHTML(true);                                  // Set email format to HTML
 		$mail->Subject = "Collector - $participant completed with code: $completion_code";

@@ -42,5 +42,9 @@
 	"fullscreen":{
     "subtitle":"On or off?",
     "text":"By default, the experiment will <b>NOT</b> be in Fullscreen mode. Change this to <b>on</b> if you don't want this."
-  }
+  },
+	"forward_at_end":{
+		"subtitle":"Where should the participant go next?",
+    "text":"By default, the participant will not be prompted to complete any other links. However, if you want the participant to complete another link after your task then just write the link you want them to go to next in this column"
+	}
 }

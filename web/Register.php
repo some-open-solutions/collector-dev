@@ -108,13 +108,13 @@ function experiment_exists($location,
 				('u'));";
 			
 			if ($conn->query($sql) === TRUE) {
-				$mail = new PHPMailer(true);                          // Passing `true` enables exceptions
-				$mail->SMTPDebug = 0;                                 // Enable verbose debug output
-				//$mail->isSMTP();                                    // Set mailer to use SMTP
-				$mail->Host = 'ocollector.org';  											// smtp2.example.com, Specify main and backup SMTP servers
-				$mail->SMTPAuth = true;                               // Enable SMTP authentication
-				$mail->Username = "$mailer_user";											// SMTP username
-				$mail->Password = "$mailer_password";                 // SMTP password
+				$mail = new PHPMailer(true);           // Passing `true` enables exceptions
+				$mail->SMTPDebug = 0;                  // Enable verbose debug output
+				//$mail->isSMTP();                     // Set mailer to use SMTP
+				$mail->Host = "$mailer_host";  				 // smtp2.example.com, Specify main and backup SMTP servers
+				$mail->SMTPAuth = true;                // Enable SMTP authentication
+				$mail->Username = "$mailer_user";			 // SMTP username
+				$mail->Password = "$mailer_password";  // SMTP password
 				$mail->SMTPSecure = 'tls';
 				$mail->SMTPOptions = array(
 					'ssl' => array(
@@ -124,7 +124,7 @@ function experiment_exists($location,
 					)
 				);                            // Enable TLS encryption, `ssl` also accepted
 				$mail->Port = 587;                                    // TCP port to connect to
-				$mail->setFrom('no-reply@ocollector.org', 'Collector');
+				$mail->setFrom("$mailer_from", 'Collector');
 				$mail->isHTML(true);                                  // Set email format to HTML
 				
 				$exploded_url = explode("/",$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF']);
@@ -188,13 +188,13 @@ function email_user($email_type,
                     $email_confirm_code,
 										$mailer_user,
 										$mailer_password){
-	$mail = new PHPMailer(true);                          // Passing `true` enables exceptions
-	$mail->SMTPDebug = 0;                                 // Enable verbose debug output
-	//$mail->isSMTP();                                    // Set mailer to use SMTP
-	$mail->Host = 'open-collector.org';										// smtp2.example.com, Specify main and backup SMTP servers
-	$mail->SMTPAuth = true;                               // Enable SMTP authentication
-	$mail->Username = "$mailer_user";											// SMTP username
-	$mail->Password = "$mailer_password";                 // SMTP password
+	$mail = new PHPMailer(true);          // Passing `true` enables exceptions
+	$mail->SMTPDebug = 0;                 // Enable verbose debug output
+	//$mail->isSMTP();                    // Set mailer to use SMTP
+	$mail->Host = "$mailer_host";					// smtp2.example.com, Specify main and backup SMTP servers
+	$mail->SMTPAuth = true;               // Enable SMTP authentication
+	$mail->Username = "$mailer_user";			// SMTP username
+	$mail->Password = "$mailer_password"; // SMTP password
 	$mail->SMTPSecure = 'tls';
 	$mail->SMTPOptions = array(
 		'ssl' => array(
@@ -204,7 +204,7 @@ function email_user($email_type,
 		)
 	);                            // Enable TLS encryption, `ssl` also accepted
 	$mail->Port = 587;                                    // TCP port to connect to
-	$mail->setFrom('no-reply@open-collector.org', 'Collector');
+	$mail->setFrom("$mailer_from", 'Collector');
 	$mail->isHTML(true);                                  // Set email format to HTML
 			
 	//identify the website this is coming from
@@ -214,7 +214,7 @@ function email_user($email_type,
 	
 	switch($email_type){		
     case "registration":
-      $msg = "Dear $email <br><br>Thank you for registering with Collector hosted by Some Open Solutions. Before you can use your new profile, we need to confirm this is a valid address. Please proceed to the following link to confirm: <br> $imploded_url/confirm.php?email=$email&confirm_code=$email_confirm_code <br>Many thanks, <br>Some Open Solutions";
+      $msg = "Dear $email <br><br>Thank you for registering with Collector hosted by Some Open Solutions. Before you can use your new profile, we need to confirm this is a valid address. Please proceed to the following link to confirm: <br> $imploded_url/confirm.php?email=$email&confirm_code=$email_confirm_code <br>Many thanks, <br><br>$mailer_team_name";
 
       // use wordwrap() if lines are longer than 70 characters
       //$msg = wordwrap($msg,70);
@@ -232,7 +232,7 @@ function email_user($email_type,
 			
       break;
     case "forgot": 
-			$msg = "Dear $email \n \nThere has been a request to reset the password for your account. Please go to the following link to set your new password: \n $imploded_url/UpdatePassword.php?email=$email&confirm_code=$email_confirm_code \nMany thanks, \nThe Open-Collector team";
+			$msg = "Dear $email <br> <br>There has been a request to reset the password for your account. Please go to the following link to set your new password: <br> $imploded_url/UpdatePassword.php?email=$email&confirm_code=$email_confirm_code \nMany thanks, <br><br>$mailer_team_name";
 
 			$mail->addAddress($email);     // Add a recipient
 			$mail->Subject = "Resetting password with Collector";
