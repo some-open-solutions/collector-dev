@@ -485,7 +485,9 @@ function create_exp_json_variables(){
 		exp_json.progress_bar_visible = true; //not doing anything at the moment	
 		exp_json.trial_no = 0;
 		exp_json.post_no  = 0;
-		exp_json.responses = [];
+		if(typeof(exp_json.responses) == "undefined"){
+			exp_json.responses = [];
+		}
 	}
 	Study.activate_pipe();
 }
@@ -1059,9 +1061,9 @@ function shuffle_start_exp(){
 				}
 		});
 		exp_json.parsed_proc = new_proc;
-		exp_json.responses 	 = [];
-
-
+		if(typeof(exp_json.responses) == "undefined"){
+			exp_json.responses 	 = [];
+		}
 	}
 	exp_json.wait_to_proc	= false;
   Study.activate_pipe();
