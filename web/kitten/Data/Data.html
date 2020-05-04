@@ -67,15 +67,16 @@ $("#fileToLoad").on("change",function(){
 });
 
 function loadFileAsText(){
+	encrypt_obj.current_batch = [];
   function batch_no_batch(batch_no){
     if(batch_no == -1){
       batch_no = 0;
     }
     if(document.getElementById("fileToLoad").files.length > batch_no + 1){
-      batch_proc   = true;
+			batch_proc   = true;
       var batch_status = "add";
     } else {
-      batch_proc   = false;
+			batch_proc   = false;
       var batch_status = "end";
     }
     console.dir("batch_status earlier");
@@ -100,11 +101,10 @@ function loadFileAsText(){
       batch_no_batch(batch_no);
     }
   }
-
-  if(document.getElementById("fileToLoad").files.length > 1){
+	if(document.getElementById("fileToLoad").files.length > 1){
     batch_no_batch(0);
   } else {
-    batch_no_batch(-1);
+		batch_no_batch(-1);
   }
 }
 
@@ -228,17 +228,19 @@ encrypt_obj = {
                   title: "What would you like to name this file?",
                   value: default_filename,
                   callback: function(result) {
-                    var filename = result.toLowerCase().replace(".csv","") + ".csv";
-                    save_csv (filename, Papa.unparse(this_decrypted_message,{
-                      quotes: false, //or array of booleans
-                      quoteChar: '"',
-                      escapeChar: '"',
-                      delimiter: ",",
-                      header: true,
-                      newline: "\r\n",
-                      skipEmptyLines: true, //or 'greedy',
-                      columns: null //or array of strings
-                    }));
+										if(result){
+											var filename = result.toLowerCase().replace(".csv","") + ".csv";
+											save_csv (filename, Papa.unparse(this_decrypted_message,{
+												quotes: false, //or array of booleans
+												quoteChar: '"',
+												escapeChar: '"',
+												delimiter: ",",
+												header: true,
+												newline: "\r\n",
+												skipEmptyLines: true, //or 'greedy',
+												columns: null //or array of strings
+											}));
+										}
                   }
                 });
               }
