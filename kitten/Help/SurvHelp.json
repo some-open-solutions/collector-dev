@@ -9,7 +9,7 @@
   },
   "feedback_color":{
     "subtitle":"What color is each feedback",
-    "title":"The colors you want to associate with each feedback (e.g. green for the correct ones, and red for the wrong ones. Put a pipe | between each feedback color"	
+    "text":"The colors you want to associate with each feedback (e.g. green for the correct ones, and red for the wrong ones. Put a pipe | between each feedback color"	
 	},
   "item_name":{
 		"subtitle":"Column name in data sheet",
