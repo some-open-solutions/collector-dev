@@ -50,51 +50,12 @@ if(typeof(Trial) !== "undefined"){
 }
 
 
-function precrypted_data(decrypted_data){
-	responses_csv = decrypted_data.responses;
-	response_headers = [];
-	responses_csv.forEach(function(row){
-		Object.keys(row).forEach(function(item){
-			if(response_headers.indexOf(item) == -1){
-				response_headers.push(item);
-			};
-		});
-	});
-	this_condition    = decrypted_data.this_condition;
-	condition_headers = Object.keys(this_condition).filter(item => item !== "_empty_");
-	table_headers			= response_headers.concat(condition_headers);
-	downloadable_csv = [table_headers];
-	responses_csv.forEach(function(row,row_no){
-		downloadable_csv.push([]);
-		table_headers.forEach(function(item,item_no){
-			if(typeof(row[item]) !== "undefined"){
-				downloadable_csv[row_no+1][item_no] = row[item];
-			} else if (condition_headers.indexOf(item) !== -1){
-				downloadable_csv[row_no+1][item_no] = this_condition[item];
-			} else {
-				downloadable_csv[row_no+1][item_no] = "";
-			}
-		});
-	});
-
-	bootbox.prompt({
-		title:"What do you want to save this file as?",
-		value:$("#participant_code").val()+".csv",
-		callback:function(result){
-			save_csv(result,Papa.unparse(downloadable_csv));
-		}
-	});
-}
-
-
 $(window).bind('keydown', function(event) {
 	if (event.ctrlKey || event.metaKey) {
 		switch (String.fromCharCode(event.which).toLowerCase()) {
 			case 's':
-				if(dev_obj.simulator_on !== "true"){
-					event.preventDefault();
-					precrypted_data(parent.parent.exp_json,"What do you want to save this file as?");
-				}
+				event.preventDefault();
+				parent.parent.precrypted_data(parent.parent.exp_json,"What do you want to save this file as?");			
 			break;
 		}
 	}

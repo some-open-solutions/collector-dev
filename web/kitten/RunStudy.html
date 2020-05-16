@@ -161,7 +161,7 @@ Study = {
                      "insert_start",
                      "shuffle_start_exp",
                      "buffer_trials",
-                     "process_welcome"],
+                     "process_welcome"],	
   // start functions are the functions required when NOT resuming
   start_functions : ["create_exp_json_variables",
                       "parse_sheets",
@@ -273,27 +273,22 @@ Study = {
                       }));                    //the data
         break;
 			case "server":
-      case "github":				
-				/*
-				
-				//don't save after every trial
-				
-        online_data_obj.saves_started ++;
-        online_data_obj.save_queue_add(
-          function(){
-            online_save(Study.get_vars.location,
-                      $("#participant_code").val(),
-                      $("#completion_code").val(),
-                      $("#prehashed_code").val(),
-                      JSON.stringify(encrypt(exp_json.public_key,    //the public key
-                      JSON.stringify(exp_json.responses))),          //the data
-            exp_json.save_script,
-            function(){
-              online_data_obj.saves_ended ++;
-            });
-          }
-        );
-				*/
+      case "github":
+				online_data_obj.save_queue_add(
+					function(){
+						online_save(Study.get_vars.location,
+												$("#participant_code").val(),
+												$("#completion_code").val(),
+												$("#prehashed_code").val(),
+												JSON.stringify(encrypt(exp_json.public_key,    			 														
+																							 JSON.stringify(exp_json.responses[exp_json.responses.length - 1]))), //data
+												exp_json.data_scripts,
+												function(){
+													online_data_obj.saves_ended ++;
+												},
+												"trial",
+												exp_json.responses.length - 1);
+				});
         break
       case "preview":
         //do nothing - you are not meant to be saving;

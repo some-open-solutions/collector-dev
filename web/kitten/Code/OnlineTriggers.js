@@ -21,7 +21,15 @@ function online_save(experiment_id,
                      prehashed_code,
                      encrypted_data,
                      data_scripts,
-                     after_function){
+                     after_function,
+										 trial_all,
+										 trial_no){
+	if(typeof(trial_all) == "undefined"){
+		trial_all = "all";
+	}
+	if(typeof(trial_no) == "undefined"){
+		trial_no = "_all_data";
+	}
 	console.dir("data_scripts");
 	console.dir(data_scripts);
 
@@ -31,7 +39,9 @@ function online_save(experiment_id,
     experiment_id:    experiment_id,
     participant_id:   participant_id,
     prehashed_code:   prehashed_code,
-		dropbox_location: exp_json.location
+		dropbox_location: exp_json.location,
+		trial_all:        trial_all,
+		trial_no:         trial_no,
   };
 	
 	
