@@ -493,6 +493,7 @@ function final_trial(){
     case "server": //this should be changed to preview if you do not want data saved!
 
 			online_data_obj.saves_started ++;
+						
 			online_data_obj.save_queue_add(
 				function(){
 					online_save(Study.get_vars.location,
@@ -502,13 +503,78 @@ function final_trial(){
 										JSON.stringify(encrypt(exp_json.public_key,    //the public key
 										JSON.stringify(exp_json.responses))),          //the data
 					exp_json.data_scripts,
-					function(){
-						online_data_obj.saves_ended ++;
+					function(returned_data){
+						message_data = returned_data.split(" encrypted data = ");
+						if(message_data.length == 1){
+							//retrieve researcher e-mail address
+							precrypted_data(exp_json,"Problem encrypting: <b>"+ message_data +"</b>, we'll try again every 10 seconds, but in case it fails, please download and e-mail this file. What do you want to save this file as? (you will get this message each time we fail to e-mail your data to the researcher)");
+							setTimeout(function(){
+								final_trial();
+							},10000);
+						} else {
+							$("#participant_country").show();
+							$("#participant_country").load("ParticipantCountry.html");
+
+							encrypted_data = message_data[1];
+
+							$("#experiment_div").html("<h1 class='text-primary'>" + message_data[0] + " <br><br> You can download the encrypted version of your data <span id='encrypt_click' class='text-success'>here</span> <br><br>or an unencrypted version <span id='raw_click' class='text-success'>here</span></h1>");
+							
+							$("#encrypt_click").on("click",function(){
+								bootbox.prompt({
+									title:"What do you want to save this file as?",
+									value:$("#participant_code").val()+"_encrypted.txt",
+									callback:function(result){
+										var blob = new Blob([encrypted_data], {type: 'text/csv'});
+										if(window.navigator.msSaveOrOpenBlob) {
+											window.navigator.msSaveBlob(blob, result);
+										} else {
+											var elem = window.document.createElement('a');
+											elem.href = window.URL.createObjectURL(blob);
+											elem.download = result;
+											document.body.appendChild(elem);
+											elem.click();
+											document.body.removeChild(elem);
+										}
+									}
+								});
+							});
+							$("#raw_click").on("click",function(){
+								precrypted_data(exp_json,"What do you want to save this file as?");
+							});
+													
+							
+							online_data_obj.finished_and_stored = true;
+						}
 					});
 				}
 			);
 			
-
+			var download_at_end = exp_json.this_condition.download_at_end;
+			if(download_at_end == undefined){
+				download_at_end = "on";
+			}	
+			if(typeof(exp_json.this_condition.end_message) !== "undefined" && exp_json.this_condition.end_message !== ""){
+				$("#experiment_div").html("<h3 class='text-primary'>"+exp_json.this_condition.end_message+"</h3>");
+			} else {
+				$("#experiment_div").html("");
+			}
+			$("#experiment_div").append("<div id='download_div'></div>");
+			
+			if(download_at_end == "on"){
+				$("#download_div").html("<h1 class='text-danger'>" +
+                                  "Please wait while we confirm that all your data has been saved" +
+                                "</h1>" +
+                                '<div class="progress">'+
+                                  '<div id="google_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%">' +
+                                  '</div>' +
+                                '</div>' +
+																"<h3 class='text-primary'>Please do not close this window until it has been confirmed that the researcher has been e-mailed your data (or you have downloaded the data yourself that you will e-mail the researcher). If you do not get a prompt to do this within 30 seconds, press CTRL-S and you should be able to directly download your data.</h3>");
+				
+					
+			} else if(download_at_end == "off") {
+				// do nothing
+			}
+			/*
 			$("#experiment_div").html("<h1 class='text-danger'>" +
                                   "Please wait while we confirm that all your data has been saved" +
                                 "</h1>" +
@@ -516,6 +582,7 @@ function final_trial(){
                                   '<div id="google_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%">' +
                                   '</div>' +
                                 '</div>');
+																*/
       function online_save_check(){
         setTimeout(function(){
           if(online_data_obj.saves_started == online_data_obj.saves_ended){
@@ -550,69 +617,6 @@ function final_trial(){
         },1000);
       }
       online_save_check();
-
-
-			/*
-			
-      $("#experiment_div").html("<h3 class='text-primary'>Please do not close this window until it has been confirmed that the researcher has been e-mailed your data (or you have downloaded the data yourself that you will e-mail the researcher). If you do not get a prompt to do this within 30 seconds, press CTRL-S and you should be able to directly download your data.</h3>");
-      $.post("emailData.php",{
-        all_data   : JSON.stringify(exp_json),
-      },function(returned_data){
-        message_data = returned_data.split(" encrypted data = ");
-        if(message_data.length == 1){
-          //retrieve researcher e-mail address
-          precrypted_data(exp_json,"Problem encrypting: <b>"+ message_data +"</b>, we'll try again every 10 seconds, but in case it fails, please download and e-mail this file. What do you want to save this file as? (you will get this message each time we fail to e-mail your data to the researcher)");
-          setTimeout(function(){
-            final_trial();
-          },10000);
-        } else {
-            $("#participant_country").show();
-            $("#participant_country").load("ParticipantCountry.html");
-
-          encrypted_data = message_data[1];
-
-          if(typeof(exp_json.this_condition.end_message) !== "undefined" && exp_json.this_condition.end_message !== ""){
-            $("#experiment_div").html("<h3 class='text-primary'>"+exp_json.this_condition.end_message+"</h3>");
-          } else {
-            $("#experiment_div").html("");
-          }
-          $("#experiment_div").append("<div id='download_div'></div>");
-
-          if(download_at_end == "on"){
-            $("#download_div").html("<h1 class='text-primary'>" + message_data[0] + " <br><br> You can download the encrypted version of your data <span id='encrypt_click' class='text-success'>here</span> <br><br>or an unencrypted version <span id='raw_click' class='text-success'>here</span></h1>");
-
-              $("#encrypt_click").on("click",function(){
-                bootbox.prompt({
-                  title:"What do you want to save this file as?",
-                  value:$("#participant_code").val()+"_encrypted.txt",
-                  callback:function(result){
-                    var blob = new Blob([encrypted_data], {type: 'text/csv'});
-                    if(window.navigator.msSaveOrOpenBlob) {
-                      window.navigator.msSaveBlob(blob, result);
-                    }
-                    else{
-                      var elem = window.document.createElement('a');
-                      elem.href = window.URL.createObjectURL(blob);
-                      elem.download = result;
-                      document.body.appendChild(elem);
-                      elem.click();
-                      document.body.removeChild(elem);
-                    }
-                  }
-                });
-              });
-              $("#raw_click").on("click",function(){
-                precrypted_data(exp_json,"What do you want to save this file as?");
-              });
-          } else if(download_at_end == "off") {
-            // do nothing
-          } else {
-            bootbox.alert("It's unclear whether the researcher wants you to be able to download your data or not");
-          }
-          online_data_obj.finished_and_stored = true;
-        }
-      });
-			*/
       break;    
     case "localhost":
     case "preview":
@@ -1017,25 +1021,116 @@ function select_condition(){
   Study.activate_pipe();
 }
 
-function shuffleArray(array) { //by Laurens Holst on https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // eslint-disable-line no-param-reassign
-    }
+//by Laurens Holst on https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+function shuffleArray(array) { 
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]]; // eslint-disable-line no-param-reassign
+	}
+}
+
+//solution by Tom Wadley at https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array
+function removeItemAll(arr, value) {
+	var i = 0;
+	while (i < arr.length) {
+		if(arr[i] === value) {
+			arr.splice(i, 1);
+		} else {
+			++i;
+		}
+	}
+	return arr;
 }
 
 function shuffle_start_exp(){
-  for(var i = 0; i < exp_json.parsed_proc.length; i++){
-    if(exp_json.parsed_proc[i]["shuffle 1"] == ""){
-      exp_json.parsed_proc[i]["shuffle 1"] = "off";
-    }
-  }
 	
-	shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+	//perhaps also have "shuffle" works as shuffle 1
+	//perhaps also have "block shuffle 1" as shuffle 2, etc.
+
+
+	var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+			shuffle_levels = shuffle_levels.sort()
+																		 .reverse();
 	
+	shuffle_levels.forEach(function(shuffle_level){
+		for(var i = 0; i < exp_json.parsed_proc.length; i++){
+			if(exp_json.parsed_proc[i][shuffle_level] == ""){
+				exp_json.parsed_proc[i][shuffle_level] = "off";
+			}
+		}
+		
+		if(shuffle_level !== "shuffle 1"){
+			
+			//split exp_json.parsed_proc into chunks based on this_level
+			//off rows don't change their order
+			var shuffle_block_names = [exp_json.parsed_proc[0][shuffle_level]];
+			var shuffle_block_rows  = [[exp_json.parsed_proc[0]]];
+			
+			for(var i = 1; i < exp_json.parsed_proc.length; i++){
+				if(exp_json.parsed_proc[i][shuffle_level] !== exp_json.parsed_proc[i-1][shuffle_level]){
+					shuffle_block_names.push(exp_json.parsed_proc[i][shuffle_level]);
+					shuffle_block_rows.push([exp_json.parsed_proc[i]]);
+				} else {
+					shuffle_block_rows[shuffle_block_rows.length-1].push(exp_json.parsed_proc[i]);
+				}
+			}
+			var shuffled_block_names = JSON.parse(JSON.stringify(shuffle_block_names));
+			
+			//create a list of names to be randomised
+			unique_shuffle_block_names = Array.from(new Set(shuffle_block_names));			
+			unique_shuffle_block_names = removeItemAll(unique_shuffle_block_names,"off");
+
+			//randomise order of unique_shuffle_block_names;
+			
+			
+			
+			//replace original index with numbers
+			unique_shuffle_block_names.forEach(function(this_name,name_no){
+				shuffled_block_names.forEach(function(item,item_no){
+					if(item == this_name){
+						shuffled_block_names[item_no] = name_no;
+					}
+				});
+			});
+			
+			shuffled_unique_shuffle_block_names = unique_shuffle_block_names.sort(function(){return 0.5-Math.random()});
+			
+			unique_shuffle_block_names.forEach(function(this_name,name_no){
+				shuffled_block_names.forEach(function(item,item_no){
+					if(item == name_no){
+						shuffled_block_names[item_no] = this_name;
+					}
+				});
+			});
+			console.dir(shuffled_block_names);
+				
+			
+			var shuffled_row_blocks = [];	
+			//now loop through the shuffled_block_names to reorder the blocks
+			shuffled_block_names.forEach(function(this_name,row_no){
+				shuffled_row_blocks[row_no] = shuffle_block_rows[shuffle_block_names.indexOf(this_name)];
+			});
+			
+			console.dir(shuffled_row_blocks);
+			
+			var all_rows = [];
+			shuffled_row_blocks.forEach(function(block){
+				block.forEach(function(row){
+					all_rows.push(row);
+				});
+			});
+			
+			exp_json.parsed_proc.forEach(function(row, row_no){
+				if(row[shuffle_level] !== "off"){
+					exp_json.parsed_proc[row_no] = all_rows[row_no];
+				}
+			});
+			
+			//exp_json.parsed_proc = all_rows;
+			
+		}
+	});
 	
-	
-	//block shuffle here?
 	// start at highest shuffle number, and then shuffle on my way down to 2
 	//  RESUME HERE
 	
