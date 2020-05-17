@@ -30,9 +30,7 @@ function online_save(experiment_id,
 	if(typeof(trial_no) == "undefined"){
 		trial_no = "_all_data";
 	}
-	console.dir("data_scripts");
-	console.dir(data_scripts);
-
+	
   data = {
     completion_code:  completion_code,
     encrypted_data:   encrypted_data,
@@ -62,14 +60,10 @@ function online_save(experiment_id,
 				crossDomain: true,
 				timeout: 120000,
 				success:function(result){
-					console.dir(result);
-					//as it stands, this will never happen as Collector doesn't allow posts to it.
-					after_function();
+					after_function(result);
 				}
 			})
 			.catch(function(error){
-				console.dir("error");
-				console.dir(error);
 				until_successful_script(script_list,																	
 																data,
 																after_function);
