@@ -685,14 +685,20 @@ function insert_start(){
 
     // update the procedure to have a general warning
     var this_proc  = exp_json.parsed_proc;
-
+		
     var this_proc_start = {
       item:0,
       max_time:"",
-      shuffle_1:"off",
-      text:"",
+			text:"",
       "trial type":"start_experiment"
     }
+		
+		var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+		shuffle_levels.forEach(function(shuffle_level){
+			this_proc_start[shuffle_level] = "off";
+		});
+		
+		
     this_proc = this_proc.unshift(this_proc_start);
 
     // update trialtypes to have a "start" trial
@@ -1048,6 +1054,10 @@ function shuffle_start_exp(){
 	//perhaps also have "block shuffle 1" as shuffle 2, etc.
 
 
+	console.dir("exp_json.parsed_proc");
+	console.dir(exp_json.parsed_proc);
+	console.dir(JSON.stringify(exp_json.parsed_proc));
+
 	var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
 			shuffle_levels = shuffle_levels.sort()
 																		 .reverse();
@@ -1067,7 +1077,8 @@ function shuffle_start_exp(){
 			var shuffle_block_rows  = [[exp_json.parsed_proc[0]]];
 			
 			for(var i = 1; i < exp_json.parsed_proc.length; i++){
-				if(exp_json.parsed_proc[i][shuffle_level] !== exp_json.parsed_proc[i-1][shuffle_level]){
+				if(exp_json.parsed_proc[i][shuffle_level] !== exp_json.parsed_proc[i-1][shuffle_level] ||
+					 exp_json.parsed_proc[i][shuffle_level] == "off"){
 					shuffle_block_names.push(exp_json.parsed_proc[i][shuffle_level]);
 					shuffle_block_rows.push([exp_json.parsed_proc[i]]);
 				} else {
