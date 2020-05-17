@@ -130,13 +130,13 @@ function list_experiments(){
         remove_from_list("Select a dropbox experiment");
         first_load = false;
       }
-      master_json.exp_mgmt.experiment = this.value;
-
-      exp_json = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
-      clean_conditions();
-      $("#dropbox_inputs").show();
-      update_handsontables();
-      update_server_table();
+			master_json.exp_mgmt.experiment = this.value;
+			exp_json = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+			clean_conditions();
+			$("#dropbox_inputs").show();
+			update_handsontables();
+			update_server_table();
+			$("#save_btn").click();
     });
   }
 	//do longer synch with dropbox if the user is using dropbox
@@ -438,12 +438,9 @@ function upload_exp_contents(these_contents,this_filename){
 		master_json.exp_mgmt.experiment = exp_name;
 		master_json.exp_mgmt.experiments[exp_name] = this_content;
 		list_experiments();
-    $("#experiment_list").val(exp_name);
-    $("#experiment_list").change();
-
-		upload_trialtypes(this_content);
+    upload_trialtypes(this_content);
     upload_surveys(this_content);
-    list_surveys();
+    list_surveys();		
 	}
   function upload_surveys(this_content){
     function unique_survey(suggested_name,survey_content){
@@ -501,7 +498,8 @@ function upload_exp_contents(these_contents,this_filename){
               if(new_name){
                 unique_experiment(new_name,content);
               } else {
-                //upload_to_master_json(exp_name,parsed_contents);
+                upload_to_master_json(exp_name,parsed_contents);
+								$("#save_btn").click();
               }
             });
           } else {
@@ -509,14 +507,14 @@ function upload_exp_contents(these_contents,this_filename){
             master_json.exp_mgmt.experiments[suggested_name] = content;
             list_experiments();
             $("#upload_experiment_modal").hide();
-            //upload_to_master_json(exp_name,parsed_contents);
+            upload_to_master_json(exp_name,parsed_contents);
+						$("#save_btn").click();
           }
         }
         unique_experiment(exp_name,parsed_contents);
-        $("#save_btn").click();
-
       } else {
-        //upload_to_master_json(exp_name,parsed_contents);
+        upload_to_master_json(exp_name,parsed_contents);
+				$("#save_btn").click();
       }
 		}
 	});

@@ -82,7 +82,10 @@ function experiment_exists($location,
 													 $conn,
 													 $email,
 													 $mailer_password,
-													 $mailer_user){
+													 $mailer_user,
+													 $mailer_host,
+													 $mailer_from,
+													 $mailer_team_name){
 	$check_exists_sql = "SELECT * FROM `view_experiment_users` WHERE `location` = '$location'";
 	
 	$result = $conn->query($check_exists_sql);
@@ -131,7 +134,7 @@ function experiment_exists($location,
 				array_pop($exploded_url);
 				$imploded_url = "https://".implode("/",$exploded_url);
 				
-				$msg = "Dear " . $initial_email . " <br><br>. $email wants to be a collaborator on your experiment at $location. If you are okay with this, please go to the following link: <br><br> $imploded_url/collaborator.php?email=$email&location=$location";
+				$msg = "Dear " . $initial_email . " <br><br>$email wants to be a collaborator on your experiment at $location. If you are okay with this, please go to the following link: <br><br> $imploded_url/collaborator.php?email=$email&location=$location <br><br>Best wishes, <br>$mailer_team_name";
 
 				// use wordwrap() if lines are longer than 70 characters
 				//$msg = wordwrap($msg,70);
@@ -520,18 +523,23 @@ if($_POST['action'] == "unregister_experiment"){
             $exp_id = $row['experiment_id'];
             //delete the experiment if the user is the only collaborator
             if($result->num_rows == 1){
-              $sql = "DELETE FROM `experiments` WHERE `experiment_id` = '$exp_id';";
-              if ($conn->query($sql) === TRUE) {
-                echo "Succesfully deleted an experiment you were the only contributor to<br>";
-              } else {
-                echo "Error deleting an experiment you were the only contributor to: " . $conn->error;
-              }
+							//confirm that this person is actually a contributor
+							$confirm_sql = "SELECT * FROM `view_experiment_users` WHERE `location`='".$location."' AND `email` = '$email';";
+							$confirm_result = $conn->query($confirm_sql);
+							if($confirm_result->num_rows == 1){
+								$sql = "DELETE FROM `experiments` WHERE `experiment_id` = '$exp_id';";
+								if ($conn->query($sql) === TRUE) {
+									echo "Succesfully deleted an experiment you were the only contributor to<br>";
+								} else {
+									echo "Error deleting an experiment you were the only contributor to: " . $conn->error;
+								}								
+							} 
             }
             
             //delete the user as a collaborator
             $sql = "DELETE FROM `contributors` WHERE `user_id` = '$user_id' AND `experiment_id`='$exp_id';";
             if ($conn->query($sql) === TRUE) {
-              echo "Succesfully removed you as a contributor to an experiment<br>";
+              echo "You are (no longer) a collaborator on this experiment.<br>";
             } else {
               echo "Error removing you as a contributor from an experiment: " . $conn->error;
             }
@@ -570,7 +578,10 @@ if($_POST["action"] == "update_experiment"){
                                    $conn,
                                    $email,
                                    $mailer_password,
-                                   $mailer_user);
+                                   $mailer_user,
+																	 $mailer_host,
+																	 $mailer_from,
+																	 $mailer_team_name);
           } else {
             echo 'Robot verification failed, please try again.';
           }             

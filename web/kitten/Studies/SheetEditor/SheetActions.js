@@ -35,10 +35,13 @@ $("#delete_exp_btn").on("click",function(){
 					dbx.filesDelete({path:"/experiments/"+exp_name+".json"})
 						.then(function(response) {
 							$('#experiment_list option:contains('+ exp_name +')')[0].remove();
-							$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
+							if(document.getElementById('experiment_list').options[0] !== undefined){
+								$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
+							}
 							master_json.exp_mgmt.experiment = $("#experiment_list").val();
 							custom_alert(exp_name +" succesfully deleted");
 							update_master_json();
+							$("#save_btn").click();
 							update_handsontables();
 						})
 						.catch(function(error) {
@@ -88,7 +91,7 @@ $("#new_experiment_button").on("click",function(){
 	});
 });
 $("#new_proc_button").on("click",function(){
-  var proc_template = new_experiment_data["Procedure"]["Procedure_1"];
+  var proc_template = new_experiment_data.all_procs["procedure_1.csv"];
 	bootbox.prompt("What would you like the name of the new procedure sheet to be?",function(new_proc_name){
 		var experiment = master_json.exp_mgmt.experiment;
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
@@ -108,7 +111,7 @@ $("#new_proc_button").on("click",function(){
 	});
 });
 $("#new_stim_button").on("click",function(){
-	var stim_template = new_experiment_data["Stimuli"]["Stimuli.csv"];
+	var stim_template = new_experiment_data.all_stims["stimuli_1.csv"];
 	bootbox.prompt("What would you like the name of the new <b>Stimuli</b> sheet to be?",function(new_sheet_name){
 		var experiment = master_json.exp_mgmt.experiment;
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
@@ -277,10 +280,10 @@ $("#run_btn").on("click",function(){
 						callback: function(){
 							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 
-							var github_url =  "https://open-collector.github.io/open-collector/web/"+
-																dev_obj.version +
+							var this_url = window.location.href.split("/" + dev_obj.version)[0] + 
+																												"/" + dev_obj.version + "/";
 																"/";
-							window.open(github_url  + "RunStudy.html?platform=preview&" +
+							window.open(this_url  	+ "RunStudy.html?platform=preview&" +
 													"location=" + master_json.exp_mgmt.experiment + "&" +
 													"name="     + master_json.exp_mgmt.exp_condition + "&" +
 													"dropbox="  + exp_json.location,"_blank");

@@ -281,7 +281,7 @@ Study = {
 												$("#completion_code").val(),
 												$("#prehashed_code").val(),
 												JSON.stringify(encrypt(exp_json.public_key,    			 														
-																							 JSON.stringify(exp_json.responses[exp_json.responses.length - 1]))), //data
+																							 JSON.stringify([exp_json.responses[exp_json.responses.length - 1]]))), //data
 												exp_json.data_scripts,
 												function(){
 													online_data_obj.saves_ended ++;
@@ -1030,36 +1030,45 @@ function shuffle_start_exp(){
       exp_json.parsed_proc[i]["shuffle 1"] = "off";
     }
   }
-  if($("#shuffle_on_button").length == 0 || $("#shuffle_on_button").length == 1 && $("#shuffle_on_button").is(":hidden")){
-		shuffle_array = {};
-		exp_json.parsed_proc.forEach(function(row,index){
-				var this_shuffle = row["shuffle 1"];
-				if(typeof(shuffle_array[this_shuffle]) == "undefined"){
-						shuffle_array[this_shuffle] = [index];
-				} else {
-						shuffle_array[this_shuffle].push(index);
-				}
-		});
-		delete shuffle_array.off;
-		Object.keys(shuffle_array).forEach(function(key){
-				shuffleArray(shuffle_array[key]);
-		});
-		//apply shuffle to exp_json.parsed_proc
-		new_proc = exp_json.parsed_proc.map(function(row,original_index){
-				if(row["shuffle 1"] !== "off" & row["shuffle 1"] !== ""){
-						this_shuffle = row["shuffle 1"];
-						var this_pos = shuffle_array[this_shuffle].pop();
-						return exp_json.parsed_proc[this_pos];
-				}
-				if(row["shuffle 1"] == "off"){
-						return exp_json.parsed_proc[original_index];
-				}
-		});
-		exp_json.parsed_proc = new_proc;
-		if(typeof(exp_json.responses) == "undefined"){
-			exp_json.responses 	 = [];
-		}
+	
+	shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+	
+	
+	
+	//block shuffle here?
+	// start at highest shuffle number, and then shuffle on my way down to 2
+	//  RESUME HERE
+	
+	
+	shuffle_array = {};
+	exp_json.parsed_proc.forEach(function(row,index){
+			var this_shuffle = row["shuffle 1"];
+			if(typeof(shuffle_array[this_shuffle]) == "undefined"){
+				shuffle_array[this_shuffle] = [index];
+			} else {
+				shuffle_array[this_shuffle].push(index);
+			}
+	});
+	delete shuffle_array.off;
+	Object.keys(shuffle_array).forEach(function(key){
+			shuffleArray(shuffle_array[key]);
+	});
+	//apply shuffle to exp_json.parsed_proc
+	new_proc = exp_json.parsed_proc.map(function(row,original_index){
+			if(row["shuffle 1"] !== "off" & row["shuffle 1"] !== ""){
+					this_shuffle = row["shuffle 1"];
+					var this_pos = shuffle_array[this_shuffle].pop();
+					return exp_json.parsed_proc[this_pos];
+			}
+			if(row["shuffle 1"] == "off"){
+					return exp_json.parsed_proc[original_index];
+			}
+	});
+	exp_json.parsed_proc = new_proc;
+	if(typeof(exp_json.responses) == "undefined"){
+		exp_json.responses 	 = [];
 	}
+
 	exp_json.wait_to_proc	= false;
   Study.activate_pipe();
 }
