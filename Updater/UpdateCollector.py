@@ -1,5 +1,5 @@
 ######################################################################
-# Update Collector from www.github.com/open-collector/open-collector #
+# Update Collector from www.github.com/some-open-solutions/collector #
 # By Dr. Anthony Haffey                                              #
 ######################################################################
 
@@ -20,7 +20,7 @@ if os.path.isdir("../Collector-update"):
     os.system('rmdir /S /Q "{}"'.format("../Collector-update"))
 
 #Download open-collector
-repoClone = pygit2.clone_repository("https://github.com/open-collector/open-collector",
+repoClone = pygit2.clone_repository("https://github.com/some-open-solutions/collector",
                                    "../Collector-update")
 
 #delete web folder

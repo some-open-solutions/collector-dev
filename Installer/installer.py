@@ -12,7 +12,7 @@ def install_in_dir(this_dir):
         #Clone the newly created repo
         print(this_dir);
         print("downloading Collector into your directory")
-        repoClone = pygit2.clone_repository("https://github.com/open-collector/open-collector",
+        repoClone = pygit2.clone_repository("https://github.com/some-open-solutions/collector",
                                             str(this_dir) +
                                             "/Collector")
         os.chdir(this_dir + "/Collector");
