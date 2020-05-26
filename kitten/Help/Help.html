@@ -85,6 +85,12 @@ function load_help(this_list){
     help_obj.tip_no = Math.floor(Math.random() * help_obj.main.length);
     $(".tip"+help_obj.tip_no).show();
   }
+  var helper_width = $("#help_content").css("width");
+  $("#ace_div").animate({
+    "width": window.innerWidth - parseFloat(helper_width.replace("px",""))
+  }, 500,function(){
+    editor.resize();
+  });
 }
 load_help(Object.keys(help_dictionary));
 
@@ -250,12 +256,28 @@ $("#help_btn").on("click",function(){
 		$("#help_btn").removeClass("bg-white");
 		$("#help_btn").addClass("btn-primary");
 		$("#help_area").hide(500);
+    $("#ace_div").animate({
+      "width": window.innerWidth
+    },500,function(){
+      editor.resize();
+    });
+    editor.resize();    
 	} else {
 		$("#help_area").show(500);
 		$("#help_btn").css("font-weight","bold");
 		$("#help_btn").addClass("btn-outline-primary");
 		$("#help_btn").addClass("bg-white");
 		$("#help_btn").removeClass("btn-primary");
+    
+    
+    var helper_width = $("#help_content").css("width");
+    $("#ace_div").animate({
+      "width": window.innerWidth - parseFloat(helper_width.replace("px",""))
+    }, 500,function(){
+      editor.resize();
+    });
+    
+    
 	}
 });
 

@@ -70,7 +70,12 @@
 </style>
 <h6><em>ACE (https://ace.c9.io/)</em> is used for editing code</h6>
 <div id="graphic_editor" 	style="display:none"></div>
-<div id="ACE_editor" 			style="display:none;width:100%"></div>
+<div id="ace_div">
+  <!-- 
+    This is to allow the ace editor width to change when the helper is shown (or not)
+  -->
+  <div id="ACE_editor" 			style="display:none;width:100%"></div>
+</div>
 <script>
 $("#graphic_editor").load(collector_map["Graphic.html"]);
 </script>
