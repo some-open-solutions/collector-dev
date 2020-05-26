@@ -144,7 +144,21 @@ doc.write('<li' + 'nk rel="stylesheet" href="../libraries/bootstrapCollector.css
 	"white-space:normal !important;"+
 	"word-wrap: break-word;"+
 "}"+
-"</style>");
+"</style>" +
+"<sc" + "ript>" +
+
+//CTRL-S
+"$(window).bind('keydown', function(event) {" +
+"	if (event.ctrlKey || event.metaKey) {" +
+"		switch (String.fromCharCode(event.which).toLowerCase()) {" +
+"			case 's':" +
+"				event.preventDefault();" +
+"				parent.$('#save_btn').click();" +
+"			break;" +
+"		}" +
+"	}" +
+"});" +
+"</scr" + "ipt>");
 doc.close();
 
 
@@ -228,6 +242,19 @@ $("#element_timeline_btn").on("click",function(){
 	}
 });
 $("#graphic_canvas").contents().on("click",function(){
+
+  //make sure that the ace editor isn't blocking the view
+  var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+  var graphic_width = parseFloat($("#graphic_settings").css("width").replace("px",""));
+  var max_width = Math.max(helper_width,
+                           graphic_width);
+  $("#ace_div").animate({
+    "width": window.innerWidth - max_width
+  }, 500,function(){
+    editor.resize();
+  });
+  
+
 	var element_type = $(".canvas_btn.btn-primary").html();
 
 	if(typeof(element_type) !== "undefined" && element_type !== "Click"){
