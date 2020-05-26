@@ -156,7 +156,7 @@ function list_experiments(){
           update_exp_list();
         })
         .catch(function(error){
-          report_error(error);
+          report_error("problem listing the experiments", "problem listing the experiments");
         });
   } else { //just a sanity check that the user is in fact using a localhost version
     switch(dev_obj.context){
@@ -201,10 +201,10 @@ function new_experiment(experiment){
             }
           })
           .catch(function(error){
-            report_error(error,"new_experiment trying to share link");
+            report_error("new_experiment trying to share link","new_experiment trying to share link");
           });
       },function(error){
-        report_error(error,"new_experiment trying to upload template to dropbox");
+        report_error("new_experiment trying to upload template to dropbox","new_experiment trying to upload template to dropbox");
       },
       "filesUpload");
     } else {
@@ -275,7 +275,7 @@ function synch_experiment(entry_name){
 			});
 		})
 		.catch(function(error){
-			report_error(error);
+			report_error("problem synching the experiment","problem synching the experiment");
 		});
 }
 function update_dropdown_lists(){

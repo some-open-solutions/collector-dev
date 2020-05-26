@@ -185,14 +185,6 @@ h1 {
     background-color: #000;
 }
 
-#stimuli_fixation {
-    font-size: 4em;
-    font-weight: bolder;
-    top: 50%;
-    left: 50%;
-    text-align: center;
-    line-height: 0.8em;
-}
 
 #stimuli_prime, #stimuli_target {
     font-size: 2em;

@@ -55,13 +55,4 @@ window.onbeforeunload = function() {
 <script>
 $("#experiment_editor_div").load(collector_map["SheetEditor.html"]);
 $("#trialtype_editor_div").load(collector_map["TrialTypeEditor.html"]);
-$(".collectorSwitch").on("click",function(){
-	if(this.className.indexOf("btn-outline-primary") !== -1){
-		this.className = this.className.replace("btn-outline-primary","btn-primary");
-	} else {
-		if(this.className.indexOf("btn-primary") !== -1){
-			this.className = this.className.replace("btn-primary","btn-outline-primary");
-		}
-	}
-});
 </script>

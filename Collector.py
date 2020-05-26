@@ -164,8 +164,26 @@ def rename_survey(old_name,
         print(err)
         eel.python_bootbox(str(err))
 
-
-
+@eel.expose
+def report_error(this_error):
+    try:
+        error_file = open("web/Tests/errors.txt", "a", newline='')
+        error_file.write("\n" + this_error)
+        error_file.close()
+    except Exception as err:
+        print(err)
+        ee.python_bootbox(str(err))
+        
+@eel.expose
+def report_success(this_error):
+    try:
+        success_file = open("web/Tests/successes.txt", "a", newline='')
+        success_file.write("\n" + this_error)
+        success_file.close()
+    except Exception as err:
+        print(err)
+        ee.python_bootbox(str(err))
+        
 @eel.expose
 def request_sheet(experiment,
                   sheet_type,
@@ -352,14 +370,5 @@ if os.path.isdir("web") == False:
 
 
 eel.init('web') #allowed_extensions=[".js",".html"]
-
-
-'''
-for proc in process_iter():
-    for conns in proc.get_connections(kind='inet'):
-        if conns.laddr[1] == 8000:
-            proc.send_signal(SIGKILL)
-            continue
-'''
-eel.start('kitten/index_local.html', port=8000)
-
+def start_function(dynamic_location):
+    eel.start(dynamic_location, port=8000)

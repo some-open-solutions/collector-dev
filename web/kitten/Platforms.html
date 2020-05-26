@@ -226,22 +226,7 @@ $("#github_logo").on("click",function(){
                       '/' +
                       repository,'_blank');
         }
-      },
-      update: {
-        label: "Update",
-        className: "btn-danger",
-        callback:function(){
-          var username     = $("#github_username").val();
-          var organisation = $("#github_organisation").val();
-          var repository   = $("#github_repository").val();
-
-          bootbox.confirm("Are you sure you want to update Collector? We would suggest you push any changes you have to github before updating.",function(result){
-						if(result){
-							eel.simple_update();
-						}
-          });
-        }
-      },
+      },      
       cancel: {
         label: "Cancel",
         className: 'btn-secondary',

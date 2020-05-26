@@ -50,12 +50,19 @@ Encryption code/interface
     <button class="btn btn-primary" id="js_decrypt_btn">Decrypt file(s)</button>
     <input type="file" id="fileToLoad" style="display:none" multiple>
     <button class="btn btn-primary" onclick="encrypt_obj.change_password()">Change password</button>
+    <button class="btn btn-primary" id="google_script_btn">Google Script</button>
   </span>
 </nav>
 
 
 
 <script>
+$("#google_script_btn").on("click",function(){
+  $.get("Data/Google/CollectorSave.txt",function(google_script){
+    bootbox.alert("//Select and copy the following to a <b>google apps script</b>: <br><br><textarea style='white-space: pre-wrap;' onclick='this.focus();this.select()' readonly='readonly'>" + google_script + "</textarea>");
+  })
+});
+
 $("#js_decrypt_btn").on("click",function(){
   $("#fileToLoad").val("");
   $("#fileToLoad").click();
@@ -374,35 +381,36 @@ encrypt_obj = {
     }
 
     master_json.keys.public_key = receiverPublicKey;
+    
+    if(typeof(encrypt_dialog) == "undefined"){
+      encrypt_dialog = bootbox.prompt("In order to encrypt and decrypt your participants' data, we need a password. Make sure you will remember this password, if you forget it then any data that is encrypted will be lost forever.",function(result){
+        if(result){
+          bootbox.prompt("Let's type in the password one more time, just to be sure",function(result_2){
+            if(result == result_2){
 
+              var encryptedAES = CryptoJS.AES.encrypt(receiverSecretKey, result_2);
+              var encryptedAES_string = encryptedAES.toString();
+              var decrypted = CryptoJS.AES.decrypt(encryptedAES_string, result_2);
+              var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
 
-    bootbox.prompt("In order to encrypt and decrypt your participants' data, we need a password. Make sure you will remember this password, if you forget it then any data that is encrypted will be lost forever.",function(result){
-      if(result){
-        bootbox.prompt("Let's type in the password one more time, just to be sure",function(result_2){
-          if(result == result_2){
+              if(plaintext == receiverSecretKey){
+                console.dir("all good");
+                master_json.keys.encrypted_private_key = encryptedAES_string;
+                encrypt_obj.confirm_keys();
+                list_keys();
+              } else {
+                bootbox.alert("Something went wrong with creating your encryption keys");
+              }
 
-            var encryptedAES = CryptoJS.AES.encrypt(receiverSecretKey, result_2);
-            var encryptedAES_string = encryptedAES.toString();
-            var decrypted = CryptoJS.AES.decrypt(encryptedAES_string, result_2);
-            var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
-
-            if(plaintext == receiverSecretKey){
-              console.dir("all good");
-              master_json.keys.encrypted_private_key = encryptedAES_string;
-              encrypt_obj.confirm_keys();
-              list_keys();
             } else {
-              bootbox.alert("Something went wrong with creating your encryption keys");
+              bootbox.alert("Erm, your passwords didnt match, do you want to have another go?");
+              //update this with the relevant code to clarify whether the user wants to have another go.
+
             }
-
-          } else {
-            bootbox.alert("Erm, your passwords didnt match, do you want to have another go?");
-            //update this with the relevant code to clarify whether the user wants to have another go.
-
-          }
-        });
-      }
-    });
+          });
+        }
+      });
+    }
   },
 }
 
