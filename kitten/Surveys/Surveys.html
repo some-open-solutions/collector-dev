@@ -263,13 +263,17 @@ function synch_surveys(){
 							});
 						})
 						.catch(function(error){
-							report_error(error);
+              report_error("problem synching the surveys, possibly due to getting the location of a specific survey", "problem synching the surveys, possibly due to getting the location of a specific survey");
 						});
 				}
 			});
 		})
 		.catch(function(error){
-			report_error(error);
+      //assume that the survey folder doesn't exist yet - reimplement error if it seems like some intervention is needed here.
+      
+      /*
+      report_error("problem synching the surveys, possibly due to listing surveys within the survey folder.", "problem synching the surveys, possibly due to listing surveys within the survey folder.");
+      */
 		});
 };
 
@@ -299,7 +303,7 @@ $("#delete_survey_btn").on("click",function(){
 					$("#save_btn").click();
 				})
 				.catch(function(error){
-					report_error(error);
+        	report_error("problem deleting the survey.", "problem deleting the survey.");
 				});
 		}
 	});

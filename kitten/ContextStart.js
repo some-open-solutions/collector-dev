@@ -45,7 +45,7 @@ switch(dev_obj.context){
       //renderItems();
       list_surveys();
       first_load = true;
-      list_experiments();
+      wait_till_exists("list_experiments");
       wait_till_exists("list_graphics");
       list_boosts();
       list_trialtypes();

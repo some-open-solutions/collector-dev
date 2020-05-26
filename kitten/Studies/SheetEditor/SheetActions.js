@@ -45,7 +45,7 @@ $("#delete_exp_btn").on("click",function(){
 							update_handsontables();
 						})
 						.catch(function(error) {
-							report_error(error);
+							report_error("problem deleting an experiment", "problem deleting an experiment");
 						});
 				} else {
 					$('#experiment_list option:contains('+ exp_name +')')[0].remove();
@@ -164,7 +164,7 @@ $("#rename_exp_btn").on("click",function(){
 						$("#experiment_list").val(new_name);					
           })
           .catch(function(error){
-            report_error(error);
+            report_error("problem moving an experiment", "problem moving an experiment");
           });
       }
 		}
@@ -572,7 +572,7 @@ $("#save_btn").on("click", function(){
 								"filesUpload");              
             })
             .catch(function(error){
-              report_error(error);
+              report_error("problem uploading an experiment", "problem uploading an experiment");
             });
 
         },function(error){

@@ -25,14 +25,8 @@ if(typeof(Trial) !== "undefined"){
 		return (new Date()).getTime() - parent.parent.exp_json.this_trial["post_"+Trial.post_no+"_trial_start_ms"];
 	}
 
-
-	Trial.set_timer = function(this_function,duration){
-		parent.parent.exp_json.time_outs.push({
-			trial_no : Trial.trial_no,
-			post_no  : Trial.post_no,
-			duration : duration,
-			this_func: this_function
-		});
+  Trial.go_to = function(new_trial_no){
+    parent.parent.Study.go_to(new_trial_no);
   }
   Trial.get = function(this_name){
     return  parent.parent.exp_json.storage[this_name];
@@ -42,6 +36,14 @@ if(typeof(Trial) !== "undefined"){
       parent.parent.exp_json.storage = {};
     }
     parent.parent.exp_json.storage[this_name] = this_content;
+  }
+	Trial.set_timer = function(this_function,duration){
+		parent.parent.exp_json.time_outs.push({
+			trial_no : Trial.trial_no,
+			post_no  : Trial.post_no,
+			duration : duration,
+			this_func: this_function
+		});
   }
   Trial.submit = function(){
     parent.parent.exp_json.inputs = jQuery( "[name]" );

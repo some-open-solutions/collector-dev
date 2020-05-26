@@ -112,6 +112,9 @@ $("#welcome_html").load("Welcome.html");
 <input type="hidden" id="completion_code" name="completion_code"/>
 <input type="hidden" id="prehashed_code" name="prehashed_code"/>
 <script>
+
+
+
 exp_json = {}; //this will get updated
 
 /////////////
@@ -183,19 +186,15 @@ Study = {
   /////////////////////
   // Trial functions //
   /////////////////////
-  finish_trial: function(trial_no,post_no){
+  finish_trial: function(go_to_info){
+    
+    
+    
 
     trial_end_ms = (new Date()).getTime();
     trial_inputs = {};
 		
-/*
-		//some hacks until version 1 fixes this
-		exp_json.this_condition = exp_json.conditions.filter(function(condition){
-			return condition.name == Study.get_vars.name;
-		})[0];
-		exp_json.parsed_proc = exp_json.parsed_procs[exp_json.this_condition.procedure];
-		exp_json.parsed_stim =  collectorPapaParsedPapa.unparse(exp_json.all_stims[exp_json.this_condition.stimuli]);
-		*/
+        
     $("#experiment_progress").css("width",(100 * exp_json.trial_no/(exp_json.parsed_proc.length-1))+"%");
 
     for(var i = 0; i < exp_json.inputs.length; i++){
@@ -234,11 +233,12 @@ Study = {
     response_data["participant_browser"] = participant_browser;
 
     $("#trial"+exp_json.trial_no).contents().children().find("iframe").length;
+    
     if($("#trial"+exp_json.trial_no).contents().children().find("iframe").length == exp_json.post_no + 1){
       //$(".trial_iframe").hide();
       $("#trial"+exp_json.trial_no).remove(); // destroy iframe for previous trial.
       exp_json.responses.push(exp_json.this_trial);
-      if(exp_json.trial_no == exp_json.parsed_proc.length - 1){
+      if(exp_json.trial_no == exp_json.parsed_proc.length - 1 & typeof(go_to_info) == "undefined"){
         final_trial();
       } else {
         exp_json.this_trial = {};
@@ -248,7 +248,7 @@ Study = {
           var this_index = parseFloat(exp_json.trial_no) + parseFloat(exp_json.this_condition.buffer) - 1;
           write_trial_iframe(this_index);
         });
-        Study.start_post();
+        Study.start_post(go_to_info);
       }
     } else {
       exp_json.post_no++;
@@ -258,9 +258,9 @@ Study = {
 
       // and then hide previous post and show next post within trial.
       $("#trial"+exp_json.trial_no).contents().children().find("iframe").hide();
-      Study.start_post();
+      Study.start_post(go_to_info);
     }
-
+    
     switch(Study.get_vars.platform){
       case "localhost":
         eel.save_data(Study.get_vars.location,
@@ -351,9 +351,26 @@ Study = {
     this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox"); // in case user forgets
 		return this_trialtype;
 	},
+  
+  go_to(new_trial_no,proc_no){
+    if(typeof(proc_no) == "undefined"){
+      proc_no = 0;
+    }
+    Study.finish_trial([new_trial_no - 2, proc_no]);
+    
+  },
 
-  start_post: function(){
-
+  start_post: function(go_to_info){
+    if(typeof(go_to_info) !== "undefined"){
+      exp_json.trial_no = go_to_info[0];
+      exp_json.post_no = go_to_info[1];
+      $(".trial_iframe").remove();
+      var this_buffer = exp_json.this_condition.buffer;
+      var trial_no    = exp_json.trial_no;
+      for(var index = trial_no; index < trial_no + this_buffer; index++){
+        write_trial_iframe(index);
+      };
+    }
 		if(typeof(exp_json.responses[exp_json.trial_no]) == "undefined"){
 			exp_json.responses[exp_json.trial_no] = {};
 		}
@@ -418,6 +435,10 @@ Study = {
 ///////////////
 
 function buffer_trials(){
+  //clear irrelevant iframes
+  //////////////////////////
+  
+  
 	var this_buffer = exp_json.this_condition.buffer;
 	var trial_no    = exp_json.trial_no;
   for(var index = trial_no; index < trial_no + this_buffer; index++){
@@ -1053,11 +1074,6 @@ function shuffle_start_exp(){
 	//perhaps also have "shuffle" works as shuffle 1
 	//perhaps also have "block shuffle 1" as shuffle 2, etc.
 
-
-	console.dir("exp_json.parsed_proc");
-	console.dir(exp_json.parsed_proc);
-	console.dir(JSON.stringify(exp_json.parsed_proc));
-
 	var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
 			shuffle_levels = shuffle_levels.sort()
 																		 .reverse();
@@ -1113,7 +1129,6 @@ function shuffle_start_exp(){
 					}
 				});
 			});
-			console.dir(shuffled_block_names);
 				
 			
 			var shuffled_row_blocks = [];	
@@ -1121,8 +1136,6 @@ function shuffle_start_exp(){
 			shuffled_block_names.forEach(function(this_name,row_no){
 				shuffled_row_blocks[row_no] = shuffle_block_rows[shuffle_block_names.indexOf(this_name)];
 			});
-			
-			console.dir(shuffled_row_blocks);
 			
 			var all_rows = [];
 			shuffled_row_blocks.forEach(function(block){
@@ -1380,7 +1393,6 @@ $("body").css("margin","auto");
 String.prototype.replaceAll = function(str1, str2, ignore){
   return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }
-
 
 Study.activate_pipe();
 </script>

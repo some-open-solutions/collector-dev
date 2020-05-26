@@ -208,8 +208,7 @@ function legacy_initiate_uber(){
                               initiate_master_json();
                             },
                             function(error){
-                              console.dir("Initial file causing error");
-                              report_error(error);
+                              report_error("Initial file causing error in legacy_initiate_uber()", "problems creating initial files");
                             },"filesUpload");
 
       });
@@ -283,9 +282,6 @@ function new_dropbox_account(dropbox_dialog){
                             //do nothing, all is well
                           },
                           function(error){
-                            console.dir(this_folder);
-                            console.dir("Initial folder causing error");
-                            //report_error(error);
                             bootbox.confirm("It looks like you need to confirm the link between your google account and dropbox." +
                                             "If this is the case, please confirm and you will be directed back to dropbox to select" +
                                             "your gmail account to do this with. If not, then this might be an issue that you want" +
@@ -306,8 +302,7 @@ function new_dropbox_account(dropbox_dialog){
                           initiate_master_json();
                         },
                         function(error){
-                          console.dir("Initial file causing error");
-                          report_error(error);
+                          report_error("Problem creating initial files in new_dropbox_account()", "Initial master file causing error");
                         },"filesUpload");
 
     });

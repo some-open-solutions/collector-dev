@@ -38,6 +38,15 @@ page_parts.forEach(function(page_part){
 	});
 });
 $("#hide_show_table_span").html(hide_show_table_span_html);
+$(".collectorSwitch").on("click",function(){
+	if(this.className.indexOf("btn-outline-primary") !== -1){
+		this.className = this.className.replace("btn-outline-primary","btn-primary");
+	} else {
+		if(this.className.indexOf("btn-primary") !== -1){
+			this.className = this.className.replace("btn-primary","btn-outline-primary");
+		}
+	}
+});
 $(".display_button").on("click",function(){
 	var this_id = "#"+this.innerHTML;
 	if($(this_id).is(":visible")){

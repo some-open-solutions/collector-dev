@@ -196,8 +196,7 @@ $("#delete_boost_btn").on("click",function(){
 						update_master_json();
 					})
 					.catch(function(error){
-						console.dir("hi 5");
-						report_error(error);
+						report_error("error deleting boost", "error deleting boost");
 					});
 			}
 		});
@@ -240,8 +239,8 @@ $("#new_boost_btn").on("click",function(){
 						update_master_json();
 					})
 					.catch(function(error){
-						console.dir("hi 4");
-						report_error(error);
+						report_error("error creating link for boost",
+                         "error creating link for boost:");
 					});
 
 			},function(error){
@@ -283,8 +282,7 @@ $("#rename_boost_btn").on("click",function(){
 						$('#posted_script option:contains("'+old_name+'")').text(new_name);update_master_json();
 					})
 					.catch(function(error){
-						console.dir("hi 3");
-						report_error(error);
+						report_error("error moving boost", "error moving boost:");
 					});
 			}
 		}
@@ -304,8 +302,7 @@ $("#save_boost_btn").on("click",function(){
 						master_json.boosts[response].location = result.url;
 					})
 					.catch(function(error){
-						console.dir("hi 2");
-						report_error(error);
+						report_error("error saving boost", "error saving boost");
 					});
 			}
 
@@ -393,8 +390,7 @@ function list_boosts(){
 					}));
 				})
 				.catch(function(error){
-					console.dir("hi 1");
-					report_error(error);
+					report_error("error created shared link for boost","error creating shared link for boost");
 				});
 		} else {
 			$("#posted_script").append($('<option>', {
