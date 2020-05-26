@@ -85,9 +85,9 @@ function load_help(this_list){
     help_obj.tip_no = Math.floor(Math.random() * help_obj.main.length);
     $(".tip"+help_obj.tip_no).show();
   }
-  var helper_width = $("#help_content").css("width");
+  var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
   $("#ace_div").animate({
-    "width": window.innerWidth - parseFloat(helper_width.replace("px",""))
+    "width": window.innerWidth - helper_width
   }, 500,function(){
     editor.resize();
   });
@@ -270,9 +270,12 @@ $("#help_btn").on("click",function(){
 		$("#help_btn").removeClass("btn-primary");
     
     
-    var helper_width = $("#help_content").css("width");
+    var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+    var graphic_width = parseFloat($("#graphic_settings").css("width").replace("px",""));
+    var max_width = Math.max(helper_width,
+                             graphic_width);
     $("#ace_div").animate({
-      "width": window.innerWidth - parseFloat(helper_width.replace("px",""))
+      "width": window.innerWidth - max_width
     }, 500,function(){
       editor.resize();
     });

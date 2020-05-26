@@ -110,7 +110,17 @@ function initiate_actions(){
                 };
                 master_json.trialtypes.trialtype = new_name;
                 graphic_editor_obj.update_main_settings();
-                graphic_editor_obj.clean_canvas();								
+                graphic_editor_obj.clean_canvas();
+                
+                //graphic editor button should be on:
+								$("#view_graphic_btn").removeClass("btn-outline-primary");
+                $("#view_graphic_btn").addClass("btn-primary");
+                $("#graphic_editor").show();
+                
+                //code editor should be on
+                $("#view_code_btn").removeClass("btn-outline-primary");
+                $("#view_code_btn").addClass("btn-primary");
+                $("#ACE_editor").show();
               }
             }
 					}
@@ -166,7 +176,7 @@ function initiate_actions(){
 		//detect if it's a graphic trialtype
 		var trialtype = this.value;
 		if(typeof(master_json.trialtypes.graphic.trialtypes[trialtype]) !== "undefined"){
-			master_json.trialtypes.trialtype = trialtype;
+      master_json.trialtypes.trialtype = trialtype;
 			editor.textInput.getElement().onkeydown = graphic_editor_obj.graphic_warning;
 
 			//clear canvas
@@ -174,8 +184,21 @@ function initiate_actions(){
 			graphic_editor_obj.clean_canvas();
 
 			load_trialtype_boosts();
-
+      
+      $("#view_code_btn").removeClass("btn-outline-primary");
+			$("#view_code_btn").addClass("btn-primary");
+			$("#ACE_editor").show();
+      $("#view_graphic_btn").removeClass("btn-outline-primary");
+      $("#view_graphic_btn").addClass("btn-primary");
+      $("#graphic_editor").show();
+      
+      
 		} else {
+      editor.setOption("readOnly",false);
+      $("#graphic_editor").hide();
+      $("#view_graphic_btn").removeClass("btn-primary");
+      $("#view_graphic_btn").addClass("btn-outline-primary");
+      
 			editor.textInput.getElement().onkeydown = "";
 			$("#ACE_editor").show();
 			master_json.trialtypes.trialtype = trialtype;
