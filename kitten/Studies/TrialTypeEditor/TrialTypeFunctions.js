@@ -229,3 +229,18 @@ function list_trialtypes(){
 
   }
 }
+function valid_trialtype(this_name){
+  if(this_name){
+    this_name = this_name.toLowerCase();
+    if(this_name == "start_experiment" |
+       this_name == "calibration_zoom" |
+       this_name == "end_checks_experiment"){
+         bootbox.alert("<b>" + this_name + "</b> is protected, please choose another name");
+      return false;   
+    } else {
+      return this_name;
+    }
+  } else {
+    return false;
+  }
+}

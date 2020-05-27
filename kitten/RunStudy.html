@@ -162,6 +162,7 @@ Study = {
                      "parse_current_proc",
                      "clean_trialtypes",
                      "insert_start",
+                     "insert_end_checks",
                      "shuffle_start_exp",
                      "buffer_trials",
                      "process_welcome"],	
@@ -171,6 +172,7 @@ Study = {
                       "parse_current_proc",
                       "clean_trialtypes",
                       "insert_start",
+                      "insert_end_checks",
                       "shuffle_start_exp"],
   activate_pipe   : function(){
     var this_function = Study.pipeline.shift();
@@ -699,6 +701,30 @@ function get_gets() {
   Study.activate_pipe();
 }
 
+function insert_end_checks(){
+  var this_proc  = exp_json.parsed_proc;
+		
+  var this_proc_end = {
+    item:0,
+    max_time:"",
+    text:"",
+    "trial type":"end_checks_experiment"
+  }
+  
+  var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+  shuffle_levels.forEach(function(shuffle_level){
+    this_proc_end[shuffle_level] = "off";
+  });
+  
+  
+  this_proc = this_proc.push(this_proc_end);
+  
+  
+  $.get("Quality/Problems.html",function(end_check_html){
+    exp_json.trialtypes.end_checks_experiment = end_check_html;
+    Study.activate_pipe();
+  });
+}
 function insert_start(){
 
   // skip this if in preview mode
@@ -706,8 +732,23 @@ function insert_start(){
 
     // update the procedure to have a general warning
     var this_proc  = exp_json.parsed_proc;
+    
+    var this_proc_calibration = {
+      item:0,
+      max_time:"",
+			text:"",
+      "trial type":"calibration_zoom"
+    }
 		
-    var this_proc_start = {
+		var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+		shuffle_levels.forEach(function(shuffle_level){
+			this_proc_calibration[shuffle_level] = "off";
+		});
+		
+		
+    this_proc.unshift(this_proc_calibration);
+    
+    var this_proc_detail_warning = {
       item:0,
       max_time:"",
 			text:"",
@@ -716,23 +757,25 @@ function insert_start(){
 		
 		var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
 		shuffle_levels.forEach(function(shuffle_level){
-			this_proc_start[shuffle_level] = "off";
+			this_proc_detail_warning[shuffle_level] = "off";
 		});
 		
 		
-    this_proc = this_proc.unshift(this_proc_start);
+    this_proc.unshift(this_proc_detail_warning);
 
     // update trialtypes to have a "start" trial
     ////////////////////////////////////////////
-    if(typeof(exp_json.trialtypes) !== "undefined"){
-      exp_json.trialtypes.start_experiment =
-        "<h1>Before starting</h1>" +
-        "<h2>Please be careful about what details you give. If you feel that any inappropriate details are being asked, please contact whoever asked you to participate.</h2>" +
-        "<h3 class='text-danger'>This website stores information on your local browser to help the experiments run smoother, and resume where you left off if you refresh the page. If you are unhappy with this, please do not proceed</h3>"+
-        "<button class='btn btn-primary' onclick='Trial.submit()'>Start</button>";
-    }
+    
+    $.get("Quality/DetailsWarning.html",function(start_experiment_html){
+      exp_json.trialtypes.start_experiment = start_experiment_html;
+      $.get("Quality/Calibration.html",function(calibration_zoom_html){
+        exp_json.trialtypes.calibration_zoom = calibration_zoom_html;
+        Study.activate_pipe();
+      });
+    });
+  } else {
+    Study.activate_pipe();
   }
-  Study.activate_pipe();
 }
 
 
