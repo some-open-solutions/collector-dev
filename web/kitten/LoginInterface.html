@@ -59,10 +59,7 @@
 				<h4 class="modal-title">Register  </h4>
 			</div>
 			<div class="card-body">
-        <div id="server_table_div"></div>
-        <button class="btn btn-primary" id="add_server" style="width:100%">Add server</button>
-				<span id="username"></span>
-				<div class="row">
+        <div class="row">
 					<input id="username_input" name="user_email" type="email" class="form-control" placeholder="email">
 				</div>
 				<div class="row">
@@ -71,6 +68,9 @@
 				<div class="row">
 					<div class="g-recaptcha" data-sitekey="6LelCO4UAAAAAFEh_KGJlAQ5lthFI-kDY4_kv33_"></div>
 				</div>
+        <div id="server_table_div"></div>
+        <button class="btn btn-primary" id="add_server" style="width:100%">Add server</button>
+
 			</div>
 		</div>
 	</div>
@@ -79,10 +79,49 @@
 <script>
 $("#add_server").on("click",function(){
   //resume here
+  var this_server_info = {
+    save_url:'',
+    registration_url:'',
+    name:''
+  }
+  bootbox.prompt("What is the url of the script that will save your data (and/or email it)?",function(script_url){
+    if(script_url){
+      this_server_info.url = script_url;
+      bootbox.prompt("If your 'server' requires registration, type in the url of the regristration script. Otherwise click 'cancel' to proceed",function(registration_url){
+        this_server_info.registration_url = registration_url;
+        bootbox.prompt("What will you call this server?",function(server_name){
+          if(server_name){
+            this_server_info.name = server_name;
+            if(typeof(master_json.data.servers[server_name]) !== "undefined"){
+              bootbox.confirm("You already have a server called <b>" + server_name + "</b> - do you want to override it?", function(result){
+                master_json.data.servers[this_server_info.name] = {
+                  url : this_server_info.url
+                }
+              });
+            } else {
+              master_json.data.servers[this_server_info.name] = {
+                url : this_server_info.url,
+                registration_url: this_server_info.registration_url
+              }
+            }
+          }
+        });
+      });
+    }
+  });
 });
 
 var  server_info;
 function update_server_table(){
+  
+  /*
+    $.get("ServerLocations.csv",function(result){
+    server_info = collectorPapaParsed(result);
+  });
+  
+  
+  
+  
   
   var server_table =  "<table class='table'>"+
                         "<thead>" +
@@ -92,12 +131,8 @@ function update_server_table(){
                             "<th scope='col'>Register Experiment</th>" +
                           "</tr>" +
                         "</thead>";
-  server_info.forEach(function(server_row){
-    //check if the user is registered
+  Object.keys(server_info).forEach(function(server_row){
     
-    if(typeof(master_json.data.servers) == "undefined"){
-      master_json.data.servers = {};
-    }
     var servers = master_json.data.servers;
     if(typeof(servers[server_row.server]) == "undefined"){
       servers[server_row.server] = {
@@ -125,6 +160,9 @@ function update_server_table(){
   }); 
   server_table += "</table>";
   $("#server_table_div").html(server_table);
+  
+  
+  
   
   $(".create_account_btn").on("click",function(){
     if($("#username_input").val().length == 0 ||
@@ -285,13 +323,13 @@ function update_server_table(){
       });
     }
   });
+  */
 }
 
 function list_servers(){
-  $.get("ServerLocations.csv",function(result){
-    server_info = collectorPapaParsed(result);
-    update_server_table();
-  });
+  
+  server_info = Object.keys(master_json.data.servers);
+  update_server_table();
 }
 $("#dismiss_login_btn").on("click",function(){
 	$("#login_modal").fadeOut();
