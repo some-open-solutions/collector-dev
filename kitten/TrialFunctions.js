@@ -18,14 +18,20 @@
 		Kitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
 */
 if(typeof(Trial) !== "undefined"){
-  Trial.elapsed = function(){
+  
+	Trial.add_response = function (response_obj){
+		response_obj.inserted_time_ms = (new Date()).getTime();
+		response_obj.inserted_time_date = new Date().toString('MM/dd/yy HH:mm:ss');
+		parent.parent.exp_json.responses.push(response_obj);	
+	}
+	
+	Trial.elapsed = function(){
 		if(Trial.post_no == ""){
 			Trial.post_no = 0;
 		}
 		return (new Date()).getTime() - parent.parent.exp_json.this_trial["post_"+Trial.post_no+"_trial_start_ms"];
 	}
-
-  Trial.go_to = function(new_trial_no){
+	Trial.go_to = function(new_trial_no){
     parent.parent.Study.go_to(new_trial_no);
   }
   Trial.get = function(this_name){
