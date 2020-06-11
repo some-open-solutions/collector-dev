@@ -136,6 +136,22 @@ function createHoT(container, data,sheet_name) {
 						if(this.getDataAtCell(m,k)==1){
 							bootbox.alert("Warning v1: 1 does not refer to any row in the Stimuli sheet! The first row is row 2 (as row 1 is the header). Fix row "+(m+1)+" in your Procedure's Item column.");
 						}
+						if(this.getDataAtCell(m,k) !== null){
+							if(this.getDataAtCell(m,k).indexOf(":") !== -1){
+								this.setDataAtCell(m,k,this.getDataAtCell(m,k).replace(":"," to "));
+							}
+						}
+						/*
+						if(this.getDataAtCell(m,k).indexOf(":") !== -1){
+							
+							
+							// replace ":" with " to " but take care of spacing
+							this.setDataAtCell(m,k,this.getDataAtCell(m,k).replace(":"," to "));
+							
+							
+							
+						}
+						*/
 					}
 				}
 				
