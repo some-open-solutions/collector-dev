@@ -596,16 +596,7 @@ function final_trial(){
 					
 			} else if(download_at_end == "off") {
 				// do nothing
-			}
-			/*
-			$("#experiment_div").html("<h1 class='text-danger'>" +
-                                  "Please wait while we confirm that all your data has been saved" +
-                                "</h1>" +
-                                '<div class="progress">'+
-                                  '<div id="google_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%">' +
-                                  '</div>' +
-                                '</div>');
-																*/
+			}			
       function online_save_check(){
         setTimeout(function(){
           if(online_data_obj.saves_started == online_data_obj.saves_ended){
@@ -895,9 +886,8 @@ function parse_current_proc(){
   				if(item.indexOf(" to ") == -1){
   					complete_items_array.push(item);
   				} else {
-  					// split by colons
-  					///////////////////
   					item_start_end = item.split(" to ");
+						
   					if(item_start_end.length > 2){
   						bootbox.alert("There is a problem with the procedure sheet - see the row in which the item column value is " +row.item + ", there is more than 1 ':' which is not allowed. If you are not the researcher, can you please send this message to them.");
   					}
