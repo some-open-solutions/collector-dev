@@ -106,6 +106,8 @@ function updateDimensionsDelayed(hot, addWidth, addHeight) {
 		updateDimensions(hot);
 	}, 0);
 }
+
+
 function createHoT(container, data,sheet_name) {
 	var table = new Handsontable(container, {
 		data: data,
@@ -265,14 +267,63 @@ function createHoT(container, data,sheet_name) {
 		}                
 		return cellProperties;
 	},
-	cells: function(row, col, prop) {},                    
+	cells: function(row, col, prop) {},
 	wordWrap: false,
-	contextMenu: true,
+	contextMenu: {
+		items: {
+			"about": { // Own custom option
+        name: function () { // `name` can be a string or a function
+          return '<b>Edit cell</b>'; // Name can contain HTML
+        },
+        hidden: function () { // `hidden` can be a boolean or a function
+          // Hide the option when the first column was clicked
+          return this.getSelectedLast()[0] == 0; // `this` === hot3
+        },
+        callback: function(key, selection, clickEvent) { // Callback for specific option
+					this_sheet = this;
+					$('#cell_editor_modal').modal('toggle');
+        }
+      },
+			"row_below": {
+        name: 'Insert row below'
+      },			
+			"row_above": {
+        name: 'Insert row above'
+      },
+			"---------": {
+        name: '---------'
+      },
+			"col_left": {
+        name: 'Insert column left '
+      },
+			"col_right": {
+        name: 'Insert column right '
+      },
+			"---------": {
+        name: '---------'
+      },
+		}
+	},
 	rowHeaders: true,
 	});
 	return table;    
 }
 
+//solution by Jeffrey Harmon at https://stackoverflow.com/questions/1064089/inserting-a-text-where-cursor-is-using-javascript-jquery
+function insertAtCaret(areaId, text) {
+	var txtarea = document.getElementById(areaId);
+	var scrollPos = txtarea.scrollTop;
+	var caretPos = txtarea.selectionStart;
+
+	var front = (txtarea.value).substring(0, caretPos);
+	var back = (txtarea.value).substring(txtarea.selectionEnd, txtarea.value.length);
+	txtarea.value = front + text + back;
+	caretPos = caretPos + text.length;
+	txtarea.selectionStart = caretPos;
+	txtarea.selectionEnd = caretPos;
+	txtarea.focus();
+	txtarea.scrollTop = scrollPos;
+}
 /*
 $(window).resize(function() {
 	resizeTimer = window.setTimeout(function() {
