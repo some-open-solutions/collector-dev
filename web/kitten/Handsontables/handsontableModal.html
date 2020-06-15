@@ -3,30 +3,130 @@
 <!--
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Large modal</button>
 -->
+<style>
+#cell_editor_div{
+	width:90%;	
+	position:fixed;
+	display:in-line;
+	padding:5%;
+	/* margin-left:30px; */
+	margin-top:100px;
+	margin-bottom:100px;
+	border-style: solid;
+	border-color: #069;
+	border-width:10px;
+	border-radius:10px;
+	z-index: 1000;
+	background-color:white;
+	display:none;
+}
+#ace_cell{
+	width:100%;
+	height:100%;
+}
+#close_cell_editor{
+	position:absolute;
+	top:0px;
+	right:0px;
+	margin: 2px;
+}
+
+</style>
 
 
-<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="cell_editor_modal">
-	title:"Editing your cell",
-  <div class="modal-dialog modal-lg">
-    <button class='btn btn-primary' id='add_brs'>Add < br >s</button><br>
-		<textarea id='cell_editor' style='width:100%;height:500px;'>" + this.getValue() + "</textarea>
-		<div class="modal-content">
-      ...
-    </div>
-  </div>
+<div id="cell_editor_div">
+	<button id="close_cell_editor" class="btn btn-primary">X</button>
+	<table style="width:100%;height:100%">
+		<tr>
+			<td style="width:50%;height:100%">
+				<button class='btn btn-primary' id='add_brs'>Add < br >s</button><br>					
+				<!--
+					<textarea id='cell_editor' style='width:100%;height:100%'></textarea>
+				-->
+				<div id="ace_cell"></div>
+			</td>
+			<td style="width:50%; height:100%">
+				<div style="width:100%; height:100%;">
+					Auto-Preview: 
+					<div class="btn-group" role="group" aria-label="Basic example">
+						<button type="button" id="cell_auto_preview_on" class="cell_preview_on_off btn btn-primary">On</button>
+						<button type="button" id="cell_auto_preview_off" class="cell_preview_on_off btn btn-outline-primary">Off</button>
+					</div>
+					<button class="btn btn-secondary" disabled>Preview</button>
+					<iframe id="cell_preview_iframe" style="width:100%; height:100%"></iframe>
+				</div>
+			</td>
+		</tr>
+	</table>
+	</div>
 </div>
 
 <script>
+var cell_editor = ace.edit("ace_cell");
+cell_editor.getSession().setUseWorker(false);
+cell_editor.setTheme("ace/theme/chrome");
+cell_editor.getSession().setMode("ace/mode/html");
+cell_editor.$blockScrolling = Infinity;
 
-$("#cell_editor").on("keyup",function(e){
-	if (e.keyCode === 13) {
-		insertAtCaret("cell_editor", "<br>");
-		//e.preventDefault();
-		
-	}						
-	this_sheet.setDataAtCell(selection.start.row, 
-													 selection.start.col,
-													 $("#cell_editor").val());
+
+
+cell_editor.setOptions({
+	enableBasicAutocompletion: true,
+	enableSnippets: false,
+	enableLiveAutocompletion: true,
+	maxLines: 50,
+	minLines: 30,
+	tabSize:2,
+	wrap:true,
+});
+cell_editor.$blockScrolling = Infinity;
+
+cell_editor.on("focus",function(){
+	helperActivate("Trialtype Code", "","trialtype_code");
+});
+
+$("#cell_editor_div").css("height",window.innerHeight-120);
+
+
+cell_editor.getSession().on('change', function() {
+  //insert content from ace editor into iframe
+	if($("#cell_auto_preview_on").hasClass("btn-primary")){
+		doc = document.getElementById('cell_preview_iframe').contentWindow.document;
+		doc.open();
+		doc.write(cell_editor.getValue()); //libraries + 
+		doc.close();
+	}	
+});
+
+langTools = ace.require('ace/ext/language_tools');
+
+cell_editor.completers.push({
+	getCompletions: function(cell_editor, session, pos, prefix, callback) {
+		callback(null, [
+			{value: "Trial.add_response()", score: 1000, meta: "add row to responses"},
+			{value: "Trial.submit()",     	score: 1000, meta: "end trial - C"},
+			{value: "Trial.elapsed()",    	score: 1000, meta: "since trial start - C"},
+			{value: "Trial.set_timer()",  	score: 1000, meta: "at trial start - C"},
+      {value: "Trial.set()",        	score: 1000, meta: "for another trial -C"},
+      {value: "Trial.get()",        	score: 1000, meta: "from an earlier trial -C"}
+		]);
+	}
+});
+
+
+cell_editor.commands.addCommand({
+	name: 'enter_break',
+	bindKey: {win: 'Enter',  mac: 'Enter'},
+	exec: function(editor) {
+		editor.session.insert(editor.getCursorPosition(), "<br>\n");
+	},
+	readOnly: true // false if this command should not apply in readOnly mode
+});
+
+$("#ace_cell").on("keyup",function(e){
+	this_sheet.setDataAtCell(this_selection.start.row, 
+													 this_selection.start.col,
+													 cell_editor.getValue());
 });
 $("#add_brs").on("click",function(){
 	var cell_contents = $("#cell_editor").val();
@@ -34,4 +134,7 @@ $("#add_brs").on("click",function(){
 			$("#cell_editor").val(cell_contents);
 });
 
+$("#close_cell_editor").on("click",function(){
+	$("#cell_editor_div").fadeOut();
+});
 </script>

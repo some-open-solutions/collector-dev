@@ -17,6 +17,8 @@
  		
 		Kitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)		
 */
+var this_sheet;
+var this_selection;
 function isTrialTypeHeader(colHeader) {
 	var isTrialTypeCol = false;
   if (colHeader === 'trial type') isTrialTypeCol = true;
@@ -281,7 +283,30 @@ function createHoT(container, data,sheet_name) {
         },
         callback: function(key, selection, clickEvent) { // Callback for specific option
 					this_sheet = this;
-					$('#cell_editor_modal').modal('toggle');
+					$('#cell_editor_div').fadeIn();
+					this_selection = selection;
+
+					cell_editor.setValue(this_sheet.getDataAtCell(selection.start.row, 
+																												selection.start.col));
+					
+					
+					//var cell_editor_width = parseFloat($("#cell_editor_div").css("width").replace("px",""));
+
+					if($("#help_content").is(":visible")){
+						var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+						
+						$("#cell_editor_div").animate({
+							"width": window.innerWidth - helper_width
+						}, 500,function(){
+							editor.resize();
+						});
+					} else {
+						$("#cell_editor_div").animate({
+							"width": window.innerWidth
+						}, 500,function(){
+							editor.resize();
+						});
+					}
         }
       },
 			"row_below": {
