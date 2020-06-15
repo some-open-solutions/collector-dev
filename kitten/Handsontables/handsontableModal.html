@@ -112,26 +112,21 @@ cell_editor.completers.push({
 		]);
 	}
 });
+</script>
 
-
-cell_editor.commands.addCommand({
-	name: 'enter_break',
-	bindKey: {win: 'Enter',  mac: 'Enter'},
-	exec: function(editor) {
-		editor.session.insert(editor.getCursorPosition(), "<br>\n");
-	},
-	readOnly: true // false if this command should not apply in readOnly mode
-});
-
+<script src="Handsontables/CellEditorKeyboard.js"></script>
+<script>
 $("#ace_cell").on("keyup",function(e){
 	this_sheet.setDataAtCell(this_selection.start.row, 
 													 this_selection.start.col,
 													 cell_editor.getValue());
 });
 $("#add_brs").on("click",function(){
-	var cell_contents = $("#cell_editor").val();
-			cell_contents = cell_contents.replaceAll("\n","\n<br>");
-			$("#cell_editor").val(cell_contents);
+	var cell_contents = cell_editor.getValue()
+																 .replaceAll("<br>\n","\n")
+																 .replaceAll("\n<br>","\n")
+																 .replaceAll("\n","<br>\n");
+			cell_editor.setValue(cell_contents);
 });
 
 $("#close_cell_editor").on("click",function(){
