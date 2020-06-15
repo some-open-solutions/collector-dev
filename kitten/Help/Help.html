@@ -65,11 +65,9 @@ function load_help(this_list){
   if(this_list.length > 0){
     help_item = this_list.pop();
     console.dir(help_item);
-    var brap;
     $.get(help_dictionary[help_item],function(this_help){
       console.dir("this_help");
       console.dir(this_help);
-      brap = this_help;
       help_obj[help_item.replace(".json","")] = this_help;
       load_help(this_list);
     });
@@ -261,7 +259,12 @@ $("#help_btn").on("click",function(){
     },500,function(){
       editor.resize();
     });
-    editor.resize();    
+    editor.resize(); 
+		$("#cell_editor_div").animate({
+			"width": window.innerWidth
+		}, 500,function(){
+			cell_editor.resize();
+		});		
 	} else {
 		$("#help_area").show(500);
 		$("#help_btn").css("font-weight","bold");
@@ -279,6 +282,12 @@ $("#help_btn").on("click",function(){
     }, 500,function(){
       editor.resize();
     });
+		var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+		$("#cell_editor_div").animate({
+			"width": window.innerWidth - helper_width
+		}, 500,function(){
+			cell_editor.resize();
+		});
     
     
 	}

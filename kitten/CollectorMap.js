@@ -10,10 +10,10 @@ window.bootstrap || document.write('<script src="../libraries/bootstrap.4.0.min.
 window.Papa          || document.write('<script src="../libraries/papaparse.4.3.6.min.js"><\/script>');
 
 // Collector specific
+window.Handsontable || document.write('<link rel="stylesheet" href="Handsontables/handsontables.full.css">' +
+'<script type="text/javascript" charset="utf-8" src="Handsontables/handsontables.full.js">' + 
+'<\/script><script type="text/javascript" charset="utf-8" src="Handsontables/HandsontablesFunctions.js"><\/script>');
 
-window.Handsontable || document.write('<link rel="stylesheet" href="Studies/handsontables/handsontables.full.css">' +
-'<script type="text/javascript" charset="utf-8" src="Studies/handsontables/handsontables.full.js">' + 
-'<\/script><script type="text/javascript" charset="utf-8" src="Studies/HandsontableFunctions.js"><\/script>');
 
 window.clean_obj_keys || document.write('<script src="jsFunctions.js"><\/script>');
 

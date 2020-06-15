@@ -41,7 +41,7 @@ The following system is to avoid the need for php's require functionality to emb
 -->
 <script src="../libraries/jquery-3.3.1.min.js"></script>
 <script src= "../libraries/bootstrap.4.0.min.js"></script>            
-<script src= "../libraries/bootbox.4.4.0.min.js"></script>            
+<script src= "../libraries/bootbox.5.4.min.js"></script>            
 <script src= "../libraries/popper.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="../libraries/bootstrapCollector.css">
@@ -52,10 +52,16 @@ The following system is to avoid the need for php's require functionality to emb
 <script src= "../libraries/papaparse.4.3.6.min.js"></script>
 <script src= "../libraries/ace-master/ace.js"></script>
 <script src= "../libraries/ace-master/ext-language_tools.js"></script>
-<script src= "Studies/handsontables/handsontables.full.js"></script>
-<script src= "Studies/HandsontableFunctions.js"></script>
 
-<link rel="stylesheet" type="text/css" href="Studies/handsontables/handsontables.full.css">
+<!-- handsontable core code and collector specific code -->
+<div id="handsontable_html"></div>
+<script>
+$("#handsontable_html").load("Handsontables/handsontableModal.html");
+</script>
+<link rel="stylesheet" type="text/css" href="Handsontables/handsontables.full.css">
+<script src= "Handsontables/handsontables.full.js"></script>
+<script src= "Handsontables/HandsontablesFunctions.js"></script>
+
 
 <script src= "jsFunctions.js"></script>
 <script src= "Code/BrowserCheck.js"></script>
@@ -162,7 +168,7 @@ files_pipeline = {
   files : [
            /*
            ["../libraries/bootstrap.4.0.min.js"],             
-           ["../libraries/bootbox.4.4.0.min.js"],             
+           ["../libraries/bootbox.5.4.min.js"],             
            ["../libraries/popper.min.js"],
            ["../libraries/bootstrapCollector.css"],
            ["../libraries/bootbox.fix.css"],
@@ -171,9 +177,9 @@ files_pipeline = {
            ["../libraries/papaparse.4.3.6.min.js"],
            ["../libraries/ace-master/ace.js"],
            ["../libraries/ace-master/ext-language_tools.js"],
-           ["Studies/handsontables/handsontables.full.js"],
-           ["Studies/HandsontableFunctions.js"],
-           ["Studies/handsontables/handsontables.full.css"],
+           ["Handsontables/handsontables.full.js"],
+           ["Handsontables/HandsontablesFunctions.js"],
+           ["Handsontables/handsontables.full.css"],
            ["jsFunctions.js"],
            ["Code/BrowserCheck.js"],
            ["CollectorMap.js"],
