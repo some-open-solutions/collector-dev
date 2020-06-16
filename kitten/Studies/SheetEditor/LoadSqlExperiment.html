@@ -117,6 +117,11 @@ $(document).keydown(function (e) {
 
 $(window).bind('keydown', function(event) {
 	if(event.originalEvent.code == "Escape"){
+		if($("#cell_editor_div").is(":visible")){
+			this_sheet.setDataAtCell(this_selection.start.row, 
+															 this_selection.start.col,
+															 cell_editor.getValue());		
+		}
 		$("#cell_editor_div").fadeOut();
 	}
   if (event.ctrlKey || event.metaKey) {
