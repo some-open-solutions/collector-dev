@@ -298,13 +298,13 @@ function createHoT(container, data,sheet_name) {
 						$("#cell_editor_div").animate({
 							"width": window.innerWidth - helper_width
 						}, 500,function(){
-							editor.resize();
+							cell_editor.resize();
 						});
 					} else {
 						$("#cell_editor_div").animate({
 							"width": window.innerWidth
 						}, 500,function(){
-							editor.resize();
+							cell_editor.resize();
 						});
 					}
         }
