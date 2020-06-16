@@ -61,8 +61,10 @@ $("#cell_select_color_activate").on("click",function(){
 	$("#cell_select_color").click();
 });
 
-$("#cell_text_size").on("change",function(){
-	cell_wrap_tag(cell_editor,"<span style='font-size:" + this.value + "px'>","</span>",false);	
+$("#cell_text_size_btn").on("click",function(){
+	bootbox.prompt("What size do you want the selected text to be?",function(response){
+		cell_wrap_tag(cell_editor,"<span style='font-size:" + response + "'>","</span>",false);
+	});
 });
 
 cell_editor.commands.addCommand({

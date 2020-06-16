@@ -287,7 +287,8 @@ function createHoT(container, data,sheet_name) {
 					this_selection = selection;
 
 					cell_editor.setValue(this_sheet.getDataAtCell(selection.start.row, 
-																												selection.start.col));
+																												selection.start.col),-1);
+													
 					
 					
 					//var cell_editor_width = parseFloat($("#cell_editor_div").css("width").replace("px",""));
@@ -309,23 +310,38 @@ function createHoT(container, data,sheet_name) {
 					}
         }
       },
+			"---------": {
+        name: '---------'
+      },
 			"row_below": {
         name: 'Insert row below'
       },			
 			"row_above": {
         name: 'Insert row above'
       },
-			"---------": {
-        name: '---------'
-      },
 			"col_left": {
-        name: 'Insert column left '
+        name: 'Insert column left'
       },
 			"col_right": {
-        name: 'Insert column right '
+        name: 'Insert column right'
       },
-			"---------": {
-        name: '---------'
+			"remove_row": {
+        name: 'Remove row'
+      },
+			"remove_col": {
+        name: 'Remove column'
+      },
+			"undo": {
+        name: 'Undo'
+      },
+			"redo": {
+        name: 'Redo'
+      },			
+			"make_read_only": {
+        name: 'Read only'
+      },
+			"alignment": {
+        name: 'Alignment'
       },
 		}
 	},

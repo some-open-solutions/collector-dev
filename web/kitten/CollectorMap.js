@@ -28,7 +28,8 @@ var isolation_map = {
     DefaultTrialtypes:{
       "instruct.html" : "file",
 			"instruct_keyboard.html": "file",
-      "survey.html"   : "file" 
+      "survey.html"   : "file", 
+			"text.html"     : "file"
     },
     "default_experiment.json" : "file",
       //stuff here

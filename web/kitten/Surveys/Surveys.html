@@ -135,7 +135,80 @@ function create_survey_HoT(this_survey){
 		minSpareRows: 1,
 		rowHeaders: false,
 		colHeaders: false,
-		contextMenu: true,
+		contextMenu: {
+			items: {
+				"about": { // Own custom option
+					name: function () { // `name` can be a string or a function
+						return '<b>Edit cell</b>'; // Name can contain HTML
+					},
+					hidden: function () { // `hidden` can be a boolean or a function
+						// Hide the option when the first column was clicked
+						return this.getSelectedLast()[0] == 0; // `this` === hot3
+					},
+					callback: function(key, selection, clickEvent) { // Callback for specific option
+						this_sheet = this;
+						$('#cell_editor_div').fadeIn();
+						this_selection = selection;
+
+						cell_editor.setValue(this_sheet.getDataAtCell(selection.start.row, 
+																													selection.start.col),-1);
+														
+						
+						
+						//var cell_editor_width = parseFloat($("#cell_editor_div").css("width").replace("px",""));
+
+						if($("#help_content").is(":visible")){
+							var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+							
+							$("#cell_editor_div").animate({
+								"width": window.innerWidth - helper_width
+							}, 500,function(){
+								cell_editor.resize();
+							});
+						} else {
+							$("#cell_editor_div").animate({
+								"width": window.innerWidth
+							}, 500,function(){
+								cell_editor.resize();
+							});
+						}
+					}
+				},
+				"---------": {
+					name: '---------'
+				},
+				"row_below": {
+					name: 'Insert row below'
+				},			
+				"row_above": {
+					name: 'Insert row above'
+				},
+				"col_left": {
+					name: 'Insert column left'
+				},
+				"col_right": {
+					name: 'Insert column right'
+				},
+				"remove_row": {
+					name: 'Remove row'
+				},
+				"remove_col": {
+					name: 'Remove column'
+				},
+				"undo": {
+					name: 'Undo'
+				},
+				"redo": {
+					name: 'Redo'
+				},			
+				"make_read_only": {
+					name: 'Read only'
+				},
+				"alignment": {
+					name: 'Alignment'
+				},
+			}
+		},
 		colWidths:100,
 		rowHeights: 1,
 		wordWrap: false,

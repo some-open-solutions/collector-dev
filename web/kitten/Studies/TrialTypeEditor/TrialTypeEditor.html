@@ -110,8 +110,6 @@ editor.on("focus",function(){
 	helperActivate("Trialtype Code", "","trialtype_code");
 });
 
-langTools = ace.require('ace/ext/language_tools');
-
 editor.completers.push({
 	getCompletions: function(editor, session, pos, prefix, callback) {
 		callback(null, [
