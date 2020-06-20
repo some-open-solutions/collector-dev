@@ -196,7 +196,7 @@ function createHoT(container, data,sheet_name) {
 				}
 			}
 
-			var experiment = master_json.exp_mgmt.experiment;
+			var experiment = $("#experiment_list").val();
 			var this_exp   = master_json.exp_mgmt.experiments[experiment];
 			
 			if(sheet_name.toLowerCase() == "conditions.csv"){

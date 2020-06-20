@@ -18,7 +18,7 @@
 		Kitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
 */
 function check_trialtypes_in_proc(procedure,post_trialtype){
-	var experiment 		= master_json.exp_mgmt.experiment;
+	var experiment 		= $("#experiment_list").val();
 	var this_exp   		= master_json.exp_mgmt.experiments[experiment];
 	var this_proc  		= this_exp.all_procs[procedure];
 	var trialtypes 		= [];
@@ -50,7 +50,7 @@ function check_trialtypes_in_proc(procedure,post_trialtype){
 	});
 }
 function clean_conditions(){
-  exp_json = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+  exp_json = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 	exp_json.conditions = collectorPapaParsed(exp_json.cond_array);
   exp_json.conditions = exp_json.conditions.filter(row => row.procedure !== "");
   exp_json.conditions.forEach(function(row){
@@ -129,9 +129,8 @@ function list_experiments(){
       } else {
         remove_from_list("Select a dropbox experiment");
         first_load = false;
-      }
-			master_json.exp_mgmt.experiment = this.value;
-			exp_json = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+      }			
+			exp_json = master_json.exp_mgmt.experiments[this.value];
 			clean_conditions();
 			$("#dropbox_inputs").show();
 			update_handsontables();
@@ -172,9 +171,8 @@ function new_experiment(experiment){
 		bootbox.alert("Name already exists. Please try again.");
 	} else {
 
-		//create it first in dropbox, THEN update table with location - duh
-		master_json.exp_mgmt.experiment 			  			= experiment;
-		master_json.exp_mgmt.experiments[experiment] = new_experiment_data;
+		//create it first in dropbox, THEN update table with location
+		master_json.exp_mgmt.experiments[$("#experiment_list").val()] = new_experiment_data;
 
     update_handsontables();
     update_master_json();
@@ -215,7 +213,6 @@ function new_experiment(experiment){
 function remove_from_list(experiment){
 	var x = document.getElementById("experiment_list");
 	x.remove(experiment);
-	master_json.exp_mgmt.experiment =  $("#experiment_list").val();
 	if(experiment !== "Select a dropbox experiment"){
 		update_handsontables();
 	}
@@ -244,8 +241,7 @@ function renderItems() {
   autoload_boosts();
 }
 function stim_proc_defaults(proc_values,stim_values){
-	var experiment = master_json.exp_mgmt.experiment;
-	var this_exp   = master_json.exp_mgmt.experiments[experiment];
+	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 
 	// selecting Stimuli_1 and Procedure_1 as default
 	if(proc_values.indexOf("Procedure_1") !== -1){
@@ -262,8 +258,7 @@ function stim_proc_defaults(proc_values,stim_values){
 	}
 }
 function stim_proc_selection(stim_proc,sheet_selected){
-	var experiment = master_json.exp_mgmt.experiment;
-	var this_exp   = master_json.exp_mgmt.experiments[experiment];
+	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 	createExpEditorHoT(this_exp.all_stims[sheet_selected],stim_proc,sheet_selected);	//sheet_name
 }
 function synch_experiment(entry_name){
@@ -278,9 +273,8 @@ function synch_experiment(entry_name){
 			report_error("problem synching the experiment","problem synching the experiment");
 		});
 }
-function update_dropdown_lists(){
-	var experiment = master_json.exp_mgmt.experiment;
-	var this_exp   = master_json.exp_mgmt.experiments[experiment];
+function update_dropdown_lists(){	
+	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 	var stim_values = [];
 	var proc_values = [];
 
@@ -307,8 +301,7 @@ function update_dropdown_lists(){
 	stim_proc_defaults(proc_values,stim_values);
 }
 function update_handsontables(){
-	var experiment = master_json.exp_mgmt.experiment;
-	var this_exp   = master_json.exp_mgmt.experiments[experiment];
+	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 
 	update_dropdown_lists();
   stim_file = Object.keys(this_exp.all_stims)[0];
@@ -347,13 +340,13 @@ function update_handsontables(){
           }
         }
         //check each sheet exists first
-        eel.request_sheet(experiment,
+        eel.request_sheet($("#experiment_list").val(),
                           "Conditions",
                           "conditions.csv");
-        eel.request_sheet(experiment,
+        eel.request_sheet($("#experiment_list").val(),
                           "Stimuli",
                           stim_file);
-        eel.request_sheet(experiment,
+        eel.request_sheet($("#experiment_list").val(),
                           "Procedure",
                           proc_file);
       case "github":
@@ -387,8 +380,7 @@ function update_this_setting(setting){
 }
 function update_trial_json(){
 	// list all the trialtypes currently existing;
-	var experiment 		= master_json.exp_mgmt.experiment;
-	var this_exp   		= master_json.exp_mgmt.experiments[experiment];
+	var this_exp   		= master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 	var proc_trialtypes = {};
 	var proc_keys		= Object.keys(this_exp.all_procs);
 
@@ -435,7 +427,6 @@ function upload_exp_contents(these_contents,this_filename){
 
 	// note that this is a local function. right?
 	function upload_to_master_json(exp_name,this_content) {
-		master_json.exp_mgmt.experiment = exp_name;
 		master_json.exp_mgmt.experiments[exp_name] = this_content;
 		list_experiments();
     upload_trialtypes(this_content);
@@ -503,7 +494,6 @@ function upload_exp_contents(these_contents,this_filename){
               }
             });
           } else {
-            master_json.exp_mgmt.experiment = suggested_name;
             master_json.exp_mgmt.experiments[suggested_name] = content;
             list_experiments();
             $("#upload_experiment_modal").hide();
