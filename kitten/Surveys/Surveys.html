@@ -295,7 +295,7 @@ function list_surveys(){
 	master_json.surveys.default_surveys = {};
 
 	master_json.surveys.user_surveys = typeof(master_json.surveys.user_surveys) == "undefined" ? {} : master_json.surveys.user_surveys;
-	master_json.surveys.default_surveys = clean_obj_keys(master_json.surveys.default_surveys);
+	master_json.surveys.default_surveys = Collector.clean_obj_keys(master_json.surveys.default_surveys);
 
 	var def_survey_list  = Object.keys(master_json.surveys.default_surveys).sort();
 	var user_survey_list = Object.keys(master_json.surveys.user_surveys).sort();

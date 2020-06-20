@@ -15,7 +15,7 @@ window.Handsontable || document.write('<link rel="stylesheet" href="Handsontable
 '<\/script><script type="text/javascript" charset="utf-8" src="Handsontables/HandsontablesFunctions.js"><\/script>');
 
 
-window.clean_obj_keys || document.write('<script src="jsFunctions.js"><\/script>');
+window.Collector || document.write('<script src="Code/Collector.js"><\/script>');
 
 
 var isolation_map = {

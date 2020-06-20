@@ -246,8 +246,8 @@ function update_server_table(){
       bootbox.alert("You are either missing your email address or password (or both) to delete the experiment");
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
-      var experiment = master_json.exp_mgmt.experiment;
-      var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+      var experiment = $("#experiment_list").val();
+      var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
     	
       $.post(register_url,{
         location:               this_exp.location,
@@ -269,8 +269,8 @@ function update_server_table(){
 							script_url  = row.script_url;
 						}
 					});
-					var experiment = master_json.exp_mgmt.experiment;
-					var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+					var experiment = $("#experiment_list").val();
+					var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 					delete(this_exp.data_scripts[server_name]);
         }
       });
@@ -282,7 +282,7 @@ function update_server_table(){
       bootbox.alert("You are either missing your email address or password (or both) to register the experiment");
     } else {
       var register_url = $(this).find("span")[0].innerHTML;
-      var experiment = master_json.exp_mgmt.experiment;
+      var experiment = $("#experiment_list").val();
       var this_exp   = master_json.exp_mgmt.experiments[experiment];
     	
       $.post(register_url,{
@@ -309,8 +309,8 @@ function update_server_table(){
 							script_url  = row.script_url;
 						}
 					});
-					var experiment = master_json.exp_mgmt.experiment;
-					var this_exp   = master_json.exp_mgmt.experiments[master_json.exp_mgmt.experiment];
+					var experiment = $("#experiment_list").val();
+					var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 					if(typeof(this_exp.data_scripts) == "undefined"){
 						this_exp.data_scripts = {};
 					}

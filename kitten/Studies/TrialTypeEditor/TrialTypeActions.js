@@ -177,6 +177,7 @@ function initiate_actions(){
 	});
 
 	$("#trial_type_select").on("change",function(){
+		$("#save_btn").click();
 		//detect if it's a graphic trialtype
 		var trialtype = this.value;
 		if(typeof(master_json.trialtypes.graphic.trialtypes[trialtype]) !== "undefined"){
