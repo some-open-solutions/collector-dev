@@ -117,6 +117,7 @@ function createHoT(container, data,sheet_name) {
 		minSpareRows: 1,            
         
 		afterChange: function(changes, source) {
+			
 			var middleColEmpty=0;
 			var middleRowEmpty=0;
 			var postEmptyCol=0; //identify if there is a used col after empty one
@@ -204,11 +205,9 @@ function createHoT(container, data,sheet_name) {
 			} else {
 				if(typeof(this_exp.all_stims[sheet_name]) !== "undefined"){
 					this_exp.all_stims[sheet_name] = this.getData();
-				}
-				else if(typeof(this_exp.all_procs[sheet_name]) !== "undefined"){
+				}	else if(typeof(this_exp.all_procs[sheet_name]) !== "undefined"){
 					this_exp.all_procs[sheet_name] = this.getData();
-				}
-				else {
+				}	else {
 					alert("error - "+sheet_name+" not found in "+experiment);
 				}
 			}

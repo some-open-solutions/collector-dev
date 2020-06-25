@@ -435,7 +435,7 @@ $("#save_btn").on("click", function(){
         if(typeof(proc_row.survey) !== "undefined" &&
           proc_row.survey !== ""){
           var this_survey = proc_row.survey.toLowerCase();
-          if(typeof(master_json.surveys.user_surveys[this_survey]) !== "undefined"){
+					if(typeof(master_json.surveys.user_surveys[this_survey]) !== "undefined"){
             if(typeof(this_exp.surveys) == "undefined"){
               this_exp.surveys = {};
             }
@@ -588,8 +588,6 @@ $("#stim_select").on("change",function(){
 	var this_exp   = master_json.exp_mgmt.experiments[experiment];
 	createExpEditorHoT(this_exp.all_stims[this.value], "stimuli", this.value);
 });
-
-
 $("#upload_default_exp_btn").on("click",function(){
 	var default_experiment_name = $("#default_experiments_select").val();
 	if(default_experiment_name !== "Select an experiment"){
