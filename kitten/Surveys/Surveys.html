@@ -114,7 +114,7 @@ function load_default_surveys(){
     <div id="survey_HoT"></div>
   </div>
   <div class="tab-pane fade" id="pills-preview" role="tabpanel" aria-labelledby="pills-preview-tab">
-    <div id="survey_preview"></div>
+    <iframe id="survey_preview"></iframe>
   </div>
 </div>
 
@@ -317,10 +317,18 @@ function list_surveys(){
 
 function preview_survey(this_survey){
   master_json.surveys.preview = true;
+	$("#survey_preview").css("width",window.innerWidth)
+	$("#survey_preview").css("height",window.innerHeight - 100)
   survey_template = $.get(collector_map["survey.html"], function(survey_template){
     survey_template = survey_template.replace('"{{survey}}"',
                                               JSON.stringify(this_survey));
-    $("#survey_preview").html(survey_template);
+		
+		doc = document.getElementById('survey_preview').contentWindow.document;                    
+		doc.open();                                                                                     
+		doc.write(libraries + survey_template); 																									// note that the difference here is the libraries
+		doc.close();          
+		
+    
   });
 }
 
