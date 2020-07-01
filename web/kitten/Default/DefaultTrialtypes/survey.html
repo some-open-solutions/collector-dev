@@ -92,6 +92,12 @@ td{
 .show_tab{
   margin:5px;
 }
+
+.survey_btn {
+	min-width:100px;
+	white-space: normal;
+	word-wrap: break-word;
+}
 .table_break{
   width:100%;
 }
@@ -285,9 +291,9 @@ function load_survey(survey){
   /////////////////////
   console.dir("survey");
   console.dir(survey);
-  if(typeof(master_json) !== "undefined" && master_json.surveys.preview){     // Yes
+  if(typeof(parent.master_json) !== "undefined" && parent.master_json.surveys.preview){     // Yes
     survey_content = survey;                                                    // i.e. the content has been passed through directly
-    survey_obj.boosts = master_json.boosts;                                //no need to be efficient in preview
+    survey_obj.boosts = parent.master_json.boosts;                                //no need to be efficient in preview
 
   } else {                                                                      // No
     survey = survey.toLowerCase().replace(".csv","") + ".csv";
@@ -597,7 +603,7 @@ function process_survey_question(this_row,row_no){
                                       response_html +
                                       '<div class="btn-group btn-group-toggle" data-toggle="buttons">'; //to help detect blank likert's
               for(var i=0; i<options.length;i++){
-                  question_td+=   '<button type="button" class="btn btn-outline-primary '+this_row["item_name"]+'_item row_'+row_no+'"  autocomplete="off" id="likert_'+row_no+'_'+i+'"  onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+options[i]+'</button>';
+                  question_td+=   '<button type="button" class="btn survey_btn btn-outline-primary '+this_row["item_name"]+'_item row_'+row_no+'"  autocomplete="off" id="likert_'+row_no+'_'+i+'"  onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+options[i]+'</button>';
 
               }
               question_td +=  "</div>"+
@@ -673,7 +679,7 @@ function process_survey_question(this_row,row_no){
       return '';
   } else {
     if(this_row["type"].toLowerCase()=="instruct"){
-      var this_row_html="<td colspan='2' class='text-primary'>"+this_row["text"]+"</label></td>";
+      var this_row_html="<td colspan='2' class='text-dark'>"+this_row["text"]+"</label></td>";
     } else if(this_row["type"].toLowerCase()=="google_slide") {
       var this_row_html="<td colspan='2'>"+this_row["text"]+"</label></td>";
     } else if(typeof(this_row["no_text"]) !== "undefined" && this_row["no_text"] == "on"){
@@ -682,7 +688,7 @@ function process_survey_question(this_row,row_no){
       if(this_row['text'].toLowerCase() == "page_start" | this_row['type'].toLowerCase() == "page_start"){
         this_row_html = question_td;
       }else {
-        var this_row_html="<td id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";
+        var this_row_html="<td class='text-primary' id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";
       }
     }
     if(typeof(this_row["optional"]) !== "undefined"){
@@ -703,8 +709,8 @@ function process_survey_question(this_row,row_no){
 
 function quest_resp_perc(quest_resp_rat){
   if(typeof(quest_resp_rat) == "undefined"){
-    row_resp_perc = "35%";
-    row_ques_perc = "65%";
+    row_resp_perc = "50%";
+    row_ques_perc = "50%";
   } else {
     row_resp_perc = parseFloat(100-quest_resp_rat.replace("%",""))+"%";
     row_ques_perc = parseFloat(quest_resp_rat.replace("%",""))+"%";
@@ -873,7 +879,7 @@ function update_score(){
 
 function write_survey(this_survey,this_id){
   scoring_object.update_scales(this_survey);
-  this_survey_html="<table class='table_break' id='table0'>";
+  this_survey_html = "<table class='table_break' id='table0'>";
   this_survey_object={
     content:[],
     shuffle:[],
@@ -925,7 +931,32 @@ function write_survey(this_survey,this_id){
 	this_survey_html += "</table>";
 
 	$("#" + this_id).html(this_survey_html);
-	$("#" + this_id).show(1000);
+	
+	
+	// can I fix the width of buttons here?
+	
+	
+	
+	
+	
+	
+	$("#" + this_id).show(1000,function(){
+		// Set all buttons to the max width
+		
+		var maxWidth = 0;
+		$('.btn').each(function(index, element) {
+			var curWidth = $(element).width();
+			if (maxWidth < curWidth ) {
+				maxWidth = curWidth;
+			}
+		});
+		
+		$('.survey_btn').each(function(i) {
+			$(this).delay(200).animate({
+				"width" : maxWidth
+			});
+		});
+	});
 
 	//scroll to top
 
