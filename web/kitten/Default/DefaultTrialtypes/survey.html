@@ -107,8 +107,7 @@ td{
   margin:5px;
 }
 
-.survey_btn {
-	min-width:100px;
+.survey_btn {	
 	white-space: normal;
 	word-wrap: break-word;
 }
@@ -250,9 +249,11 @@ $("#proceed_button").on("click",function(){
     var quest_resp = isJSON($("#"+response_elements[i].id).val());
     if (quest_resp.length < min_resp_length){
       proceed = false;
+			$("#"+response_elements[i].id.replace("response","question")).removeClass("text-dark");
       $("#"+response_elements[i].id.replace("response","question")).removeClass("text-success");
       $("#"+response_elements[i].id.replace("response","question")).addClass("text-danger");
     } else {
+			$("#"+response_elements[i].id.replace("response","question")).removeClass("text-dark");
       $("#"+response_elements[i].id.replace("response","question")).removeClass("text-danger");
       $("#"+response_elements[i].id.replace("response","question")).addClass("text-success");
     }
