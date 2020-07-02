@@ -168,7 +168,7 @@ function list_variables(trialtype){
     }
     return split_part;
   });
-  boost_html = split_trialtype.join("{{");
+  mod_html = split_trialtype.join("{{");
   return variables;
 }
 

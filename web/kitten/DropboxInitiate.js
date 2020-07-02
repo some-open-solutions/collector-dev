@@ -243,10 +243,10 @@ function load_master_json(link_created){
 		$("#startup_btn").on("click",function(){
 			startup_dialog.modal("hide");
 		});
-		// add boosts if not already present
+		// add mods if not already present
 		//////////////////////////////////////
-		if(typeof(master_json.boosts) == "undefined"){
-			master_json.boosts = {};
+		if(typeof(master_json.mods) == "undefined"){
+			master_json.mods = {};
 		}
 		renderItems();
 		dbx.filesListFolder({path: '/experiments'})
@@ -269,7 +269,7 @@ function new_dropbox_account(dropbox_dialog){
     console.dir(this_json);
     master_json = this_json;
     //create more general dropbox update function that queues any dropbox request?
-    var these_folders = ["boosts",
+    var these_folders = ["mods",
                          "experiments",
                          "stimuli",
                          "surveys",

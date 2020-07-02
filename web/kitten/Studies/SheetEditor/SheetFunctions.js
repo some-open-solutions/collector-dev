@@ -74,7 +74,7 @@ function createExpEditorHoT(sheet,selected_handsonTable, sheet_name) {
 		var area = $("#procsArea");
 		var table_name = 'handsOnTable_Procedure';
 	} else {
-		boostrap.alert("There is a bug in your code - not clear which experiment sheet you want to edit/update/create etc.");
+		bootstrap.alert("There is a bug in your code - not clear which experiment sheet you want to edit/update/create etc.");
 	}
 	area.html("<span class='sheet_name' style='display: none'>" + sheet_name + "</span>");
 	var container = $("<div>").appendTo(area)[0];
@@ -226,7 +226,7 @@ function renderItems() {
   first_load = true;
 
   list_experiments();
-	list_boosts();
+	list_mods();
   list_surveys();
 	list_trialtypes();
 	list_graphics();
@@ -238,7 +238,7 @@ function renderItems() {
 		master_json.exp_mgmt.published_ids[name_list[i]] = published_list[i];
 	}
 	initiate_actions();
-  autoload_boosts();
+  autoload_mods();
 }
 function stim_proc_defaults(proc_values,stim_values){
 	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];

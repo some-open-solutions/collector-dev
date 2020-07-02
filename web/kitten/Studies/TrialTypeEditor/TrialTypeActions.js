@@ -188,7 +188,7 @@ function initiate_actions(){
       graphic_editor_obj.load_canvas(master_json.trialtypes.graphic.trialtypes[trialtype].elements);
 			graphic_editor_obj.clean_canvas();
 
-			load_trialtype_boosts();
+			load_trialtype_mods();
       
       $("#view_code_btn").removeClass("btn-outline-primary");
 			$("#view_code_btn").addClass("btn-primary");

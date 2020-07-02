@@ -89,6 +89,11 @@ function load_help(this_list){
   }, 500,function(){
     editor.resize();
   });
+	$("#survey_preview").animate({
+		"width": window.innerWidth - helper_width
+	}, 500,function(){
+		cell_editor.resize();
+	});
 }
 load_help(Object.keys(help_dictionary));
 
@@ -265,7 +270,12 @@ $("#help_btn").on("click",function(){
 			"width": window.innerWidth
 		}, 500,function(){
 			cell_editor.resize();
-		});		
+		});
+		$("#survey_preview").animate({
+			"width": window.innerWidth
+		}, 500,function(){
+			cell_editor.resize();
+		});
 	} else {
 		$("#help_area").show(500);
 		$("#help_btn").css("font-weight","bold");
@@ -283,13 +293,16 @@ $("#help_btn").on("click",function(){
     }, 500,function(){
       editor.resize();
     });
-		var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
 		$("#cell_editor_div").animate({
 			"width": window.innerWidth - helper_width
 		}, 500,function(){
 			cell_editor.resize();
 		});
-    
+    $("#survey_preview").animate({
+			"width": window.innerWidth - helper_width
+		}, 500,function(){
+			cell_editor.resize();
+		});
     
 	}
 });
