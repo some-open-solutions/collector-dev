@@ -441,19 +441,19 @@ $("#save_btn").on("click", function(){
             }
             this_exp.surveys[this_survey] = master_json.surveys.user_surveys[this_survey];
 
-            //check for boosts
-            if(typeof(this_exp.boosts) == "undefined"){
-              this_exp.boosts = {};
+            //check for mods
+            if(typeof(this_exp.mods) == "undefined"){
+              this_exp.mods = {};
             }
             keyed_survey = Papa.parse(Papa.unparse(master_json.surveys.user_surveys[this_survey]),{header:true}).data;
             keyed_survey.forEach(function(key_row){
               clean_key_row = Collector.clean_obj_keys(key_row);
               if(typeof(clean_key_row.type) !== "undefined"){
-                var survey_boost_type = clean_key_row.type.toLowerCase();
-                if(typeof(master_json.boosts[survey_boost_type]) !== "undefined"){
-                  this_exp.boosts[survey_boost_type] = {
+                var survey_mod_type = clean_key_row.type.toLowerCase();
+                if(typeof(master_json.mods[survey_mod_type]) !== "undefined"){
+                  this_exp.mods[survey_mod_type] = {
                     location:'',
-                    contents:master_json.boosts[survey_boost_type].contents
+                    contents:master_json.mods[survey_mod_type].contents
                   }
                 }
               }

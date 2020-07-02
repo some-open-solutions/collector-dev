@@ -317,8 +317,33 @@ function list_surveys(){
 
 function preview_survey(this_survey){
   master_json.surveys.preview = true;
-	$("#survey_preview").css("width",window.innerWidth)
 	$("#survey_preview").css("height",window.innerHeight - 100)
+
+	
+	if($("#help_content").is(":visible")){
+		var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+		
+		if($("#help_content").is(":visible")){
+			var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
+			
+			$("#survey_preview").animate({
+				"width": window.innerWidth - helper_width
+			}, 500,function(){
+				cell_editor.resize();
+			});
+		} else {
+			$("#survey_preview").animate({
+				"width": window.innerWidth
+			}, 500,function(){
+				cell_editor.resize();
+			});
+		}
+		
+		
+	} else {
+		$("#survey_preview").css("width",window.innerWidth);
+	}
+	
   survey_template = $.get(collector_map["survey.html"], function(survey_template){
     survey_template = survey_template.replace('"{{survey}}"',
                                               JSON.stringify(this_survey));

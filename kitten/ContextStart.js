@@ -47,10 +47,10 @@ switch(dev_obj.context){
       first_load = true;
       wait_till_exists("list_experiments");
       wait_till_exists("list_graphics");
-      list_boosts();
+      list_mods();
       list_trialtypes();
       initiate_actions();
-      autoload_boosts();
+      autoload_mods();
       wait_till_exists("list_keys");
       wait_till_exists("list_servers");    
     }

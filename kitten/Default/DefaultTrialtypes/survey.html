@@ -42,13 +42,27 @@ td{
   display:            none;
 }
 #survey_outline{
+	position: fixed;
+  top: 50%;
+  left: 50%;
+	height: 90%;
+	overflow: auto;
+	-webkit-transform: translate(-50%, -50%);
+   transform: translate(-50%, -50%);
   background-color: white;
-  color:            #0a3272;
-  border-radius:    20px;
+	min-width:        900px;
+	max-width:        9000px;
+	border-radius:    20px;
   border-color:     #0a3272;
   border-style:     solid;
-  margin:           20px;
   border-width:     5px;
+	
+		/*
+  color:            #0a3272;
+  margin:           20px;
+  
+	left: 						50%;
+	*/
 }
 #survey_tabs{
   padding:            20px;
@@ -124,12 +138,12 @@ if(typeof(settings.tab_hor_vert) == "undefined" || settings.tab_hor_vert.toLower
   settings.tab_hor_vert = "horizontal";
   $("#survey_outline").html(  '<div id="please_wait_div">Loading... Please wait</div>'+
                               '<div id="this_survey_id" class="needs-validation" novalidate></div>'+
-                              '<div id="survey_tabs" style="text-align:right" class="border-top border-primary"></div><input type="submit" value="Proceed" class="btn btn-primary" id="proceed_button">');
+                              '<div id="survey_tabs" style="text-align:right" class="border-top border-dark"></div><input type="submit" value="Proceed" class="btn btn-primary" id="proceed_button">');
 
 } else if (settings.tab_hor_vert.toLowerCase() == "vertical"){
   $("#survey_outline").html( '<table>'+
                                 '<tr>'+
-                                  '<td valign="top" class="border-right border-primary">'+
+                                  '<td valign="top" class="border-right border-dark">'+
                                     '<div id="survey_tabs"></div></td>' +
                                   '<td>'+
                                     '<div id="please_wait_div">Please wait while survey is downloading</div>'+
@@ -271,7 +285,7 @@ $("#proceed_button").on("click",function(){
     current_tab ++;
     $("#tab_"+current_tab+"_button").removeClass("btn-secondary");
     $("#tab_"+current_tab+"_button").removeClass("disabled");
-    $("#tab_"+current_tab+"_button").addClass("btn-outline-primary");
+    $("#tab_"+current_tab+"_button").addClass("btn-outline-dark");
     $("#tab_"+current_tab+"_button").click();
   } else if(proceed == false){
     bootbox.alert("You have failed to complete at least one compulsory input.");
@@ -293,7 +307,7 @@ function load_survey(survey){
   console.dir(survey);
   if(typeof(parent.master_json) !== "undefined" && parent.master_json.surveys.preview){     // Yes
     survey_content = survey;                                                    // i.e. the content has been passed through directly
-    survey_obj.boosts = parent.master_json.boosts;                                //no need to be efficient in preview
+    survey_obj.mods = parent.master_json.mods;                                //no need to be efficient in preview
 
   } else {                                                                      // No
     survey = survey.toLowerCase().replace(".csv","") + ".csv";
@@ -301,12 +315,12 @@ function load_survey(survey){
     if(typeof(parent.parent.exp_json.surveys) !== "undefined" && 
        typeof(parent.parent.exp_json.surveys[survey]) !== "undefined"){
       survey_content = parent.parent.exp_json.surveys[survey];
-      survey_obj.boosts = parent.parent.exp_json.boosts;                     //take boosts from exp_json
+      survey_obj.mods = parent.parent.exp_json.mods;                     //take mods from exp_json
 
     } else if(typeof(parent.parent.exp_json.surveys) !== "undefined" && 
 							typeof(parent.parent.exp_json.surveys[survey.replace(".csv","")])){
 			survey_content = parent.parent.exp_json.surveys[survey.replace(".csv","")];
-      survey_obj.boosts = parent.parent.exp_json.boosts;                     //take boosts from exp_json
+      survey_obj.mods = parent.parent.exp_json.mods;                     //take mods from exp_json
 		}	else {
       bootbox.alert("Survey " + survey  + " doesn't appear to exist");
     }
@@ -338,10 +352,10 @@ function isJSON(str) {
 function likert_update(this_element,this_response,this_value){
   [row_no,item_name] = retrieve_row_no_item_name(this_element);
   $(".row_"+row_no).removeClass("active");
-  $(".row_"+row_no).removeClass("btn-primary");
-  $(".row_"+row_no).addClass("btn-outline-primary");
-  $(this_element).removeClass("btn-outline-primary");
-  $(this_element).addClass("btn-primary");
+  $(".row_"+row_no).removeClass("btn-dark");
+  $(".row_"+row_no).addClass("btn-outline-dark");
+  $(this_element).removeClass("btn-outline-dark");
+  $(this_element).addClass("btn-dark");
   $("#survey_"+item_name+"_response").val(this_response);
   response_check(this_element);
 }
@@ -460,17 +474,17 @@ function process_survey_question(this_row,row_no){
     // Item types
     ///////////////
 
-    if(typeof(survey_obj.boosts) !== "undefined" && typeof(survey_obj.boosts[this_row.type]) !== "undefined"){
+    if(typeof(survey_obj.mods) !== "undefined" && typeof(survey_obj.mods[this_row.type]) !== "undefined"){
 
-      var boost_html = survey_obj.boosts[this_row.type].contents;
-      console.dir(boost_html);
+      var mod_html = survey_obj.mods[this_row.type].contents;
+      console.dir(mod_html);
 
-      //for each row variable, insert it into the boost if possible?
+      //for each row variable, insert it into the mod if possible?
       Object.keys(this_row).forEach(function(attribute){
-        console.dir(boost_html);
-        boost_html = boost_html.replaceAll("{{"+attribute+"}}",this_row[attribute]);
+        console.dir(mod_html);
+        mod_html = mod_html.replaceAll("{{"+attribute+"}}",this_row[attribute]);
       });
-      question_td += boost_html;
+      question_td += mod_html;
     } else {
 
       switch(this_row["type"].toLowerCase()){
@@ -487,7 +501,7 @@ function process_survey_question(this_row,row_no){
             survey_obj.tabs++;
           }
           if(survey_obj.tabs == 0){ //i.e. is the first tab
-            active_button = "btn-outline-primary active";
+            active_button = "btn-outline-dark active";
           } else {
             active_button = "btn-secondary disabled";
           }
@@ -554,7 +568,7 @@ function process_survey_question(this_row,row_no){
             var this_option = this_row["answers"];
             question_td +=  response_html +
                             '<div class="btn-group-toggle" data-toggle="buttons">'+
-                                '<label class="btn btn-outline-primary">'+
+                                '<label class="btn btn-outline-dark">'+
                                     '<input type="checkbox" class="'+this_row["item_name"]+'_item row_'+row_no+'"  checked autocomplete="off" id="'+this_row["item_name"]+'" onchange="response_check(this)" name="survey_'+this_row["item_name"].toLowerCase()+'">'+ this_option +
                                 '</label>'+
                             '</div>' + feedback_string;
@@ -603,7 +617,7 @@ function process_survey_question(this_row,row_no){
                                       response_html +
                                       '<div class="btn-group btn-group-toggle" data-toggle="buttons">'; //to help detect blank likert's
               for(var i=0; i<options.length;i++){
-                  question_td+=   '<button type="button" class="btn survey_btn btn-outline-primary '+this_row["item_name"]+'_item row_'+row_no+'"  autocomplete="off" id="likert_'+row_no+'_'+i+'"  onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+options[i]+'</button>';
+                  question_td+=   '<button type="button" class="btn survey_btn btn-outline-dark '+this_row["item_name"]+'_item row_'+row_no+'"  autocomplete="off" id="likert_'+row_no+'_'+i+'"  onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+options[i]+'</button>';
 
               }
               question_td +=  "</div>"+
@@ -688,7 +702,7 @@ function process_survey_question(this_row,row_no){
       if(this_row['text'].toLowerCase() == "page_start" | this_row['type'].toLowerCase() == "page_start"){
         this_row_html = question_td;
       }else {
-        var this_row_html="<td class='text-primary' id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";
+        var this_row_html="<td class='text-dark' id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";
       }
     }
     if(typeof(this_row["optional"]) !== "undefined"){
