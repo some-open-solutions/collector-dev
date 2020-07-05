@@ -21,6 +21,7 @@ $.ajaxSetup({ cache: false }); // prevents caching, which disrupts $.get calls
 
 trialtypes_obj = {
 	delete_trialtype:function(){
+		var deleted_trialtype = $("#trial_type_select").val();
     master_json.trialtypes.trialtype = $("#trial_type_select").val();
 		var this_loc = "/trialtypes/"+master_json.trialtypes.trialtype;
 		bootbox.confirm("Are you sure you want to delete this "+this_loc+"?",function(result){
@@ -34,13 +35,26 @@ trialtypes_obj = {
 				trialtypes_obj.load_trial_file("default_trialtype");
 				custom_alert("Successfully deleted "+this_loc);
 				update_master_json();
-				dbx.filesDelete({path:this_loc+".html"})
-					.then(function(returned_data){
-						//do nothing more
-					})
-					.catch(function(error){
-						report_error("problem deleting a trialtype", "problem deleting a trialtype");
-					});
+				
+				
+				switch(detect_context){
+					case "github":																							// i.e. the user is online and using dropbox
+					case "gitpod":					                                    // i.e. the user is online and using dropbox
+					case "server":                                              // i.e. the user is online and using dropbox
+						dbx.filesDelete({path:this_loc+".html"})
+							.then(function(returned_data){
+								//do nothing more
+							})
+							.catch(function(error){
+								report_error("problem deleting a trialtype", 
+														 "problem deleting a trialtype");
+							});
+						break;
+					case "localhost":																						// i.e. they can edit local files
+						eel.delete_trialtype(deleted_trialtype);									// delete the local trialtype file
+						break;
+				}
+
 			}
 		});
 	},
