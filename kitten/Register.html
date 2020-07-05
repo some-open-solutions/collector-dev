@@ -60,7 +60,7 @@
 			</div>
 			<div class="card-body">
         <div class="row">
-					<input id="username_input" name="user_email" type="email" class="form-control" placeholder="email">
+					<input id="email_input" name="user_email" type="email" class="form-control" placeholder="email">
 				</div>
 				<div class="row">
 						<input id="password_input" name="user_password" type="password" class="form-control" placeholder="password">
@@ -117,7 +117,7 @@ function bind_create_account_btns(){
 	$(".create_account_btn").unbind();         										  			// to avoid multiple triggers
 	
 	$(".create_account_btn").on("click",function(){												// when creating a new account
-		if($("#username_input").val().length == 0) {												// check if e-mail present
+		if($("#email_input").val().length == 0) {												// check if e-mail present
 			bootbox.alert("You need to put in an e-mail address"); 			
 		} else if( $("#password_input").val().length <8){           			  // check if password is at least 8 characters
 			bootbox.alert("Your password should be at least 8 characters");	  // warn the user if not
@@ -125,7 +125,7 @@ function bind_create_account_btns(){
 			var register_url = $(this).find("span")[0].innerHTML;							// find the registration url
 			$.post(register_url,{																							// register the user
 				action: 					      "register",
-				email: 					        $("#username_input").val(),
+				email: 					        $("#email_input").val(),
 				password: 				      $("#password_input").val(),
 				"g-recaptcha-response": $("#g-recaptcha-response").val()        // to try to prevent bots
 			},function(server_response){
@@ -140,7 +140,7 @@ function bind_delete_account_btns(){
 	$(".delete_account_btn").unbind();                                    // to avoid multiple triggers
 	
 	$(".delete_account_btn").on("click",function(){
-		if($("#username_input").val().length == 0){													// if missing email
+		if($("#email_input").val().length == 0){													// if missing email
 			bootbox.alert("Input your email address to delete the account."); 
 		} else if( $("#password_input").val().length == 0){                 // if missing password
 			bootbox.alert("You need your password to delete the account." +   
@@ -156,7 +156,7 @@ function bind_delete_account_btns(){
 				if(result){																											// if they confirm
 					$.post(register_url,{																					// delete the account
 						action: 					      "unregister",
-						email: 					        $("#username_input").val(),
+						email: 					        $("#email_input").val(),
 						password: 				      $("#password_input").val(),
 						"g-recaptcha-response": $("#g-recaptcha-response").val()    // bot check
 					},function(server_response){
@@ -171,7 +171,7 @@ function bind_delete_account_btns(){
 function bind_forgot_password_btn(){
 	$(".forgot_password_btn").unbind();																		// to avoid multiple triggers
 	$(".forgot_password_btn").on("click",function(){                       
-		if($("#username_input").val().length == 0){													// if missing email
+		if($("#email_input").val().length == 0){													// if missing email
 			bootbox.alert("You are missing your email address");
 		} else {
 			var register_url = $(this).find("span")[0].innerHTML;
@@ -181,7 +181,7 @@ function bind_forgot_password_btn(){
 				if(result){																											// if they confirm
 					$.post(register_url,{
 						action: 					      "forgot_password",
-						email: 					        $("#username_input").val(),
+						email: 					        $("#email_input").val(),
 						"g-recaptcha-response": $("#g-recaptcha-response").val()    // bot check
 					},function(server_response){
 						grecaptcha.reset();																					// reset bot check
@@ -196,7 +196,7 @@ function bind_forgot_password_btn(){
 function bind_unpublish_btn(){
 	$(".unpublish_btn").unbind();
 	$(".unpublish_btn").on("click",function(){
-		if($("#username_input").val().length == 0){													// if missing email
+		if($("#email_input").val().length == 0){													// if missing email
 			bootbox.alert("You are either missing your email address");
 		} else if($("#password_input").val().length == 0){									// if missing password
 			bootbox.alert("You need your password to delete the experiment." +   
@@ -210,7 +210,7 @@ function bind_unpublish_btn(){
 				location:               this_exp.location,
 				experiment:             experiment,
 				action:                 "unregister_experiment",
-				email:                  $("#username_input").val(),
+				email:                  $("#email_input").val(),
 				password:               $("#password_input").val(),
 				"g-recaptcha-response": $("#g-recaptcha-response").val()				// bot check
 			},function(server_response){
@@ -228,7 +228,7 @@ function publish_experiment(this_exp,                                   // objec
 				  location:               this_exp.location,
 				  experiment:             experiment,
 				  action:                 "update_experiment",
-				  email:                  $("#username_input").val(),
+				  email:                  $("#email_input").val(),
 					password:               $("#password_input").val(),
 					"g-recaptcha-response": $("#g-recaptcha-response").val()
 				},function(returned_message){
@@ -271,7 +271,7 @@ function publish_experiment(this_exp,                                   // objec
 
 function bind_publish_btn(){
 	$(".publish_btn").on("click",function(){
-		if($("#username_input").val().length == 0){													// if missing email	
+		if($("#email_input").val().length == 0){													// if missing email	
 			bootbox.alert("You are missing your email address");
 		} else if($("#password_input").val().length < 8) {									// if missing password (or password too short)
 			bootbox.alert("You need a password that is" +
@@ -368,8 +368,7 @@ function update_server_table(){
 					users: [],
 					experiments : {}
 				}
-			}
-			 
+			}			 
 			//check if the server is in the list of exp.data_scripts
 			if($("#experiment_list").val() == undefined || 
 				 $("#experiment_list").val() == null){
@@ -388,8 +387,7 @@ function update_server_table(){
 											"</tr>";
 		}); 
 		server_table += "</table>";
-		$("#server_table_div").html(server_table);
-		
+		$("#server_table_div").html(server_table);		
 		bind_create_account_btns();
 		bind_delete_account_btns();
 		bind_forgot_password_btn();
@@ -399,7 +397,6 @@ function update_server_table(){
 }
 
 function list_servers(){
-  
   server_info = Object.keys(master_json.data.servers);
   update_server_table();
 }

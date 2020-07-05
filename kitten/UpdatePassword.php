@@ -59,7 +59,7 @@ if($result->num_rows>1 | $result->num_rows == 0){
             <table>
                 <tr>
                     <td>Email address</td>
-                    <td><input id="username_input" name="user_email" type="email" placeholder="e-mail address"></td>
+                    <td><input id="email_input" name="user_email" type="email" placeholder="e-mail address"></td>
                 </tr>
                 <tr>
                     <td>Current Password</td>
