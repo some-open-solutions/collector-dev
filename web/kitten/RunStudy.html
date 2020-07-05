@@ -785,15 +785,15 @@ function parse_sheets(){
     case "preview":
     case "github":
       if(typeof(Study.get_vars.dropbox) !== "undefined" && Study.get_vars.dropbox){
-        exp_json.parsed_proc = collectorPapaParsed(exp_json.all_procs[proc_sheet_name]);
-        exp_json.parsed_stim = [null,null].concat(collectorPapaParsed(exp_json.all_stims[stim_sheet_name]));
+        exp_json.parsed_proc = Collector.PapaParsed(exp_json.all_procs[proc_sheet_name]);
+        exp_json.parsed_stim = [null,null].concat(Collector.PapaParsed(exp_json.all_stims[stim_sheet_name]));
         Study.activate_pipe();
       } else {
         var proc_url = "../User/Experiments/" +
                        Study.get_vars.location +
                        "/" + proc_sheet_name;
         $.get(proc_url,function(proc_sheet_content){
-          exp_json.parsed_proc = collectorPapaParsed(proc_sheet_content);
+          exp_json.parsed_proc = Collector.PapaParsed(proc_sheet_content);
           proc_stim_loaded[1] = "procedure";
           if(proc_stim_loaded.join("-") == "stimuli-procedure"){
             Study.activate_pipe();
@@ -803,7 +803,7 @@ function parse_sheets(){
                        Study.get_vars.location +
                        "/" +  stim_sheet_name;
         $.get(stim_url,function(stim_sheet_content){
-          exp_json.parsed_stim = [null,null].concat(collectorPapaParsed(stim_sheet_content));
+          exp_json.parsed_stim = [null,null].concat(Collector.PapaParsed(stim_sheet_content));
           proc_stim_loaded[0] = "stimuli";
           if(proc_stim_loaded.join("-") == "stimuli-procedure"){
             Study.activate_pipe();
@@ -815,11 +815,11 @@ function parse_sheets(){
       break;
     case "server":
       proc_stim_loaded[1] = "procedure";
-      exp_json.parsed_proc = collectorPapaParsed(exp_json.all_procs[proc_sheet_name]);
+      exp_json.parsed_proc = Collector.PapaParsed(exp_json.all_procs[proc_sheet_name]);
       if(proc_stim_loaded.join("-") == "stimuli-procedure"){
         Study.activate_pipe();
       }
-      exp_json.parsed_stim = [null,null].concat(collectorPapaParsed(exp_json.all_stims[stim_sheet_name]));
+      exp_json.parsed_stim = [null,null].concat(Collector.PapaParsed(exp_json.all_stims[stim_sheet_name]));
       proc_stim_loaded[0] = "stimuli";
       if(proc_stim_loaded.join("-") == "stimuli-procedure"){
         Study.activate_pipe();
@@ -1072,7 +1072,7 @@ function requestFullScreen(element) {
 }
 
 function select_condition(){
-	exp_json.conditions = collectorPapaParsed(exp_json.cond_array);
+	exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
 
   exp_json.this_condition = exp_json.conditions.filter(function(row){
     return row.name == Study.get_vars.name;

@@ -22,16 +22,14 @@
 ////////////////////////////////////////
 // To allow development within gitpod //
 ////////////////////////////////////////
-if(typeof(dev_obj) == "undefined"){
-  dev_obj = {
-    dev_location:"Surveys.html"
-  }
+if(Collector.detect_context() == "gitpod"){
   
+  var gitpod_surveys = true;
   document.write('<script src="../../CollectorMap.js"><\/script>');
   
   function get_map(){
     if(typeof(isolation_map) !== "undefined"){
-      collector_map = this_map(dev_obj.dev_location);
+      collector_map = this_map("Surveys.html");
     } else {
       setTimeout(function(){
         get_map();
@@ -310,9 +308,8 @@ function list_surveys(){
 			class:"bg-white text-dark"
 		}));
 	});
-  if(typeof(dev_obj.dev_location) == "undefined" &
-     dev_obj.context !== "localhost"){
-      synch_surveys();
+  if(Collector.detect_context() !== "localhost"){
+    synch_surveys();
   }
 }
 
@@ -405,7 +402,7 @@ $("#delete_survey_btn").on("click",function(){
 			delete master_json.surveys.user_surveys[survey_name];
 			dbx.filesDelete({path:"/surveys/" + survey_name})
 				.then(function(result){
-					custom_alert("Succesfully deleted <b>" + survey_name + "</b>");
+					Collector.custom_alert("Succesfully deleted <b>" + survey_name + "</b>");
 					$('#survey_select option[value="' + $("#survey_select").val() + '"]').remove();
 					$("#survey_select").val("default|demographics.csv");
 					create_survey_HoT(master_json.surveys.default_surveys["demographics.csv"]);
@@ -439,7 +436,7 @@ $("#new_survey_button").on("click",function(){
 								class : "bg-info text-white"
 							}));
 							$("#survey_select").val(survey_value);
-							custom_alert("<b>"+survey_name+"</b> created succesfully");
+							Collector.custom_alert("<b>"+survey_name+"</b> created succesfully");
 						} else {
 							bootbox.alert("Survey name already exists");
 						}
@@ -463,7 +460,7 @@ $("#rename_survey_btn").on("click",function(){
     if(typeof(master_json.surveys.default_surveys[old_survey_name]) !== "undefined"){
       bootbox.alert("You can't rename default experiments.");
     } else {
-			switch(dev_obj.context){
+			switch(Collector.detect_context()){
 				case "localhost":
 					bootbox.prompt("What would you like to call this survey instead?",function(new_survey_name){
 						eel.expose(update_master_surveys);
@@ -512,15 +509,15 @@ $("#save_survey_btn").on("click",function(){
       contents : survey_content,
       mode    : "overwrite"
     },function(){
-      custom_alert("Success!");
+      Collector.custom_alert("Success!");
       update_master_json();
     },function(error){
-      custom_alert("error - check console!");
+      Collector.custom_alert("error - check console!");
       console.dir(error);
     },
     "filesUpload");
     
-    switch(dev_obj.context){
+    switch(Collector.detect_context()){
       case "localhost":
         eel.save_survey(survey_name[1].toLowerCase()
                                    .replace(".csv","") + ".csv",
@@ -555,7 +552,7 @@ $("#survey_select").on("change",function(){
   }
 });
 
-if(dev_obj.dev_location == "Surveys.html"){
-  list_surveys();
+if(typeof(gitpod_surveys)){
+	list_surveys();
 }
 </script>

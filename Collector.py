@@ -1,4 +1,5 @@
 import eel
+import glob
 import io
 import json
 import pygit2
@@ -58,6 +59,9 @@ def delete_exp(exp_name):
 def delete_trialtype(trialtype_name):
     os.remove("web/User/Trialtypes/" + trialtype_name + ".html") # delete file
 
+@eel.expose
+def list_trialtypes():
+		eel.list_python_trialtypes(glob.glob('web/User/Trialtypes/*.html')); #json.loads(
 
 @eel.expose
 def pull_collector(username,

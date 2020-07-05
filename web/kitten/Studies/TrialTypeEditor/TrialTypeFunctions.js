@@ -33,11 +33,11 @@ trialtypes_obj = {
 				$("#trial_type_select  option:selected").remove(); 																	//remove from dropdown list
 				master_json.trialtypes.trialtype = $("#trial_type_select").val();
 				trialtypes_obj.load_trial_file("default_trialtype");
-				custom_alert("Successfully deleted "+this_loc);
+				Collector.custom_alert("Successfully deleted "+this_loc);
 				update_master_json();
 				
 				
-				switch(detect_context){
+				switch(Collector.detect_context){
 					case "github":																							// i.e. the user is online and using dropbox
 					case "gitpod":					                                    // i.e. the user is online and using dropbox
 					case "server":                                              // i.e. the user is online and using dropbox
@@ -85,7 +85,7 @@ trialtypes_obj = {
 		}
 		
     //python load if localhost
-    switch(dev_obj.context){
+    switch(Collector.detect_context()){
       case "localhost":
         cleaned_trialtype = trialtype.toLowerCase()
                                      .replace(".html","") +
@@ -113,7 +113,7 @@ trialtypes_obj = {
 				new_name			: new_name
 			},function(returned_data){
 				console.dir(returned_data);
-				custom_alert(returned_data);
+				Collector.custom_alert(returned_data);
 				//update user_trialtypes
 				master_json.trialtypes.user_trialtypes[new_name] = master_json.trialtypes.user_trialtypes[original_name];
 				delete (master_json.trialtypes.user_trialtypes[original_name]);
@@ -156,12 +156,12 @@ trialtypes_obj = {
 			}
 			$("#trial_type_file_select").show();
 			$("#default_user_trialtype_span").html("user_trialtype");
-			custom_alert("success - " + name + " created");
+			Collector.custom_alert("success - " + name + " created");
 		} else {
-			custom_alert("success - " + name + " updated");
+			Collector.custom_alert("success - " + name + " updated");
 		}
 		dbx_obj.new_upload({path:"/trialtypes/"+name+".html",contents:content,mode:"overwrite"},function(result){
-			custom_alert("<b>" + name + "updated on dropbox");
+			Collector.custom_alert("<b>" + name + "updated on dropbox");
 		},function(error){
 			bootbox.alert("error: "+error.error+"<br> try saving again after waiting a little");
 		},
@@ -192,6 +192,14 @@ trialtypes_obj = {
 	}
 }
 function list_trialtypes(){
+	
+	eel.expose(list_python_trialtypes);
+	function list_python_trialtypes(python_trialtypes){
+		console.dir(python_trialtypes);
+		//compare python trialtypes list to master_json.trialtypes.user_trialtypes;
+		
+	}
+	
   function process_returned(returned_data){
     
     $("#trial_type_select").empty();
@@ -215,33 +223,44 @@ function list_trialtypes(){
 			$("#trial_type_select").append("<option class='user_trialtype'>"+element+"</option>");
 		});
 		trialtypes_obj.synchTrialtypesFolder();
+		
+		/*
+			for locally installed Collector, look for trialtypes in the "Trialtypes" folder
+		*/
+		
+		switch(Collector.detect_context()){
+			case "server":      
+			case "gitpod":
+			case "github":
+				// currently do nothing
+				break;
+			case "localhost":
+				eel.list_trialtypes();
+				break;
+		}
+		
+		$.get("../User/Trialtypes/webgazer.html",function(result){
+			console.dir(result);
+		});
+		
   }
-  switch(dev_obj.context){
-    case "server":      
-    case "gitpod":
-    case "github":
-		case "localhost":
-      //retrieve the default trialtypes
-      var default_list = Object.keys(isolation_map["Default"]["DefaultTrialtypes"]);
+		
+	function get_default_trialtypes(list){
+		if(list.length > 0){
+			var item = list.pop();
+			$.get(collector_map[item],function(trial_content){
+				default_trialtypes[item.toLowerCase()
+															 .replace(".html","")] = trial_content;
+				get_default_trialtypes(list);
+			});
+		} else {
+			process_returned(JSON.stringify(default_trialtypes));
+		}
+	}
+	var default_list = Object.keys(isolation_map["Default"]["DefaultTrialtypes"]);
 
-      default_trialtypes = {};
-      //Need a recursive function here to loop through the trialtypes and then, once all loaded, update the dropdown list. Hmm. Or update the dropdown list asap?
-      function git_default_trialtypes(list){
-        if(list.length > 0){
-          var item = list.pop();
-          $.get(collector_map[item],function(trial_content){
-            default_trialtypes[item.toLowerCase().replace(".html","")] = trial_content;
-            git_default_trialtypes(list);
-          });
-        } else {
-          process_returned(JSON.stringify(default_trialtypes));
-        }
-      }
-      git_default_trialtypes(default_list);
-
-      break;
-
-  }
+	default_trialtypes = {};
+	get_default_trialtypes(default_list);
 }
 function valid_trialtype(this_name){
   if(this_name){
@@ -249,7 +268,8 @@ function valid_trialtype(this_name){
     if(this_name == "start_experiment" |
        this_name == "calibration_zoom" |
        this_name == "end_checks_experiment"){
-         bootbox.alert("<b>" + this_name + "</b> is protected, please choose another name");
+         bootbox.alert("<b>" + this_name + "</b>" +
+					"is protected, please choose another name");
       return false;   
     } else {
       return this_name;

@@ -230,7 +230,7 @@ function initiate_actions(){
       if(typeof(master_json.trialtypes.default_trialtypes[name]) == "undefined"){
         trialtypes_obj.save_trialtype(content,name,"old");
       } else {
-        custom_alert("You cannot overwrite default trialtypes. Would you like to create a new trialtype? Copy the code from <b>" + name + "</b> to a new trialtype if you want to make changes");
+        Collector.custom_alert("You cannot overwrite default trialtypes. Would you like to create a new trialtype? Copy the code from <b>" + name + "</b> to a new trialtype if you want to make changes");
       }
 		}
 	});

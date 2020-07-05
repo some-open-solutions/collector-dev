@@ -20,16 +20,16 @@ function wait_till_exists(this_function){
     window[this_function]();
   }
 }
-switch(dev_obj.context){
+switch(Collector.detect_context()){
   case "gitpod":
   case "server":
   case "github":
     wait_till_exists("check_authenticated");  //check dropbox    
     break;
   case "localhost":
-    eel.expose(python_bootbox);
+		eel.expose(python_bootbox);
     function python_bootbox(message){
-      custom_alert(message);
+      Collector.custom_alert(message);
     }
 
     eel.expose(python_hide_bb);
@@ -41,6 +41,8 @@ switch(dev_obj.context){
 
     eel.expose(load_master_json);
     function load_master_json(this_json){
+			console.dir("this_json");
+			console.dir(this_json);
       master_json = this_json;
       //renderItems();
       list_surveys();
