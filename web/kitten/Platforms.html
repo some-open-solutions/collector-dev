@@ -40,10 +40,7 @@
 		</td>
     <td>
       <span id="save_status" class="text-white"></span>
-    </td>
-    <td>
-      <span id="collector_account_email" class="account_info text-white"></span>
-    </td>
+    </td>    
 		<td>
 			<img class='logo' style="border-radius: 50%; background-color:white; padding:2px" src="../logos/collector.ico.png" id="collector_logo">
 		</td>
@@ -63,10 +60,7 @@ switch(Collector.detect_context()){
 		$("#collector_logo").show();
     break;
 	case "github":
-  case "server":
-		if(window.localStorage.getItem("user_email") !== null){
-			$("#collector_account_email").html(window.localStorage.getItem("user_email"));			
-		} 
+  case "server":		
     $("#collector_logo").show();
     break;
   default:    
