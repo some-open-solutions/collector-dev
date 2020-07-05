@@ -48,8 +48,8 @@ switch(dev_obj.context){
       wait_till_exists("list_experiments");
       wait_till_exists("list_graphics");
       list_mods();
-      list_trialtypes();
-      initiate_actions();
+      wait_till_exists("list_trialtypes");
+      wait_till_exists("initiate_actions");
       autoload_mods();
       wait_till_exists("list_keys");
       wait_till_exists("list_servers");    

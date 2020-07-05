@@ -48,8 +48,13 @@ def repository_initialized():
 
 @eel.expose
 def delete_exp(exp_name):
-    os.remove("web/User/Experiments/" + exp_name + ".json")# delete file
-    shutil.rmtree("web/User/Experiments/" + exp_name)# delete folder
+    os.remove("web/User/Experiments/" + exp_name + ".json")      # delete file
+    shutil.rmtree("web/User/Experiments/" + exp_name)            # delete folder
+
+@eel.expose
+def delete_trialtype(trialtype_name):
+    os.remove("web/User/Trialtypes/" + trialtype_name + ".html") # delete file
+
 
 @eel.expose
 def pull_collector(username,
