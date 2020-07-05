@@ -53,6 +53,16 @@ function collectorPapaParsed(content){
   }
 	return post_parsed;
 }
+
+/*
+* Check if Collector is still connected
+*/
+
+eel.expose(collector_live);
+function collector_live(){
+	$("#top_navbar").addClass("bg-primary");
+}
+
 function complete_csv(this_csv){
   response_headers 		 = [];
   for(var i = 0; i < this_csv.length ; i++) {
@@ -149,12 +159,6 @@ function detect_version(){
   }
 }
 
-//detect if this is local or github or ocollector.org
-function initiate_collector(){
-  dev_obj.context = detect_context();
-	$("#option_Studies").click();  
-}
-
 function list_variables(trialtype){
   var variables = [];
 
@@ -198,4 +202,40 @@ String.prototype.replaceAll = function(str1, str2, ignore) //by qwerty at https:
 {
   return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }
-initiate_collector();
+
+setInterval(function(){
+	
+	/*
+	* set background to grey until validated that Collector is live
+	*/
+	$("#top_navbar").removeClass("bg-primary");
+	
+	/*
+	* the next step depends on whether user is online or not
+	*/
+	
+	switch(detect_context()){
+		case "github":
+		case "github":
+		case "server":
+			
+			/*
+			* Check if google exists. If not, assume that the user is not connected
+			*/
+			if(navigator.onLine){
+				collector_live();
+			} else {
+				bootbox.alert("You seem to not be connected to the internet - changes might not be saved");
+			}
+			
+			break;
+		case "localhost":
+			eel.collector_live();
+			setTimeout(function(){
+				if($("#top_navbar").hasClass("bg-primary") == false){
+					bootbox.alert("It seems like localhost turned off some time in the last minute. You may want to copy any changes you recently made to a text or spreadsheet editor and then restart Collector");
+				}
+			},15000);
+			break;
+	}
+},30000);
