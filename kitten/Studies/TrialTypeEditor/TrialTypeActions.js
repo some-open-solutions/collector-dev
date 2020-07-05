@@ -176,8 +176,20 @@ function initiate_actions(){
 		});
 	});
 
+	
 	$("#trial_type_select").on("change",function(){
-		$("#save_btn").click();
+		
+		var old_trialtype = ($(this).attr('previousValue'));
+		
+		if(old_trialtype !== "" & 																															// not the first selected
+			Object.keys(master_json.trialtypes.default_trialtypes).indexOf(old_trialtype) == -1){ // not a default trialtype
+			trialtypes_obj.save_trialtype(master_json.trialtypes.user_trialtypes[old_trialtype],  // trialtype content
+																		old_trialtype,																					// trialtype name
+																		"old");																									// not creating a new one
+		}
+		
+		$(this).attr('previousValue', this.value);
+		//$("#save_btn").click();
 		//detect if it's a graphic trialtype
 		var trialtype = this.value;
 		if(typeof(master_json.trialtypes.graphic.trialtypes[trialtype]) !== "undefined"){

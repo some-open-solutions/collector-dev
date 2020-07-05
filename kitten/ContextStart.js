@@ -1,16 +1,15 @@
-//
-// Eel functions
-//////////////////
-
+/*
+* Eel functions
+*/
 python_dialog = bootbox.dialog({
   show:false,
   title:"Please wait",
   message:"<div id='python_message'></div>"
 });
 
-
-
-// this is a hack to deal with asynchronous order of parts of the page loading
+/*
+* this is a hack to deal with asynchronous order of parts of the page loading
+*/
 function wait_till_exists(this_function){
   if(typeof(window[this_function]) == "undefined"){
     setTimeout(function(){
@@ -20,6 +19,10 @@ function wait_till_exists(this_function){
     window[this_function]();
   }
 }
+
+/*
+* Start Collector
+*/
 switch(Collector.detect_context()){
   case "gitpod":
   case "server":
