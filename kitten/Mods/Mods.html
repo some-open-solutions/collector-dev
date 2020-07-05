@@ -187,7 +187,7 @@ $("#delete_mod_btn").on("click",function(){
 				//delete dbx file
 				dbx.filesDelete({path:"/mods/"+mod+".html"})
 					.then(function(response) {
-						custom_alert(mod +" succesfully deleted");
+						Collector.custom_alert(mod +" succesfully deleted");
 						$('#mod_select option[value=' + mod + ']').remove();
 
 						$("#mod_select").val("Select a mod");
@@ -244,7 +244,7 @@ $("#new_mod_btn").on("click",function(){
 					});
 
 			},function(error){
-				custom_alert("Error saving mod - please check your console.");
+				Collector.custom_alert("Error saving mod - please check your console.");
 				console.dir(error);
 			},
 			"filesUpload");
@@ -310,7 +310,7 @@ $("#save_mod_btn").on("click",function(){
 			if(exp_json !== "" && typeof(exp_json.surveys) !== "undefined"){
 				var relevant_surveys = Object.keys(exp_json.surveys);
 				relevant_surveys.forEach(function(survey){
-					relevant_survey = collectorPapaParsed(exp_json.surveys[survey]);
+					relevant_survey = Collector.PapaParsed(exp_json.surveys[survey]);
 					if(relevant_survey.filter(row => row.type == mod).length > 0){
 						if(typeof(exp_json.mods) == "undefined"){
 							exp_json.mods = {
@@ -324,7 +324,7 @@ $("#save_mod_btn").on("click",function(){
 			}
 			update_master_json();
     },function(error){
-      custom_alert("Error saving mod - please check your console.");
+      Collector.custom_alert("Error saving mod - please check your console.");
       console.dir(error);
     },
 		"filesUpload");

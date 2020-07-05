@@ -1,5 +1,5 @@
-item,trial type,max time,text,Shuffle 1,survey,
-2,survey,user,"<h1>Here's my survey title</h1><br>
+item,trial type,max time,text,Shuffle 1,
+2,text,user,"<h1>Here's my survey title</h1><br>
 <br>
 <br>
 Hello <b>this is in bold</b> <em>this is in italics</em> <br>
@@ -12,5 +12,5 @@ Thanks for participating<br>
 <br>
 <u>here's something underlined</u><br>
 <br>
-",off,autism_quotient.csv,
-,,,,,,
+",off,
+,,,,,

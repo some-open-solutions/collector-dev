@@ -284,7 +284,7 @@ function bind_publish_btn(){
 			/*
 				Identify the experiment location
 			*/
-			switch(detect_context()){                                           
+			switch(Collector.detect_context()){                                           
 				case "github":                                                  // i.e. the experiment is on dropbox
 				case "gitpod":                                                  // i.e. the experiment is on dropbox
 				case "server":                                                  // i.e. the experiment is on dropbox
@@ -349,7 +349,7 @@ function update_server_table(){
 		master_json.data.servers = {};
 	}
 	$.get("ServerLocations.csv",function(result){
-    server_info = collectorPapaParsed(result);
+    server_info = Collector.PapaParsed(result);
 		server_info.forEach(function(server_row){
 			master_json.data.servers[server_row.server] = server_row;
 		});

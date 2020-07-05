@@ -45,13 +45,13 @@ function check_trialtypes_in_proc(procedure,post_trialtype){
 		} else if(typeof(master_json.trialtypes.default_trialtypes[trialtype]) !== "undefined"){
 			master_json.exp_mgmt.experiments[experiment].trialtypes[trialtype] = master_json.trialtypes.default_trialtypes[trialtype];
 		} else {
-			custom_alert("Invalid trialtype <b>"+trialtype+"</b> in at least one of your procedure sheets. The file will save, but the experiment won't run until you use a valid trialtype.",4000);
+			Collector.custom_alert("Invalid trialtype <b>"+trialtype+"</b> in at least one of your procedure sheets. The file will save, but the experiment won't run until you use a valid trialtype.",4000);
 		}
 	});
 }
 function clean_conditions(){
   exp_json = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
-	exp_json.conditions = collectorPapaParsed(exp_json.cond_array);
+	exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
   exp_json.conditions = exp_json.conditions.filter(row => row.procedure !== "");
   exp_json.conditions.forEach(function(row){
     console.dir(row);
@@ -158,7 +158,7 @@ function list_experiments(){
           report_error("problem listing the experiments", "problem listing the experiments");
         });
   } else { //just a sanity check that the user is in fact using a localhost version
-    switch(dev_obj.context){
+    switch(Collector.detect_context()){
       case "localhost":
         update_exp_list()
         break;
@@ -190,7 +190,7 @@ function new_experiment(experiment){
       dbx_obj.new_upload({path:this_path,contents:JSON.stringify(new_experiment_data)},function(result){
         dbx.sharingCreateSharedLink({path:this_path})
           .then(function(returned_link){
-            switch(dev_obj.context){
+            switch(Collector.detect_context()){
               case "server":
 							case "gitpod":
 							case "github":
@@ -231,12 +231,6 @@ function renderItems() {
 	list_trialtypes();
 	list_graphics();
   list_servers();
-
-	var published_list = dev_obj.published_links;
-	master_json.exp_mgmt.published_ids = {};
-	for(var i = 0; i< name_list.length; i++){
-		master_json.exp_mgmt.published_ids[name_list[i]] = published_list[i];
-	}
 	initiate_actions();
   autoload_mods();
 }
@@ -307,7 +301,7 @@ function update_handsontables(){
   stim_file = Object.keys(this_exp.all_stims)[0];
   proc_file = Object.keys(this_exp.all_procs)[0];
 
-  switch(dev_obj.context){
+  switch(Collector.detect_context()){
       case "localhost":
         eel.expose(receive_sheet);
         function receive_sheet(sheet_content,
