@@ -44,7 +44,10 @@ def repository_initialized():
         
         #eel.push_repository();
  '''       
-      
+
+@eel.expose
+def collector_live():
+		eel.collector_live()
 
 @eel.expose
 def delete_exp(exp_name):
@@ -346,7 +349,7 @@ def load_master_json():
         master_json = json.loads(master_json)
         eel.load_master_json(master_json)
 
-##to be deleted
+##to be deleted?
 @eel.expose
 def load_trialtype(trialtype):
     try:
