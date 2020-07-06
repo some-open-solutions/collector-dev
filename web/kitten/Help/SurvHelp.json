@@ -41,6 +41,7 @@
 		"number": "Only allows participants to type in a number. ",
 		"para": "Gives the participant a large text box to write in their answer. ",
 		"radio": "Allows the participant to only select one option in a list (unlike checkboxes).",
+		"select":"A standard dropdown list. ",
 		"shortAnswer": "Gives participant space for a small paragraph for their response. ",
 		"slider": "The participant can slide between values you specify. ",
 		"text": "Gives the participant a text box to write in their answer."

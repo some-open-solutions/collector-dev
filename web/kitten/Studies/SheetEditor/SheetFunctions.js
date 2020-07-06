@@ -172,7 +172,7 @@ function new_experiment(experiment){
 	} else {
 
 		//create it first in dropbox, THEN update table with location
-		master_json.exp_mgmt.experiments[$("#experiment_list").val()] = new_experiment_data;
+		master_json.exp_mgmt.experiments[experiment] = new_experiment_data;
 
     update_handsontables();
     update_master_json();

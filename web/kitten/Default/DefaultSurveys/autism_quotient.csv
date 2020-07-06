@@ -1,5 +1,5 @@
 item_name,text,Type,Answers,Values,Score: AQ_Test,Score: Social_Skill,Score: Attention_switching,Score: Communication,Score: Imagination,Score: Attention_to_detail,Optional
-Instructions1,Choose one response that best describes how strongly each item applies to you:,Instruct,,,,,,,,,
+Instructions1,<span style='color:#006699'><span style='font-size:20px'>Choose one response that best describes how strongly each item applies to you:</span></span>,Instruct,,,,,,,,,
 AQ1,I prefer to do things with others rather than on my own.,likert,Definitely agree|Slightly agree|Slightly disagree|Definitely disagree,1|1|0|0,r1,r1,,,,,No
 AQ2,I prefer to do things the same way over and over again.,likert,Definitely agree|Slightly agree|Slightly disagree|Definitely disagree,1|1|0|0,1,,1,,,,No
 AQ3,"If I try to imagine something, I find it very easy to create a picture in my mind.",likert,Definitely agree|Slightly agree|Slightly disagree|Definitely disagree,1|1|0|0,r1,,,,r1,,No

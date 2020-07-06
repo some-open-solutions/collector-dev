@@ -30,6 +30,11 @@ td{
   padding:10px;
   vertical-align: top;
 }
+
+/*
+*	elements by id
+*/
+
 #content{
   width:95%;
 }
@@ -42,25 +47,54 @@ td{
   display:            none;
 }
 #survey_outline{
-	position: fixed;
-  top: 50%;
-  left: 50%;
-	height: 90%;
-	overflow: auto;
-	-webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  background-color: white;
-	min-width:        900px;
-	max-width:        9000px;
-	border-radius:    20px;
-  border-color:     #0a3272;
-  border-style:     solid;
-  border-width:     5px;
+	position: 					fixed;
+  top: 								50%;
+  left: 							50%;
+	height: 						90%;
+	overflow: 					auto;
+	-webkit-transform: 	translate(-50%, -50%);
+  transform: 					translate(-50%, -50%);
+  background-color: 	white;
+	min-width:        	900px;
+	max-width:        	9000px;
+	border-radius:    	20px;
+  border-color:     	#069; 
+  border-style:     	solid;
+  border-width:     	5px;
+	padding:            10px;
 }
 #survey_tabs{
   padding:            20px;
 }
 
+/*
+* by Bora Alp Arat at https://stackoverflow.com/questions/21684101/css-vertical-scrollbar-padding-left-right-in-ul-possible
+*/
+::-webkit-scrollbar {
+  width: 14px;
+  height: 18px;
+}
+::-webkit-scrollbar-thumb {
+  height: 6px;
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+	-webkit-border-radius: 7px;
+  background-color: rgba(0, 102, 153, 0.5); 
+  -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+}
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+
+/*
+*	elements by class
+*/
 
 .feedback_span_multiple{
   display:none;
@@ -83,12 +117,9 @@ td{
 .show_tab{
   margin:5px;
 }
-
-.survey_btn {
+.survey_btn{
 	white-space: normal;
-	word-wrap: initial;
-	min-width:80px;
-	max-width:250px;
+	word-wrap: initial;	
 }
 .table_break{
 	width:100%;
@@ -404,7 +435,10 @@ function process_survey_question(this_row,row_no){
     this_row.values = this_row.answers;
   }
 
-  if(typeof(this_row["text"]) !== "undefined" && typeof(this_row["type"]) !== "undefined" && this_row['text'].toLowerCase() == "page_break" | this_row['type'].toLowerCase() == "page_break"){
+  if(typeof(this_row["text"]) !== "undefined" && 
+		 typeof(this_row["type"]) !== "undefined" && 
+		 this_row['text'].toLowerCase() == "page_break" | 
+		 this_row['type'].toLowerCase() == "page_break"){
         page_break_management.breaks_remaining++;
         question_td = "</tr></table><table id='table" + page_break_management.breaks_remaining + "' style='display:none' class='table_break'></tr>";
   } else {
@@ -456,7 +490,8 @@ function process_survey_question(this_row,row_no){
     // Item types
     ///////////////
 
-    if(typeof(survey_obj.mods) !== "undefined" && typeof(survey_obj.mods[this_row.type]) !== "undefined"){
+    if(typeof(survey_obj.mods) !== "undefined" && 
+			 typeof(survey_obj.mods[this_row.type]) !== "undefined"){
 
       var mod_html = survey_obj.mods[this_row.type].contents;
       console.dir(mod_html);
@@ -508,7 +543,7 @@ function process_survey_question(this_row,row_no){
             }
           });
 
-          if(survey_obj.tabs>0){
+          if(survey_obj.tabs > 0){
             question_td += "</td><td></td></tr></table></div><div class='survey_page' id='tab_"+survey_obj.tabs+"' style='display:none'><table id='table_"+survey_obj.tabs+"' class='table_break'><tr>";
           } else {
             question_td += "</td><td></td></tr></table><div class='survey_page' id='tab_"+survey_obj.tabs+"' ><table id='table_"+survey_obj.tabs+"' class='table_break'><tr>";
@@ -564,15 +599,27 @@ function process_survey_question(this_row,row_no){
           break;
 
           case "dropdown":
-              feedback_string = generate_feedback_string(feedback_array,0,feedback_color,row_no,this_row);
+					case "select":
+              feedback_string = generate_feedback_string(feedback_array,
+																												 0,
+																												 feedback_color,
+																												 row_no,
+																												 this_row);
               var options = this_row["answers"].split("|");
               question_td += response_html +
-                                  '<select class="custom-select '+this_row["item_name"]+'_item row_'+row_no+'" onchange="response_check(this)" collector_button" name="survey_'+this_row["item_name"].toLowerCase()+'">'+
-                                      '<option selected disabled hidden>-- no option selected --</option>';
+								'<select ' +
+									'class="custom-select ' + 
+													'text-primary ' +
+													this_row["item_name"] + 
+													'_item row_' + row_no + '" ' +
+													'collector_button' +
+										'onchange="response_check(this)" ' +
+										'name="survey_' + this_row["item_name"].toLowerCase() + '">' +
+										'<option selected disabled hidden>-- no option selected --</option>';
               for(var i=0; i<options.length;i++){
-                  question_td += "<option>"+options[i]+"</option>";
+								question_td += "<option>" + options[i] + "</option>";
               }
-              question_td += '</select>'+feedback_string;
+              question_td += '</select>' + feedback_string;
           break;
 
           case "email":
@@ -599,7 +646,16 @@ function process_survey_question(this_row,row_no){
                                       response_html +
                                       '<div class="btn-group btn-group-toggle" data-toggle="buttons">'; //to help detect blank likert's
               for(var i=0; i<options.length;i++){
-                  question_td+=   '<button type="button" class="btn survey_btn btn-outline-primary '+this_row["item_name"]+'_item row_'+row_no+'"  autocomplete="off" id="likert_'+row_no+'_'+i+'"  onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+options[i]+'</button>';
+                question_td +=  '<button type="button" '+
+																	'class="btn '+
+																				 'survey_btn ' +
+																				 'btn-outline-primary ' + 
+																				 this_row["item_name"] + '_item row_' + row_no +
+																				 '"autocomplete="off"' +
+																	'id = "likert_' + row_no + '_' + i + '" ' +
+																	'onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+ 
+																		options[i] +
+																'</button>';
 
               }
               question_td +=  "</div>"+
@@ -674,10 +730,21 @@ function process_survey_question(this_row,row_no){
   if(typeof(this_row["type"])== "undefined"){
       return '';
   } else {
-    if(this_row["type"].toLowerCase()=="instruct"){
-      var this_row_html = "<td colspan='2' class='text-primary' style='font-size:25px'>" + 
+    if(this_row["type"].toLowerCase() == "instruct"){
+      var this_row_html = "<td colspan='2'>" + 
 														this_row["text"] +
 													"</td>";
+		} else if(this_row["type"].toLowerCase() == "likert"){
+			var this_row_html = "<tr>" +
+														"<td colspan='2'>" + 
+															this_row["text"] +
+														"</td>" + 
+													"</tr>" +
+													"<tr>" +
+														"<td colspan='2' align='center'>" + 
+															question_td + 
+														"</td>"
+													"</tr>";
     } else if(this_row["type"].toLowerCase()=="google_slide") {
       var this_row_html="<td colspan='2'>"+this_row["text"]+"</label></td>";
     } else if(typeof(this_row["no_text"]) !== "undefined" && this_row["no_text"] == "on"){
@@ -891,6 +958,8 @@ function write_survey(this_survey,this_id){
   for(i = 0; i < this_survey.length; i++){
     this_row = this_survey[i];
     row_html = process_survey_question(this_row,i);
+		console.dir("row_html");
+		console.dir(row_html);
     this_survey_object.content.push(row_html[0]);
     this_survey_object.shuffle.push(row_html[1]);
 	}
@@ -941,7 +1010,6 @@ function write_survey(this_survey,this_id){
 	
 	$("#" + this_id).show(1000,function(){
 		// Set all buttons to the max width
-		
 		var maxWidth = 0;
 		$('.btn').each(function(index, element) {
 			var curWidth = $(element).width();
@@ -954,7 +1022,7 @@ function write_survey(this_survey,this_id){
 			$(this).delay(200).animate({
 				"width" : maxWidth
 			});
-		});
+		});		
 	});
 
 	//scroll to top
