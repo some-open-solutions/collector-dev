@@ -86,7 +86,7 @@ function load_default_surveys(){
         <button class='btn btn-primary' type='button' id="new_survey_button" title="Will create a new survey based on the one you have selected. Please select one of the existing surveys if you haven't already to be able to create a new survey based on it.">New Survey</button>
       </td>
       <td>
-        <select id='survey_select' class="form-control">
+        <select id='survey_select' class="form-control" previousValue="">
           <option disabled selected>Please select a survey</option>
         </select>
       </td>
@@ -120,9 +120,6 @@ function load_default_surveys(){
 
 
 <script>
-///////////////
-// functions //
-///////////////
 var survey_HoT;
 
 function create_survey_HoT(this_survey){
@@ -225,6 +222,18 @@ function create_survey_HoT(this_survey){
 			helperActivate(column, thisCellValue,"survey");
 		},
 		afterChange: function(){
+			
+			/*
+			* Check if they have just made a change to a default survey
+			*/
+			
+			var current_survey = $("#survey_select").val()
+																							.split("|")[1];
+																							
+			if(typeof(master_json.surveys.default_surveys[current_survey]) !== "undefined"){
+				Collector.custom_alert("These changes will not be saved, as you are editing a <b>default</b> survey. Please click <b>New Survey</b> to create a new survey");
+			}
+			
       var middleColEmpty=0;
 			var middleRowEmpty=0;
 			var postEmptyCol=0; //identify if there is a used col after empty one
@@ -363,30 +372,35 @@ function preview_survey(this_survey){
 }
 
 function synch_surveys(){
-	dbx.filesListFolder({path:"/surveys"})
-		.then(function(result){
-			result.entries.forEach(function(entry){
-				if(typeof(master_json.surveys.user_surveys[entry.name.toLowerCase()]) == "undefined"){
-					dbx.sharingCreateSharedLink({path:entry.path_lower})
-						.then(function(shared_link){
-							$.get(shared_link.url.replace("www.","dl."),function(result){
-								var survey_name = entry.name.toLowerCase().replace(".csv","");
-								master_json.surveys.user_surveys[survey_name] = Papa.parse(result).data;
-							});
-						})
-						.catch(function(error){
-              report_error("problem synching the surveys, possibly due to getting the location of a specific survey", "problem synching the surveys, possibly due to getting the location of a specific survey");
-						});
-				}
-			});
-		})
-		.catch(function(error){
-      //assume that the survey folder doesn't exist yet - reimplement error if it seems like some intervention is needed here.
-      
-      /*
-      report_error("problem synching the surveys, possibly due to listing surveys within the survey folder.", "problem synching the surveys, possibly due to listing surveys within the survey folder.");
-      */
-		});
+	var synch_survey_interval = setInterval(function(){
+		if(typeof(dbx) !== "undefined"){
+			clearInterval(synch_survey_interval);
+			dbx.filesListFolder({path:"/surveys"})
+				.then(function(result){
+					result.entries.forEach(function(entry){
+						if(typeof(master_json.surveys.user_surveys[entry.name.toLowerCase()]) == "undefined"){
+							dbx.sharingCreateSharedLink({path:entry.path_lower})
+								.then(function(shared_link){
+									$.get(shared_link.url.replace("www.","dl."),function(result){
+										var survey_name = entry.name.toLowerCase().replace(".csv","");
+										master_json.surveys.user_surveys[survey_name] = Papa.parse(result).data;
+									});
+								})
+								.catch(function(error){
+									report_error("problem synching the surveys, possibly due to getting the location of a specific survey", "problem synching the surveys, possibly due to getting the location of a specific survey");
+								});
+						}
+					});
+				})
+				.catch(function(error){
+					//assume that the survey folder doesn't exist yet - reimplement error if it seems like some intervention is needed here.
+					
+					/*
+					report_error("problem synching the surveys, possibly due to listing surveys within the survey folder.", "problem synching the surveys, possibly due to listing surveys within the survey folder.");
+					*/
+				});
+		}
+	},2000);
 };
 
 
@@ -498,40 +512,71 @@ $("#rename_survey_btn").on("click",function(){
   }  
 });
 
+survey_obj = {
+	save:function(survey_name,
+								survey_content){
+
+		survey_name = survey_name;
+
+		if(typeof(master_json.surveys.default_surveys[survey_name]) == "undefined"){			
+			dbx_obj.new_upload({
+				path    : "/surveys/" + survey_name,
+				contents : survey_content,
+				mode    : "overwrite"
+			},function(){
+				Collector.custom_alert("Success!");
+				update_master_json();
+			},function(error){
+				Collector.custom_alert("error - check console!");
+				console.dir(error);
+			},
+			"filesUpload");
+			
+			switch(Collector.detect_context()){
+				case "localhost":
+					eel.save_survey(survey_name[1].toLowerCase()
+																				.replace(".csv","") + ".csv",
+													survey_content);
+					break;
+				default:
+					//nothing?
+					break;
+			}
+		} else {
+			Collector.custom_alert("You were looking at a default survey - no changes made to it");
+		}
+	}
+}
+
 $("#save_survey_btn").on("click",function(){
-	console.dir('$("#survey_select").val()');
-	console.dir($("#survey_select").val());
 	if($("#survey_select").val() !== null & typeof(survey_HoT) !== "undefined"){
-		var survey_name     = $("#survey_select").val().split("|");
+		var survey_name     = $("#survey_select").val().split("|")[1]
+																									 .replace(".csv","") + ".csv";
 		var survey_content  = Papa.unparse(survey_HoT.getData());
-    dbx_obj.new_upload({
-      path    : "/surveys/" + survey_name[1].replace(".csv","") + ".csv",
-      contents : survey_content,
-      mode    : "overwrite"
-    },function(){
-      Collector.custom_alert("Success!");
-      update_master_json();
-    },function(error){
-      Collector.custom_alert("error - check console!");
-      console.dir(error);
-    },
-    "filesUpload");
-    
-    switch(Collector.detect_context()){
-      case "localhost":
-        eel.save_survey(survey_name[1].toLowerCase()
-                                   .replace(".csv","") + ".csv",
-                        survey_content);
-        break;
-      default:
-        //nothing?
-        break;
-    }
+		survey_obj.save(survey_name,
+										survey_content);
 	}
 });
 
 $("#survey_select").on("change",function(){
-	$("#save_btn").click();
+	/*
+	* use code from trialtypes to save previously edited survey
+	*/
+	var old_survey = ($(this).attr('previousValue'));
+
+	if(old_survey !== "" & 																								 				  // not the first selected
+		 Object.keys(master_json.surveys.default_surveys).indexOf(old_survey) == -1){ // not a default trialtype
+		
+		old_survey = old_survey.split("|")[1]
+													 .replace(".csv","") + ".csv";
+		
+		var survey_content  = Papa.unparse(survey_HoT.getData());
+		survey_obj.save(old_survey,
+										survey_content);
+	}
+	
+	$(this).attr('previousValue', this.value);
+	
   var this_survey = $("#survey_select").val().split("|");
   if(this_survey[0] == "default"){
     $("#survey_select").removeClass("bg-light");
