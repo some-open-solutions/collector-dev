@@ -67,6 +67,42 @@ td{
   padding:            20px;
 }
 
+
+/*
+*	elements by class
+*/
+.feedback_span_multiple{
+  display: none;
+  margin:  10px;
+}
+.feedback_span_single{
+  display: none;
+  padding: 10px;
+}
+.likert_table td{
+  padding:    1px;
+  text-align: center;
+}
+.likert_table td:hover{
+  color: blue;
+}
+.score_total{
+  display: none;
+}
+.show_tab{
+  margin: 5px;
+}
+.survey_btn{
+	white-space: normal;
+	word-wrap: 	 initial;
+}
+.table_break{
+	width:    100%;
+	height:   300px;
+	overflow: auto;	
+}
+
+
 /*
 * by Bora Alp Arat at https://stackoverflow.com/questions/21684101/css-vertical-scrollbar-padding-left-right-in-ul-possible
 */
@@ -89,42 +125,6 @@ td{
 }
 ::-webkit-scrollbar-corner {
   background-color: transparent;
-}
-
-
-/*
-*	elements by class
-*/
-
-.feedback_span_multiple{
-  display:none;
-  margin :10px;
-}
-.feedback_span_single{
-  display:none;
-  padding:10px;
-}
-.likert_table td{
-  padding:1px;
-  text-align:center;
-}
-.likert_table td:hover{
-  color:blue;
-}
-.score_total{
-  display:none;
-}
-.show_tab{
-  margin:5px;
-}
-.survey_btn{
-	white-space: normal;
-	word-wrap: initial;	
-}
-.table_break{
-	width:100%;
-	height: 300px;
-	overflow: auto;	
 }
 </style>
 <div id="everything">
@@ -274,13 +274,8 @@ $("#proceed_button").on("click",function(){
   if(current_tab == survey_obj.tabs && proceed){
     if(typeof(sql_surveys) == "undefined"){
       //$(".table_break");
-      console.dir('$(".table_break:visible")');
-      console.dir($(".table_break:visible"));
       var next_table_no = parseFloat($(".table_break:visible")[0].id.replace("table","")) + 1;
-      console.dir("next_table_no");
-      console.dir(next_table_no);
-      console.dir($(".table_break#table_"+next_table_no));
-
+      
       if($(".table_break#table"+next_table_no).length == 0){
         if(typeof(Trial) !== "undefined"){
           Trial.submit();
@@ -316,8 +311,6 @@ $("#proceed_button").on("click",function(){
 function load_survey(survey){
   // are we in preview?
   /////////////////////
-  console.dir("survey");
-  console.dir(survey);
   if(typeof(parent.master_json) !== "undefined" && parent.master_json.surveys.preview){     // Yes
     survey_content = survey;                                                    // i.e. the content has been passed through directly
     survey_obj.mods = parent.master_json.mods;                                //no need to be efficient in preview
@@ -494,11 +487,9 @@ function process_survey_question(this_row,row_no){
 			 typeof(survey_obj.mods[this_row.type]) !== "undefined"){
 
       var mod_html = survey_obj.mods[this_row.type].contents;
-      console.dir(mod_html);
-
+      
       //for each row variable, insert it into the mod if possible?
       Object.keys(this_row).forEach(function(attribute){
-        console.dir(mod_html);
         mod_html = mod_html.replaceAll("{{"+attribute+"}}",this_row[attribute]);
       });
       question_td += mod_html;
@@ -637,15 +628,40 @@ function process_survey_question(this_row,row_no){
           case "likert":
               feedback_string = generate_feedback_string(feedback_array,0,feedback_color,row_no,this_row);
               var options  = this_row["answers"].split("|");
-              if(typeof(this_row["values"]) == "undefined"){
+              
+							if(typeof(this_row["values"]) == "undefined"){
                 this_row["values"] = this_row["answers"];
               }
-              var values   = this_row["values"].split("|");
-              question_td += "<table class='likert_table'><tr>" +
-                                  '<td>'+
-                                      response_html +
-                                      '<div class="btn-group btn-group-toggle" data-toggle="buttons">'; //to help detect blank likert's
-              for(var i=0; i<options.length;i++){
+              
+							if(typeof(this_row["btn_width"]) !== "undefined" && this_row["btn-width"]  !== ""){
+								var btn_style = "width:" + this_row["btn_width"];
+							} else {
+								var btn_style = "";
+							}
+							
+							var values   = this_row["values"].split("|");
+              question_td += 	"<table class='likert_table'>" +
+																"<tr>" +
+																	"<td>";
+							/*
+							* Add side_text if it exists
+							*/
+							if(typeof(this_row["side_text"]) !== "undefined" &&
+								this_row["side_text"] !== ""){
+								side_text = this_row["side_text"].split("|");
+								side_text = side_text.map(function(this_side){
+									return "<span style='padding:20px;' class='text-primary'><b>" + this_side + "</b></span>";
+								});
+							} else {
+								side_text = ["",""];
+							}							
+							question_td += side_text[0];
+
+							question_td +=  response_html +
+                              '<div class="btn-group btn-group-toggle" data-toggle="buttons">'; //to help detect blank likert's
+              
+							
+							for(var i=0; i<options.length;i++){
                 question_td +=  '<button type="button" '+
 																	'class="btn '+
 																				 'survey_btn ' +
@@ -653,12 +669,14 @@ function process_survey_question(this_row,row_no){
 																				 this_row["item_name"] + '_item row_' + row_no +
 																				 '"autocomplete="off"' +
 																	'id = "likert_' + row_no + '_' + i + '" ' +
+																	'style = "' + btn_style + '" ' +
 																	'onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+ 
 																		options[i] +
 																'</button>';
 
               }
-              question_td +=  "</div>"+
+							question_td +=  "</div>" +
+															side_text[1] +
                               "<input type='hidden' class='"+this_class+"' id='survey_"+this_row["item_name"].toLowerCase()+"_score' name='survey_"+this_row["item_name"].toLowerCase()+"_score'>"+
                           "</td>"+
                       "</tr>"+
@@ -735,7 +753,15 @@ function process_survey_question(this_row,row_no){
 														this_row["text"] +
 													"</td>";
 		} else if(this_row["type"].toLowerCase() == "likert"){
-			var this_row_html = "<tr>" +
+			
+			if(typeof(this_row["side_by_side"]) !== "undefined" &&
+				 this_row["side_by_side"].toLowerCase() == "yes"){
+				
+				var this_row_html="<td class='text-primary' id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";				
+				 
+			} else {
+				
+				var this_row_html = "<tr>" +
 														"<td colspan='2'>" + 
 															this_row["text"] +
 														"</td>" + 
@@ -745,6 +771,10 @@ function process_survey_question(this_row,row_no){
 															question_td + 
 														"</td>"
 													"</tr>";
+				
+			}			
+			
+			
     } else if(this_row["type"].toLowerCase()=="google_slide") {
       var this_row_html="<td colspan='2'>"+this_row["text"]+"</label></td>";
     } else if(typeof(this_row["no_text"]) !== "undefined" && this_row["no_text"] == "on"){
@@ -773,8 +803,7 @@ function process_survey_question(this_row,row_no){
 }
 
 function quest_resp_perc(quest_resp_rat){
-	console.dir("hi ho hum");
-  if(typeof(quest_resp_rat) == "undefined"){
+	if(typeof(quest_resp_rat) == "undefined"){
     row_resp_perc = "50%";
     row_ques_perc = "50%";
   } else {
@@ -958,9 +987,7 @@ function write_survey(this_survey,this_id){
   for(i = 0; i < this_survey.length; i++){
     this_row = this_survey[i];
     row_html = process_survey_question(this_row,i);
-		console.dir("row_html");
-		console.dir(row_html);
-    this_survey_object.content.push(row_html[0]);
+		this_survey_object.content.push(row_html[0]);
     this_survey_object.shuffle.push(row_html[1]);
 	}
 
@@ -1000,16 +1027,9 @@ function write_survey(this_survey,this_id){
 
 	$("#" + this_id).html(this_survey_html);
 	
-	
-	// can I fix the width of buttons here?
-	
-	
-	
-	
-	
-	
 	$("#" + this_id).show(1000,function(){
 		// Set all buttons to the max width
+		/*
 		var maxWidth = 0;
 		$('.btn').each(function(index, element) {
 			var curWidth = $(element).width();
@@ -1023,6 +1043,7 @@ function write_survey(this_survey,this_id){
 				"width" : maxWidth
 			});
 		});		
+		*/
 	});
 
 	//scroll to top

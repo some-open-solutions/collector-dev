@@ -496,7 +496,7 @@ $("#save_btn").on("click", function(){
 					} else {
 						bootbox.alert("The trialtype <b>" + cleaned_row["trial type"] + "</b> doesn't appear to exist");
 					}
-					these_variables = list_variables(this_trialtype);
+					these_variables = Collector.list_variables(this_trialtype);
 
 					these_variables.forEach(function(this_variable){
 						if(Object.keys(cleaned_row).indexOf(this_variable) == -1 &&

@@ -141,15 +141,11 @@ online_data_obj = {
   }
 }
 
-//////////////
-// Pipeline //
-//////////////
-
 Study = {
-  ////////////////////////////
-  // Pipeline functionality //
-  ////////////////////////////
 
+  /*
+	* Pipeline
+	*/
   get_vars        : {},
   resume          : false,
   pipeline        : ["get_gets",
@@ -185,13 +181,10 @@ Study = {
     }
   },
 
-  /////////////////////
-  // Trial functions //
-  /////////////////////
+  /*
+  * Trial functions 
+  */
   finish_trial: function(go_to_info){
-    
-    
-    
 
     trial_end_ms = (new Date()).getTime();
     trial_inputs = {};

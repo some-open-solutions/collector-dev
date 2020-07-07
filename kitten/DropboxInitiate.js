@@ -308,4 +308,3 @@ function new_dropbox_account(dropbox_dialog){
     });
   });
 }
-

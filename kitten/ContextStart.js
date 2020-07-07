@@ -44,9 +44,7 @@ switch(Collector.detect_context()){
 
     eel.expose(load_master_json);
     function load_master_json(this_json){
-			console.dir("this_json");
-			console.dir(this_json);
-      master_json = this_json;
+			master_json = this_json;
       //renderItems();
       list_surveys();
       first_load = true;
