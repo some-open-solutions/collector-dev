@@ -237,7 +237,7 @@ encrypt_obj = {
                   callback: function(result) {
 										if(result){
 											var filename = result.toLowerCase().replace(".csv","") + ".csv";
-											Collector.save_csv (filename, Papa.unparse(this_decrypted_message,{
+											Collector.save_data (filename, Papa.unparse(this_decrypted_message,{
 												quotes: false, //or array of booleans
 												quoteChar: '"',
 												escapeChar: '"',
