@@ -164,8 +164,6 @@ $("#rename_exp_btn").on("click",function(){
           });
       }
 		}
-		//confirm that there isn't another experiment with that name
-
 	});
 });
 $("#rename_proc_button").on("click",function(){

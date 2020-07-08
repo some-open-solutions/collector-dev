@@ -266,8 +266,7 @@ $("#help_btn").on("click",function(){
     },500,function(){
       editor.resize();
     });
-    editor.resize(); 
-		$("#cell_editor_div").animate({
+		$("#cell_editor_div").css({
 			"width": window.innerWidth
 		}, 500,function(){
 			cell_editor.resize();
