@@ -21,7 +21,7 @@ $.ajaxSetup({ cache: false }); // prevents caching, which disrupts $.get calls
 
 trialtypes_obj = {
 	delete_trialtype:function(){
-		var deleted_trialtype = $("#trial_type_select").val();
+    var deleted_trialtype = $("#trial_type_select").val();
     master_json.trialtypes.trialtype = $("#trial_type_select").val();
 		var this_loc = "/trialtypes/"+master_json.trialtypes.trialtype;
 		bootbox.confirm("Are you sure you want to delete this "+this_loc+"?",function(result){
@@ -30,6 +30,7 @@ trialtypes_obj = {
 					delete(master_json.trialtypes.graphic.trialtypes[master_json.trialtypes.trialtype]);
 				}
 				delete(master_json.trialtypes.user_trialtypes[master_json.trialtypes.trialtype]);
+        $("#trial_type_select").attr("previousvalue","");
 				$("#trial_type_select  option:selected").remove(); 																	//remove from dropdown list
 				master_json.trialtypes.trialtype = $("#trial_type_select").val();
 				trialtypes_obj.load_trial_file("default_trialtype");
@@ -37,7 +38,7 @@ trialtypes_obj = {
 				update_master_json();
 				
 				
-				switch(Collector.detect_context){
+				switch(Collector.detect_context()){
 					case "github":																							// i.e. the user is online and using dropbox
 					case "gitpod":					                                    // i.e. the user is online and using dropbox
 					case "server":                                              // i.e. the user is online and using dropbox
@@ -51,7 +52,7 @@ trialtypes_obj = {
 							});
 						break;
 					case "localhost":																						// i.e. they can edit local files
-						eel.delete_trialtype(deleted_trialtype);									// delete the local trialtype file
+            eel.delete_trialtype(deleted_trialtype);									// delete the local trialtype file
 						break;
 				}
 
@@ -65,7 +66,9 @@ trialtypes_obj = {
 		if(user_default == "default_trialtype"){
 			$("#delete_trial_type_button").hide();
       $("#default_user_trialtype_span").html("default_trialtype");
-      $("#trial_type_select")[0].className = $("#trial_type_select")[0].className.replace("user_","default_");
+      $("#trial_type_select").removeClass("user_trialtype")
+                             .addClass("default_trialtype");
+        //[0].className = $("#trial_type_select")[0].className.replace("user_","default_");
 		} else {
 			$("#delete_trial_type_button").show();
 		}
@@ -100,36 +103,7 @@ trialtypes_obj = {
     }
     
 		
-	},
-	rename_trial_type:function(new_name){
-		var original_name = $("#trial_type_select").val();
-		if(new_name == original_name){
-			bootbox.alert("Your suggested new name is the same as the original name");
-		} else {
-			/*
-			$.post("Studies/TrialTypeEditor/AjaxTrialtypes.php",{
-				action 				: "rename",
-				original_name	: original_name,
-				new_name			: new_name
-			},function(returned_data){
-				console.dir(returned_data);
-				Collector.custom_alert(returned_data);
-				//update user_trialtypes
-				master_json.trialtypes.user_trialtypes[new_name] = master_json.trialtypes.user_trialtypes[original_name];
-				delete (master_json.trialtypes.user_trialtypes[original_name]);
-
-				//update dropdown list
-				$("#trial_type_select").append("<option class='user_trialtype'>"+new_name+"</option>");
-				for(var i = 0; i < $("#trial_type_select").find("option").length; i++){
-					if($("#trial_type_select").find("option")[i].innerHTML == original_name){
-						$("#trial_type_select").find("option")[i].remove();
-						$("#trial_type_select").val(new_name);
-					};
-				}
-			});
-			*/
-		}
-	},
+	},	
 	save_trialtype:function(content,
                           name,
                           new_old,
@@ -191,7 +165,7 @@ trialtypes_obj = {
 		}
 	}
 }
-function list_trialtypes(){
+function list_trialtypes(to_do_after){
 	
 	eel.expose(list_python_trialtypes);
 	function list_python_trialtypes(python_trialtypes){
@@ -213,6 +187,9 @@ function list_trialtypes(){
 		python_user_trialtypes.forEach(function(this_trialtype){
 			$("#trial_type_select").append("<option class='user_trialtype'>" + this_trialtype + "</option>");
 		});
+    if(typeof(to_do_after) !== "undefined"){
+      to_do_after();
+    }
 	}
 	
   function process_returned(returned_data){
@@ -239,15 +216,15 @@ function list_trialtypes(){
 		});
 		trialtypes_obj.synchTrialtypesFolder();
 		
-		/*
-			for locally installed Collector, look for trialtypes in the "Trialtypes" folder
-		*/
 		
 		switch(Collector.detect_context()){
 			case "server":      
 			case "gitpod":
 			case "github":
 				// currently do nothing
+        if(typeof(to_do_after) !== "undefined"){
+          to_do_after();
+        }
 				break;
 			case "localhost":
 				eel.list_trialtypes();
