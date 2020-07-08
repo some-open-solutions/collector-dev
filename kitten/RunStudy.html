@@ -343,7 +343,20 @@ Study = {
 			}
 			this_trialtype = this_trialtype.replaceAll("{{" + variable + "}}", variable_val);
 		});
-    this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox"); // in case user forgets
+    this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox"); // in case the user forgets
+    
+    /*
+    * add the random seed to each dropbox img, vid or audio file here 
+    */
+    var dl0_to_replace = (this_trialtype.match(/dl=0/g) || []).length;
+    for (var i = 0; i < dl0_to_replace; i++){
+      this_trialtype = this_trialtype.replace("?dl=0","?dl=0&someRandomSeed=" + Math.random().toString(36));
+    }
+    
+    var dl1_to_replace = (this_trialtype.match(/dl=1/g) || []).length;
+    for (var i = 0; i < dl1_to_replace; i++){
+      this_trialtype = this_trialtype.replace("?dl=1","?dl=1&someRandomSeed=" + Math.random().toString(36));
+    }
 		return this_trialtype;
 	},
   
@@ -649,11 +662,17 @@ function full_screen(){
   if(typeof(exp_json.this_condition.fullscreen) !== "undefined"){
     if(exp_json.this_condition.fullscreen == "on"){
       var elem = $(document.body);
-      bootbox.confirm("The researcher would like to run this in full screen, are you okay with that?",function(response){
-        if(response){
-          requestFullScreen(document.documentElement);
-        }
-      });
+      
+      if((window.fullScreen) ||
+         (window.innerWidth == screen.width && window.innerHeight == screen.height)) {
+        // don't need to ask
+      } else {
+        bootbox.confirm("The researcher would like to run this in full screen, are you okay with that?",function(response){
+          if(response){
+            requestFullScreen(document.documentElement);
+          }
+        });
+      }
     }
   }
   Study.activate_pipe();
