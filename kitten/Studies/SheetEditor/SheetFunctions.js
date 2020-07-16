@@ -232,7 +232,7 @@ function renderItems() {
 	list_graphics();
   list_servers();
 	initiate_actions();
-  autoload_mods();
+  autoload_mods();  
 }
 function stim_proc_defaults(proc_values,stim_values){
 	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];

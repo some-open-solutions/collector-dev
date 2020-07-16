@@ -130,10 +130,6 @@ function check_authenticated(){
       console.dir(error);
     });
 
-    $_GET = window.location.href.substr(1).split("&").reduce((o,i)=>(u=decodeURIComponent,[k,v]=i.split("="),o[u(k)]=v&&u(v),o),{});
-
-
-
   }	else {
     // Set the login anchors href using dbx.getAuthenticationUrl()
     dropbox_login();
@@ -249,19 +245,7 @@ function load_master_json(link_created){
 			master_json.mods = {};
 		}
 		renderItems();
-		dbx.filesListFolder({path: '/experiments'})
-			.then(function(response) {
-			// hack to deal with uneven loading of files
-			check_dbx_trialtypes = setInterval(function(){
-				if(typeof(dbx_trialtypes_startup) !== "undefined"){
-					dbx_trialtypes_startup();
-					clearInterval(check_dbx_trialtypes)
-				}
-			},100);
-			})
-			.catch(function(error) {
-				console.dir(error);
-			});
+		
 	});
 }
 function new_dropbox_account(dropbox_dialog){
