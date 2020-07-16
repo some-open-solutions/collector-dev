@@ -147,7 +147,7 @@ $("#rename_exp_btn").on("click",function(){
           eel.save_experiment(new_name,master_json.exp_mgmt.experiments[new_name]);
           eel.delete_exp(original_name);
           update_master_json();
-          list_experiments();
+          list_studies();
           $("#experiment_list").val(new_name);
           $("#experiment_list").change();
           break;
@@ -156,7 +156,7 @@ $("#rename_exp_btn").on("click",function(){
         dbx.filesMove({from_path:"/Experiments/"+original_name+".json",to_path:"/Experiments/"+new_name+".json"})
           .then(function(result){
 						update_master_json();
-						list_experiments();
+						list_studies();
 						$("#experiment_list").val(new_name);					
           })
           .catch(function(error){

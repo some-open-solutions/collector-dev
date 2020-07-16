@@ -32,12 +32,15 @@ Collector.tests = {
     
   },
   surveys:{
-    
+    dropdown: {
+      outcome: "awaiting",
+      text: "Are surveys listed?"
+    }
   },
   trialtypes:{
     dropdown: {      
       outcome:"awaiting",
-      text: "Are trialtype dropdowns working?"
+      text: "Are trialtypes listed?"
     }
   },
   /*

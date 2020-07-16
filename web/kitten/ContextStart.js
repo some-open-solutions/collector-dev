@@ -51,7 +51,7 @@ switch(Collector.detect_context()){
 			master_json = this_json;
       list_surveys();
       first_load = true;
-      wait_till_exists("list_experiments");
+      wait_till_exists("list_studies");
       wait_till_exists("list_graphics");
       list_mods();
       wait_till_exists("list_trialtypes");

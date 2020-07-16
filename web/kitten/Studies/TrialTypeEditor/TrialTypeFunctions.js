@@ -167,28 +167,30 @@ trialtypes_obj = {
 }
 function list_trialtypes(to_do_after){
 	try{
-    eel.expose(list_python_trialtypes);
-    function list_python_trialtypes(python_trialtypes){
-      var python_user_trialtypes = [];
-      python_trialtypes.forEach(function(python_trialtype){
-        var split_trialtype = python_trialtype.replaceAll("\\","/")
-                                              .split("/");
-        var this_trialtype = split_trialtype[split_trialtype.length - 1];
-            this_trialtype = this_trialtype.toLowerCase()
-                                           .replace(".html","");
-        
-        if(Object.keys(master_json.trialtypes.user_trialtypes).indexOf(this_trialtype) == -1){
-          python_user_trialtypes.push(this_trialtype);
-          $.get("../User/Trialtypes/" + this_trialtype + ".html", function(trialtype_content){
-            master_json.trialtypes.user_trialtypes[this_trialtype] = trialtype_content;
-          });
-        }			
-      });
-      python_user_trialtypes.forEach(function(this_trialtype){
-        $("#trial_type_select").append("<option class='user_trialtype'>" + this_trialtype + "</option>");
-      });
-      if(typeof(to_do_after) !== "undefined"){
-        to_do_after();
+    if(typeof(eel) !== "undefined"){
+      eel.expose(list_python_trialtypes);
+      function list_python_trialtypes(python_trialtypes){
+        var python_user_trialtypes = [];
+        python_trialtypes.forEach(function(python_trialtype){
+          var split_trialtype = python_trialtype.replaceAll("\\","/")
+                                                .split("/");
+          var this_trialtype = split_trialtype[split_trialtype.length - 1];
+              this_trialtype = this_trialtype.toLowerCase()
+                                             .replace(".html","");
+          
+          if(Object.keys(master_json.trialtypes.user_trialtypes).indexOf(this_trialtype) == -1){
+            python_user_trialtypes.push(this_trialtype);
+            $.get("../User/Trialtypes/" + this_trialtype + ".html", function(trialtype_content){
+              master_json.trialtypes.user_trialtypes[this_trialtype] = trialtype_content;
+            });
+          }			
+        });
+        python_user_trialtypes.forEach(function(this_trialtype){
+          $("#trial_type_select").append("<option class='user_trialtype'>" + this_trialtype + "</option>");
+        });
+        if(typeof(to_do_after) !== "undefined"){
+          to_do_after();
+        }
       }
     }
     
