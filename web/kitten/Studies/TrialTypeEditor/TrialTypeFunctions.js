@@ -253,10 +253,10 @@ function list_trialtypes(to_do_after){
     
     
     Collector.tests.pass("trialtypes",
-                         "dropdown");
+                         "list");
   } catch(error){
     Collector.tests.fail("trialtypes",
-                         "dropdown");
+                         "list");
   };
 }
 function valid_trialtype(this_name){
