@@ -289,36 +289,44 @@ function create_survey_HoT(this_survey){
 }
 
 function list_surveys(){
-  $("#survey_select").empty();
-  $("#survey_select").append("<option disabled>Select a survey</option>");
-  $("#survey_select").val("Select a survey");
-    
-  if(typeof(master_json.surveys) == "undefined" ||
-    typeof(master_json.surveys.user_surveys) == "undefined"){
-    master_json.surveys = {
-      preview         : false,
-      user_surveys    : {}
+  try{
+    $("#survey_select").empty();
+    $("#survey_select").append("<option disabled>Select a survey</option>");
+    $("#survey_select").val("Select a survey");
+      
+    if(typeof(master_json.surveys) == "undefined" ||
+      typeof(master_json.surveys.user_surveys) == "undefined"){
+      master_json.surveys = {
+        preview         : false,
+        user_surveys    : {}
+      }
     }
-  }
-	master_json.surveys = typeof(master_json.surveys) == "undefined" ? {} : master_json.surveys;
-	master_json.surveys.default_surveys = {};
+    master_json.surveys = typeof(master_json.surveys) == "undefined" ? {} : master_json.surveys;
+    master_json.surveys.default_surveys = {};
 
-	master_json.surveys.user_surveys = typeof(master_json.surveys.user_surveys) == "undefined" ? {} : master_json.surveys.user_surveys;
-	master_json.surveys.default_surveys = Collector.clean_obj_keys(master_json.surveys.default_surveys);
+    master_json.surveys.user_surveys = typeof(master_json.surveys.user_surveys) == "undefined" ? {} : master_json.surveys.user_surveys;
+    master_json.surveys.default_surveys = Collector.clean_obj_keys(master_json.surveys.default_surveys);
 
-	var def_survey_list  = Object.keys(master_json.surveys.default_surveys).sort();
-	var user_survey_list = Object.keys(master_json.surveys.user_surveys).sort();
+    var def_survey_list  = Object.keys(master_json.surveys.default_surveys).sort();
+    var user_survey_list = Object.keys(master_json.surveys.user_surveys).sort();
 
-  load_default_surveys();
-  user_survey_list.forEach(function(user_survey){
-    $("#survey_select").append($("<option>",{
-			text:user_survey,
-			value:"user|" + user_survey,
-			class:"bg-white text-dark"
-		}));
-	});
-  if(Collector.detect_context() !== "localhost"){
-    synch_surveys();
+    load_default_surveys();    
+    user_survey_list.forEach(function(user_survey){
+      $("#survey_select").append($("<option>",{
+        text:user_survey,
+        value:"user|" + user_survey,
+        class:"bg-white text-dark"
+      }));
+    });
+    if(Collector.detect_context() !== "localhost"){
+      synch_surveys();
+    } else {
+      Collector.tests.pass("surveys",
+                         "dropdown");
+    }
+  } catch(error){
+    Collector.tests.fail("surveys",
+                         "dropdown");
   }
 }
 
@@ -384,6 +392,8 @@ function synch_surveys(){
 									$.get(shared_link.url.replace("www.","dl."),function(result){
 										var survey_name = entry.name.toLowerCase().replace(".csv","");
 										master_json.surveys.user_surveys[survey_name] = Papa.parse(result).data;
+                    Collector.tests.pass("surveys",
+                                         "dropdown");
 									});
 								})
 								.catch(function(error){

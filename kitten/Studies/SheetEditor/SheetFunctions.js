@@ -110,7 +110,7 @@ function get_HoT_data(current_sheet) { // needs to be adjusted for
 
     return data;
 }
-function list_experiments(){
+function list_studies(){
 	name_list = Object.keys(master_json.exp_mgmt.experiments);
   function update_exp_list(){
     var select_html = "<select id='experiment_list'  class='custom-select'><option hidden disabled selected>Select a study</option>";
@@ -225,7 +225,7 @@ function renderItems() {
 
   first_load = true;
 
-  list_experiments();
+  list_studies();
 	list_mods();
   list_surveys();
 	list_trialtypes();
@@ -422,7 +422,7 @@ function upload_exp_contents(these_contents,this_filename){
 	// note that this is a local function. right?
 	function upload_to_master_json(exp_name,this_content) {
 		master_json.exp_mgmt.experiments[exp_name] = this_content;
-		list_experiments();
+		list_studies();
     upload_trialtypes(this_content);
     upload_surveys(this_content);
     list_surveys();		
@@ -489,7 +489,7 @@ function upload_exp_contents(these_contents,this_filename){
             });
           } else {
             master_json.exp_mgmt.experiments[suggested_name] = content;
-            list_experiments();
+            list_studies();
             $("#upload_experiment_modal").hide();
             upload_to_master_json(exp_name,parsed_contents);
 						$("#save_btn").click();
