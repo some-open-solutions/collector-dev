@@ -322,11 +322,11 @@ function list_surveys(){
       synch_surveys();
     } else {
       Collector.tests.pass("surveys",
-                         "dropdown");
+                         "list");
     }
   } catch(error){
     Collector.tests.fail("surveys",
-                         "dropdown");
+                         "list");
   }
 }
 
@@ -385,6 +385,8 @@ function synch_surveys(){
 			clearInterval(synch_survey_interval);
 			dbx.filesListFolder({path:"/surveys"})
 				.then(function(result){
+          Collector.tests.pass("surveys",
+                               "list");
 					result.entries.forEach(function(entry){
 						if(typeof(master_json.surveys.user_surveys[entry.name.toLowerCase()]) == "undefined"){
 							dbx.sharingCreateSharedLink({path:entry.path_lower})
@@ -392,8 +394,6 @@ function synch_surveys(){
 									$.get(shared_link.url.replace("www.","dl."),function(result){
 										var survey_name = entry.name.toLowerCase().replace(".csv","");
 										master_json.surveys.user_surveys[survey_name] = Papa.parse(result).data;
-                    Collector.tests.pass("surveys",
-                                         "dropdown");
 									});
 								})
 								.catch(function(error){
