@@ -47,7 +47,7 @@ trialtypes_obj = {
 								//do nothing more
 							})
 							.catch(function(error){
-								report_error("problem deleting a trialtype", 
+								Collector.tests.report_error("problem deleting a trialtype", 
 														 "problem deleting a trialtype");
 							});
 						break;

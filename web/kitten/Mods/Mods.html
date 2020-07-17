@@ -196,7 +196,7 @@ $("#delete_mod_btn").on("click",function(){
 						update_master_json();
 					})
 					.catch(function(error){
-						report_error("error deleting mod", "error deleting mod");
+						Collector.tests.report_error("error deleting mod", "error deleting mod");
 					});
 			}
 		});
@@ -239,7 +239,7 @@ $("#new_mod_btn").on("click",function(){
 						update_master_json();
 					})
 					.catch(function(error){
-						report_error("error creating link for mod",
+						Collector.tests.report_error("error creating link for mod",
                          "error creating link for mod:");
 					});
 
@@ -282,7 +282,7 @@ $("#rename_mod_btn").on("click",function(){
 						$('#posted_script option:contains("'+old_name+'")').text(new_name);update_master_json();
 					})
 					.catch(function(error){
-						report_error("error moving mod", "error moving mod:");
+						Collector.tests.report_error("error moving mod", "error moving mod:");
 					});
 			}
 		}
@@ -302,7 +302,7 @@ $("#save_mod_btn").on("click",function(){
 						master_json.mods[response].location = result.url;
 					})
 					.catch(function(error){
-						report_error("error saving mod", "error saving mod");
+						Collector.tests.report_error("error saving mod", "error saving mod");
 					});
 			}
 
@@ -391,7 +391,7 @@ function list_mods(){
             }));
           })
           .catch(function(error){
-            report_error("error created shared link for mod","error creating shared link for mod");
+            Collector.tests.report_error("error created shared link for mod","error creating shared link for mod");
           });
       } else {
         $("#posted_script").append($('<option>', {

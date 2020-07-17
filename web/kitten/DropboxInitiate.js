@@ -203,7 +203,7 @@ function legacy_initiate_uber(){
                               initiate_master_json();
                             },
                             function(error){
-                              report_error("Initial file causing error in legacy_initiate_uber()", "problems creating initial files");
+                              Collector.tests.report_error("Initial file causing error in legacy_initiate_uber()", "problems creating initial files");
                             },"filesUpload");
 
       });
@@ -285,7 +285,7 @@ function new_dropbox_account(dropbox_dialog){
                           initiate_master_json();
                         },
                         function(error){
-                          report_error("Problem creating initial files in new_dropbox_account()", "Initial master file causing error");
+                          Collector.tests.report_error("Problem creating initial files in new_dropbox_account()", "Initial master file causing error");
                         },"filesUpload");
 
     });
