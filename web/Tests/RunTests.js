@@ -20,16 +20,22 @@
 */
 Collector.tests = {
   /*
-  * types of test
+  * categories of test
   */
   data:{
     
   },
   mods:{
-    
+    list:{
+      outcome: "awaiting",
+      text: "Are the mods listed?"
+    }
   },
   studies:{
-    
+    list:{
+      outcome: "awaiting",
+      text: "Are the studies listed?"
+    }
   },
   surveys:{
     list: {
@@ -47,12 +53,14 @@ Collector.tests = {
   * running tests and their results
   */
   fail:function(test_category,
-                this_test){
+                this_test,
+                error){
     Collector.tests[test_category][this_test].outcome = "fail";
     $("#test_" +
       test_category + 
       "_" +
       this_test).html("<span class='text-danger'>Fail</span>");
+    bootbox.alert(error);
   },
   pass:function(test_category,
                 this_test){
@@ -68,7 +76,6 @@ Collector.tests = {
     if($_GET.testing){
       var test_text = "<h1 class='text-primary'> Running tests </h1>" +
                       "<table class='table'>";
-                        
      ["data",
       "mods",
       "studies",

@@ -114,8 +114,7 @@ function check_authenticated(){
     } else {
       dbx = new Dropbox({ accessToken: getAccessTokenFromUrl() });
     }
-    console.dir("dropbox on");
-
+    
     dbx.usersGetCurrentAccount()
     .then(function(account_info){
       $("#dropbox_account_email").html(account_info.email);
