@@ -104,4 +104,22 @@ Collector.tests = {
       // And wait for other parts of Collector to trigger the tests
     }
   },
+  
+  /*
+  * reporting succeess and errors (note that success isn't used yet)
+  */  
+  report_error: function(error,collector_error_message){
+    if(typeof(collector_error_message) !== "undefined"){
+      bootbox.alert(collector_error_message);
+    }
+    if(typeof(eel) !== "undefined"){
+      eel.report_error(error);
+      custom_alert("Error - check the error report in web/Tests/errors.txt");
+    }
+  },
+  report_success: function(success){
+    if(typeof(eel) !== "undefined"){
+      eel.report_success(success);
+    }
+  }
 }
