@@ -111,58 +111,66 @@ function get_HoT_data(current_sheet) { // needs to be adjusted for
     return data;
 }
 function list_studies(){
-	name_list = Object.keys(master_json.exp_mgmt.experiments);
-  function update_exp_list(){
-    var select_html = "<select id='experiment_list'  class='custom-select'><option hidden disabled selected>Select a study</option>";
-    name_list.sort(function(a,b){
-      return a.toLowerCase().localeCompare(b.toLowerCase());
-    });
-    name_list.forEach(function(item_name){
-      select_html += "<option>" + item_name + "</option>";
-    });
-    select_html += "</select>";
-    $("#experiments").html(select_html);
-    $("#experiment_list").on("change",function(){
-      if(first_load == false){
-        master_json.exp_mgmt.any_loaded = true;
+  try{
+    name_list = Object.keys(master_json.exp_mgmt.experiments);
+    function update_exp_list(){
+      var select_html = "<select id='experiment_list'  class='custom-select'><option hidden disabled selected>Select a study</option>";
+      name_list.sort(function(a,b){
+        return a.toLowerCase().localeCompare(b.toLowerCase());
+      });
+      name_list.forEach(function(item_name){
+        select_html += "<option>" + item_name + "</option>";
+      });
+      select_html += "</select>";
+      $("#experiments").html(select_html);
+      $("#experiment_list").on("change",function(){
+        if(first_load == false){
+          master_json.exp_mgmt.any_loaded = true;
+          $("#save_btn").click();
+        } else {
+          remove_from_list("Select a dropbox experiment");
+          first_load = false;
+        }			
+        exp_json = master_json.exp_mgmt.experiments[this.value];
+        clean_conditions();
+        $("#dropbox_inputs").show();
+        update_handsontables();
+        update_server_table();
         $("#save_btn").click();
-      } else {
-        remove_from_list("Select a dropbox experiment");
-        first_load = false;
-      }			
-			exp_json = master_json.exp_mgmt.experiments[this.value];
-			clean_conditions();
-			$("#dropbox_inputs").show();
-			update_handsontables();
-			update_server_table();
-			$("#save_btn").click();
-    });
-  }
-	//do longer synch with dropbox if the user is using dropbox
-  if(dropbox_check()){
-    dbx.filesListFolder({path:"/experiments"})
-        .then(function(experiments){
-          experiments.entries.forEach(function(entry){
-            if(entry[".tag"] == "file" && entry.name.indexOf(".json") !== -1 ){
-              var entry_name = entry.name.toLowerCase().replace(".json","");
-              //do not write over master_json for now if there is an experiment json with the same name
-              if(name_list.indexOf(entry_name) == -1){
-                name_list.push(entry_name);
-                synch_experiment(entry_name);
-              }
-            }
-          });
-          update_exp_list();
-        })
-        .catch(function(error){
-          report_error("problem listing the experiments", "problem listing the experiments");
-        });
-  } else { //just a sanity check that the user is in fact using a localhost version
-    switch(Collector.detect_context()){
-      case "localhost":
-        update_exp_list()
-        break;
+      });
     }
+    //do longer synch with dropbox if the user is using dropbox
+    if(dropbox_check()){
+      dbx.filesListFolder({path:"/experiments"})
+          .then(function(experiments){
+            experiments.entries.forEach(function(entry){
+              if(entry[".tag"] == "file" && entry.name.indexOf(".json") !== -1 ){
+                var entry_name = entry.name.toLowerCase().replace(".json","");
+                //do not write over master_json for now if there is an experiment json with the same name
+                if(name_list.indexOf(entry_name) == -1){
+                  name_list.push(entry_name);
+                  synch_experiment(entry_name);
+                }
+              }
+            });
+            update_exp_list();
+          })
+          .catch(function(error){
+            report_error("problem listing the experiments", "problem listing the experiments");
+          });
+    } else { //just a sanity check that the user is in fact using a localhost version
+      switch(Collector.detect_context()){
+        case "localhost":
+          update_exp_list()
+          break;
+      }
+    }
+    Collector.tests.pass("studies",
+                         "list");
+  } catch(error){
+    Collector.tests.fail("studies",
+                         "list",
+                         error);
   }
 }
 function new_experiment(experiment){

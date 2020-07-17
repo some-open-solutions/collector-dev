@@ -256,7 +256,8 @@ function list_trialtypes(to_do_after){
                          "list");
   } catch(error){
     Collector.tests.fail("trialtypes",
-                         "list");
+                         "list",
+                         error);
   };
 }
 function valid_trialtype(this_name){

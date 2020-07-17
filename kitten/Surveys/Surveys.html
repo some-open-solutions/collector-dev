@@ -326,7 +326,8 @@ function list_surveys(){
     }
   } catch(error){
     Collector.tests.fail("surveys",
-                         "list");
+                         "list",
+                         error);
   }
 }
 
