@@ -392,193 +392,208 @@ $("#run_btn").on("click",function(){
 
 });
 $("#save_btn").on("click", function(){
-  $("#save_trial_type_button").click();
-	$("#save_survey_btn").click();
-  $("#save_snip_btn").click();
-	$("#save_data_script_btn").click();
+  try{
+    $("#save_trial_type_button").click();
+    $("#save_survey_btn").click();
+    $("#save_snip_btn").click();
+    $("#save_data_script_btn").click();
 
-  if(typeof(master_json.keys) == "undefined" ||
-		 typeof(master_json.keys.public_key) == "undefined"){
-			 encrypt_obj.generate_keys();
-	}
-  
-	var experiment = $("#experiment_list").val();
-  var this_exp 	 = master_json.exp_mgmt.experiments[experiment];
-  
-  if(typeof(this_exp) !== "undefined"){
-      this_exp.public_key   = master_json.keys.public_key;
-  }
-	//parse procs for survey saving next
-	if($("#experiment_list").val() !== null) {
-    this_exp.parsed_procs = {};
-    var procs = Object.keys(this_exp.all_procs);
-    procs.forEach(function(proc){
-      this_exp.parsed_procs[proc] = Papa.parse(Papa.unparse(this_exp.all_procs[proc]),{header:true}).data;
-    });
-
-    //add surveys to experiment
-		if(typeof(this_exp.surveys) == "undefined"){
-			this_exp.surveys = {};
-		}
-
-
-    Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
-
-      this_proc = this_exp.parsed_procs[proc_name];
-      this_proc.forEach(function(proc_row){
-        proc_row = Collector.clean_obj_keys(proc_row);
-
-				// survey check
-				////////////////
-        if(typeof(proc_row.survey) !== "undefined" &&
-          proc_row.survey !== ""){
-          var this_survey = proc_row.survey.toLowerCase();
-					if(typeof(master_json.surveys.user_surveys[this_survey]) !== "undefined"){
-            if(typeof(this_exp.surveys) == "undefined"){
-              this_exp.surveys = {};
-            }
-            this_exp.surveys[this_survey] = master_json.surveys.user_surveys[this_survey];
-
-            //check for mods
-            if(typeof(this_exp.mods) == "undefined"){
-              this_exp.mods = {};
-            }
-            keyed_survey = Papa.parse(Papa.unparse(master_json.surveys.user_surveys[this_survey]),{header:true}).data;
-            keyed_survey.forEach(function(key_row){
-              clean_key_row = Collector.clean_obj_keys(key_row);
-              if(typeof(clean_key_row.type) !== "undefined"){
-                var survey_mod_type = clean_key_row.type.toLowerCase();
-                if(typeof(master_json.mods[survey_mod_type]) !== "undefined"){
-                  this_exp.mods[survey_mod_type] = {
-                    location:'',
-                    contents:master_json.mods[survey_mod_type].contents
-                  }
-                }
-              }
-            });
-          } else if(typeof(master_json.surveys.default_surveys[this_survey]) !== "undefined"){
-            this_exp.surveys[proc_row.survey] = master_json.surveys.default_surveys[this_survey];
-          }	else {
-            bootbox.alert("The survey <b>" + proc_row.survey + "</b> in your procedure sheet doesn't appear to exist. Please check the spelling of it");
-          }
-        }
-      });
-    });
-
-    //clean all the procedures
-    var trialtypes = [];
-
-    Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
-			var cleaned_parsed_proc = [];
-			this_exp.parsed_procs[proc_name].forEach(function(row){
-				if(Object.values(row).join("") !== ""){
-					cleaned_parsed_proc.push(row);
-				}
-			});
-			this_exp.parsed_procs[proc_name] = cleaned_parsed_proc;
-
-			this_exp.parsed_procs[proc_name] = this_exp.parsed_procs[proc_name].map(function(row,row_index){
-        var cleaned_row = Collector.clean_obj_keys(row);
-        if(trialtypes.indexOf(cleaned_row["trial type"]) == -1){
-          trialtypes.push(cleaned_row["trial type"].toLowerCase());
-        }
-				cleaned_row["trial type"] = cleaned_row["trial type"].toLowerCase();
-				if(cleaned_row["trial type"].indexOf(" ") !== -1){
-					bootbox.alert("You have a space in row <b>" + (row_index + 2) + "</b> of your procedure <b>" + proc_name + "</b>. Please fix this before trying to run your experiment.");
-				}
-				if(cleaned_row.item == 0){
-					if(typeof(master_json.trialtypes.user_trialtypes[cleaned_row["trial type"]]) !== "undefined"){
-						var this_trialtype = master_json.trialtypes.user_trialtypes[cleaned_row["trial type"]];
-					} else if(typeof(master_json.trialtypes.default_trialtypes[cleaned_row["trial type"]]) !== "undefined"){
-						var this_trialtype = master_json.trialtypes.default_trialtypes[cleaned_row["trial type"]];
-					} else {
-						bootbox.alert("The trialtype <b>" + cleaned_row["trial type"] + "</b> doesn't appear to exist");
-					}
-					these_variables = Collector.list_variables(this_trialtype);
-
-					these_variables.forEach(function(this_variable){
-						if(Object.keys(cleaned_row).indexOf(this_variable) == -1 &&
-               this_variable !== "survey" &&
-               cleaned_row["trial type"] !== "survey"){          //i.e. this variable is not part of this procedure
-							Collector.custom_alert("You have your item set to <b>0</b> in row <b>" +
-														(row_index + 2) +
-														"</b>. However, it seems like the trialtype <b>" +
-														cleaned_row["trial type"] +
-														"</b> will be looking for a variable <b>" + this_variable + "</b> in your" +
-														" stimuli sheet.");
-						}
-					});
-
-					//need to take into account the trialtypes might be referring to a header in the procedure sheet
-				}
-        return cleaned_row;
-      });
-    });
-
-		proc_file = $("#proc_select").val();
-		createExpEditorHoT(this_exp.all_procs[proc_file], "Procedure",   proc_file);
-
-    trialtypes = trialtypes.filter(Boolean); //remove blanks
-    if(typeof(this_exp.trialtypes) == "undefined"){
-      this_exp.trialtypes = {};
+    if(typeof(master_json.keys) == "undefined" ||
+       typeof(master_json.keys.public_key) == "undefined"){
+         encrypt_obj.generate_keys();
     }
-
-    // First loop is to make sure the experiment has all the trialtypes
-    ///////////////////////////////////////////////////////////////////
-    trialtypes.forEach(function(trialtype){
-      if(typeof(master_json.trialtypes.user_trialtypes[trialtype]) == "undefined"){
-        this_exp.trialtypes[trialtype] = master_json.trialtypes.default_trialtypes[trialtype];
-      } else {
-        this_exp.trialtypes[trialtype] = master_json.trialtypes.user_trialtypes[trialtype];
+    
+    var experiment = $("#experiment_list").val();
+    
+    /*
+    * Only try to save an experiment if there is a valid experiment loaded
+    */
+    if(typeof(experiment) !== "undefined"){
+      var this_exp 	 = master_json.exp_mgmt.experiments[experiment];
+    
+      if(typeof(this_exp) !== "undefined"){
+        this_exp.public_key   = master_json.keys.public_key;
       }
-    });
+      //parse procs for survey saving next
+      if($("#experiment_list").val() !== null) {
+        this_exp.parsed_procs = {};
+        var procs = Object.keys(this_exp.all_procs);
+        procs.forEach(function(proc){
+          this_exp.parsed_procs[proc] = Papa.parse(Papa.unparse(this_exp.all_procs[proc]),{header:true}).data;
+        });
 
-    if(Collector.detect_context() == "localhost"){
-      python_exp = this_exp;
-      python_exp.python_procs = {};
-      python_exp.python_conditions = Papa.unparse(this_exp.cond_array);
-      Object.keys(this_exp.all_procs).forEach(function(this_proc){
-        python_exp.python_procs[this_proc] = Papa.unparse(this_exp.all_procs[this_proc]);
-      });
-      python_exp.python_stims = {};
-      Object.keys(this_exp.all_stims).forEach(function(this_stim){
-        python_exp.python_stims[this_stim] = Papa.unparse(this_exp.all_stims[this_stim]);
-      });
-      eel.save_experiment(experiment,  //experiment name
-                          python_exp); //experiment content
+        //add surveys to experiment
+        if(typeof(this_exp.surveys) == "undefined"){
+          this_exp.surveys = {};
+        }
 
+
+        Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
+
+          this_proc = this_exp.parsed_procs[proc_name];
+          this_proc.forEach(function(proc_row){
+            proc_row = Collector.clean_obj_keys(proc_row);
+
+            // survey check
+            ////////////////
+            if(typeof(proc_row.survey) !== "undefined" &&
+              proc_row.survey !== ""){
+              var this_survey = proc_row.survey.toLowerCase();
+              if(typeof(master_json.surveys.user_surveys[this_survey]) !== "undefined"){
+                if(typeof(this_exp.surveys) == "undefined"){
+                  this_exp.surveys = {};
+                }
+                this_exp.surveys[this_survey] = master_json.surveys.user_surveys[this_survey];
+
+                //check for mods
+                if(typeof(this_exp.mods) == "undefined"){
+                  this_exp.mods = {};
+                }
+                keyed_survey = Papa.parse(Papa.unparse(master_json.surveys.user_surveys[this_survey]),{header:true}).data;
+                keyed_survey.forEach(function(key_row){
+                  clean_key_row = Collector.clean_obj_keys(key_row);
+                  if(typeof(clean_key_row.type) !== "undefined"){
+                    var survey_mod_type = clean_key_row.type.toLowerCase();
+                    if(typeof(master_json.mods[survey_mod_type]) !== "undefined"){
+                      this_exp.mods[survey_mod_type] = {
+                        location:'',
+                        contents:master_json.mods[survey_mod_type].contents
+                      }
+                    }
+                  }
+                });
+              } else if(typeof(master_json.surveys.default_surveys[this_survey]) !== "undefined"){
+                this_exp.surveys[proc_row.survey] = master_json.surveys.default_surveys[this_survey];
+              }	else {
+                bootbox.alert("The survey <b>" + proc_row.survey + "</b> in your procedure sheet doesn't appear to exist. Please check the spelling of it");
+              }
+            }
+          });
+        });
+
+        //clean all the procedures
+        var trialtypes = [];
+
+        Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
+          var cleaned_parsed_proc = [];
+          this_exp.parsed_procs[proc_name].forEach(function(row){
+            if(Object.values(row).join("") !== ""){
+              cleaned_parsed_proc.push(row);
+            }
+          });
+          this_exp.parsed_procs[proc_name] = cleaned_parsed_proc;
+
+          this_exp.parsed_procs[proc_name] = this_exp.parsed_procs[proc_name].map(function(row,row_index){
+            var cleaned_row = Collector.clean_obj_keys(row);
+            if(trialtypes.indexOf(cleaned_row["trial type"]) == -1){
+              trialtypes.push(cleaned_row["trial type"].toLowerCase());
+            }
+            cleaned_row["trial type"] = cleaned_row["trial type"].toLowerCase();
+            if(cleaned_row["trial type"].indexOf(" ") !== -1){
+              bootbox.alert("You have a space in row <b>" + (row_index + 2) + "</b> of your procedure <b>" + proc_name + "</b>. Please fix this before trying to run your experiment.");
+            }
+            if(cleaned_row.item == 0){
+              if(typeof(master_json.trialtypes.user_trialtypes[cleaned_row["trial type"]]) !== "undefined"){
+                var this_trialtype = master_json.trialtypes.user_trialtypes[cleaned_row["trial type"]];
+              } else if(typeof(master_json.trialtypes.default_trialtypes[cleaned_row["trial type"]]) !== "undefined"){
+                var this_trialtype = master_json.trialtypes.default_trialtypes[cleaned_row["trial type"]];
+              } else {
+                bootbox.alert("The trialtype <b>" + cleaned_row["trial type"] + "</b> doesn't appear to exist");
+              }
+              these_variables = Collector.list_variables(this_trialtype);
+
+              these_variables.forEach(function(this_variable){
+                if(Object.keys(cleaned_row).indexOf(this_variable) == -1 &&
+                   this_variable !== "survey" &&
+                   cleaned_row["trial type"] !== "survey"){          //i.e. this variable is not part of this procedure
+                  Collector.custom_alert("You have your item set to <b>0</b> in row <b>" +
+                                (row_index + 2) +
+                                "</b>. However, it seems like the trialtype <b>" +
+                                cleaned_row["trial type"] +
+                                "</b> will be looking for a variable <b>" + this_variable + "</b> in your" +
+                                " stimuli sheet.");
+                }
+              });
+
+              //need to take into account the trialtypes might be referring to a header in the procedure sheet
+            }
+            return cleaned_row;
+          });
+        });
+
+        proc_file = $("#proc_select").val();
+        createExpEditorHoT(this_exp.all_procs[proc_file], "Procedure",   proc_file);
+
+        trialtypes = trialtypes.filter(Boolean); //remove blanks
+        if(typeof(this_exp.trialtypes) == "undefined"){
+          this_exp.trialtypes = {};
+        }
+
+        // First loop is to make sure the experiment has all the trialtypes
+        ///////////////////////////////////////////////////////////////////
+        trialtypes.forEach(function(trialtype){
+          if(typeof(master_json.trialtypes.user_trialtypes[trialtype]) == "undefined"){
+            this_exp.trialtypes[trialtype] = master_json.trialtypes.default_trialtypes[trialtype];
+          } else {
+            this_exp.trialtypes[trialtype] = master_json.trialtypes.user_trialtypes[trialtype];
+          }
+        });
+
+        if(Collector.detect_context() == "localhost"){
+          python_exp = this_exp;
+          python_exp.python_procs = {};
+          python_exp.python_conditions = Papa.unparse(this_exp.cond_array);
+          Object.keys(this_exp.all_procs).forEach(function(this_proc){
+            python_exp.python_procs[this_proc] = Papa.unparse(this_exp.all_procs[this_proc]);
+          });
+          python_exp.python_stims = {};
+          Object.keys(this_exp.all_stims).forEach(function(this_stim){
+            python_exp.python_stims[this_stim] = Papa.unparse(this_exp.all_stims[this_stim]);
+          });
+          eel.save_experiment(experiment,  //experiment name
+                              python_exp); //experiment content
+
+        }
+
+        //dropbox check here
+        if(dropbox_check()){
+          dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},
+            function(returned_data){
+              dbx.sharingCreateSharedLink({path:returned_data.path_lower})
+                .then(function(returned_link){
+                  this_exp.location = returned_link.url;
+                  dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},function(location_saved){
+                      $("#run_link").attr("href","../"+ master_json.exp_mgmt.version + "/RunStudy.html?location="+this_exp.location);
+                      update_master_json();
+                    },function(error){
+                      Collector.custom_alert("check console for error saving location");
+                      bootbox.alert(error.error + "<br> Perhaps wait a bit and save again?");;
+                    },
+                    "filesUpload");              
+                })
+                .catch(function(error){
+                  Collector.tests.report_error("problem uploading an experiment", "problem uploading an experiment");
+                });
+
+            },function(error){
+              alert(error);
+            },
+            "filesUpload");
+        }
+      } else {
+        update_master_json();
+      }
+      if(Collector.detect_context() == "localhost"){
+        eel.save_master_json(master_json);
+      }
     }
-
-    //dropbox check here
-    if(dropbox_check()){
-      dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},
-        function(returned_data){
-          dbx.sharingCreateSharedLink({path:returned_data.path_lower})
-            .then(function(returned_link){
-              this_exp.location = returned_link.url;
-							dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},function(location_saved){
-									$("#run_link").attr("href","../"+ master_json.exp_mgmt.version + "/RunStudy.html?location="+this_exp.location);
-									update_master_json();
-								},function(error){
-									Collector.custom_alert("check console for error saving location");
-									bootbox.alert(error.error + "<br> Perhaps wait a bit and save again?");;
-								},
-								"filesUpload");              
-            })
-            .catch(function(error){
-              Collector.tests.report_error("problem uploading an experiment", "problem uploading an experiment");
-            });
-
-        },function(error){
-          alert(error);
-        },
-        "filesUpload");
-    }
-  } else {
-    update_master_json();
-  }
-  if(Collector.detect_context() == "localhost"){
-    eel.save_master_json(master_json);
+    
+    Collector.tests.pass("studies",
+                         "save_at_start");
+  } catch (error){
+    Collector.tests.fail("studies",
+                         "save_at_start",
+                         error);
   }
 });
 $("#stim_select").on("change",function(){
