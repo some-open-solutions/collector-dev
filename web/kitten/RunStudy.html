@@ -347,7 +347,7 @@ Study = {
     
     /*
     * add the random seed to each dropbox img, vid or audio file here 
-    */
+    
     var dl0_to_replace = (this_trialtype.match(/dl=0/g) || []).length;
     for (var i = 0; i < dl0_to_replace; i++){
       this_trialtype = this_trialtype.replace("?dl=0","?dl=0&someRandomSeed=" + Math.random().toString(36));
@@ -357,6 +357,7 @@ Study = {
     for (var i = 0; i < dl1_to_replace; i++){
       this_trialtype = this_trialtype.replace("?dl=1","?dl=1&someRandomSeed=" + Math.random().toString(36));
     }
+    */
 		return this_trialtype;
 	},
   
@@ -699,7 +700,7 @@ function get_gets() {
     exp_condition = "";
   }
   if(Study.get_vars.platform == "preview"){
-    bootbox.alert("You are in <b>Preview</b> mode. This means that you will <b>NOT</b> be saving any data. If this is not what you want, go back to the study editor, click <em>run</em> again, and click on 'local' or 'online' instead of 'preview'");
+    //bootbox.alert("You are in <b>Preview</b> mode. This means that you will <b>NOT</b> be saving any data. If this is not what you want, go back to the study editor, click <em>run</em> again, and click on 'local' or 'online' instead of 'preview'");
   }
   Study.activate_pipe();
 }
@@ -730,8 +731,26 @@ function insert_end_checks(){
 }
 function insert_start(){
 
-  // skip this if in preview mode
-  if(Study.get_vars.platform !== "preview"){
+  
+  if(Study.get_vars.platform == "preview"){
+    var this_proc  = exp_json.parsed_proc;
+    
+    var this_proc_calibration = {
+      item:0,
+      max_time:"",
+			text:"",
+      "trial type":"preview_start"
+    }
+    var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+    shuffle_levels.forEach(function(shuffle_level){
+      this_proc_calibration[shuffle_level] = "off";
+    });
+    this_proc.unshift(this_proc_calibration);
+    $.get("Quality/PreviewStart.html",function(preview_start_html){
+      exp_json.trialtypes.preview_start = preview_start_html;
+      Study.activate_pipe();
+    });    
+  } else {
 
     // update the procedure to have a general warning
     var this_proc  = exp_json.parsed_proc;
@@ -742,30 +761,25 @@ function insert_start(){
 			text:"",
       "trial type":"calibration_zoom"
     }
-		
-		var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
-		shuffle_levels.forEach(function(shuffle_level){
-			this_proc_calibration[shuffle_level] = "off";
-		});
-		
-		
-    this_proc.unshift(this_proc_calibration);
+    var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+    shuffle_levels.forEach(function(shuffle_level){
+      this_proc_calibration[shuffle_level] = "off";
+    });
     
+    this_proc.unshift(this_proc_calibration);
     var this_proc_detail_warning = {
       item:0,
       max_time:"",
-			text:"",
+      text:"",
       "trial type":"start_experiment"
     }
-		
-		var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
-		shuffle_levels.forEach(function(shuffle_level){
-			this_proc_detail_warning[shuffle_level] = "off";
-		});
-		
-		
+    
+    var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+    shuffle_levels.forEach(function(shuffle_level){
+      this_proc_detail_warning[shuffle_level] = "off";
+    });
     this_proc.unshift(this_proc_detail_warning);
-
+    
     // update trialtypes to have a "start" trial
     ////////////////////////////////////////////
     
@@ -776,9 +790,8 @@ function insert_start(){
         Study.activate_pipe();
       });
     });
-  } else {
-    Study.activate_pipe();
-  }
+	}
+  
 }
 
 
@@ -1336,6 +1349,7 @@ function write_trial_iframe(index){
 	if(typeof(exp_json.parsed_proc[index]) == "undefined"){
 		return null;
 	}
+  
 	$("#experiment_div").append("<iframe class='trial_iframe' scrolling='no' frameBorder='0' id='trial"+index+"'></iframe>");
 	this_proc = exp_json.parsed_proc[index];
 
@@ -1353,7 +1367,12 @@ function write_trial_iframe(index){
 	}
 	doc = document.getElementById('trial'+index).contentWindow.document;
 	doc.open();
-	doc.write(trial_iframe_code);
+  try{
+    doc.write(trial_iframe_code);
+  } catch(error){
+    alert("failed to write the trial_code");
+    alert(error);
+  }
 	doc.close();
 
 	//CODE HERE TO DEAL WITH POST TRIAL TYPES
@@ -1365,7 +1384,14 @@ function write_trial_iframe(index){
 
 		doc = document.getElementById('trial'+index).contentWindow.document.getElementById('post'+i).contentWindow;
 		doc.document.open();
-		doc.document.write(libraries + trial_content); //libraries + trial_content
+    
+    
+    /*
+    * New attempt to check if images have loaded succesfully
+    */
+    var img_check_code =  '<scr' + 'ipt src="Code/StimuliChecks.js"></scr' + 'ipt>';
+    
+    doc.document.write(libraries + trial_content + img_check_code); //+ 
 		doc.document.close();
 
     //autoscroll to top of iframe (in case the trial runs over)

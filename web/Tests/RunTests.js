@@ -19,16 +19,30 @@
 	Kitten release (2019-20) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
 */
 Collector.tests = {
+  categories:["data",
+              "helper",
+              "mods",
+              "studies",
+              "surveys",
+              "trialtypes"],
   pipeline:[
     "start",
     "after_start"
   ],
   pipe_position: "start",
+  
   /*
   * categories of test
   */
   data:{
     
+  },
+  helper:{
+    startup:{
+      outcome: "awaiting",
+      text:    "Can the user see the helper at start up (dropbox only)?",
+      type:    "start"
+    }
   },
   mods:{
     list:{
@@ -74,11 +88,7 @@ Collector.tests = {
     var old_index = Collector.tests.pipeline.indexOf(this_type);
     if(old_index < Collector.tests.pipeline.length - 1){
       Collector.tests.pipe_position  = Collector.tests.pipeline[old_index + 1];
-      ["data",
-       "mods",
-       "studies",
-       "surveys",
-       "trialtypes"].forEach(function(test_category){
+      this.categories.forEach(function(test_category){
         Object.keys(Collector.tests[test_category]).forEach(function(this_test){
           if(Collector.tests[test_category][this_test].type == Collector.tests.pipe_position){
              Collector.tests[test_category][this_test].action();
@@ -94,11 +104,7 @@ Collector.tests = {
     var this_type       = Collector.tests.pipe_position;
     var tests_remaining = 0;
     
-    ["data",
-      "mods",
-      "studies",
-      "surveys",
-      "trialtypes"].forEach(function(test_category){
+    this.categories.forEach(function(test_category){
       Object.keys(Collector.tests[test_category]).forEach(function(this_test){
         
         if(Collector.tests[test_category][this_test].type    == this_type &&
@@ -117,12 +123,14 @@ Collector.tests = {
   fail:function(test_category,
                 this_test,
                 error){
+    console.dir("error");
+    console.dir(error);
     Collector.tests[test_category][this_test].outcome = "fail";
     $("#test_" +
       test_category + 
       "_" +
       this_test).html("<span class='text-danger'>Fail</span>");
-    bootbox.alert(error);
+    bootbox.alert("error occurred - check the console for more information");
   },
   pass:function(test_category,
                 this_test){
@@ -145,13 +153,16 @@ Collector.tests = {
                       "<h4> Start tests remaining:<span id='start_tests_remaining_span'></span></h4>" +
                       "<h4> After start tests remaining:<span id='after_start_tests_remaining_span'></span></h4>" +
                       "<table class='table'>";
-     ["data",
-      "mods",
-      "studies",
-      "surveys",
-      "trialtypes"].forEach(function(test_category){
+     this.categories.forEach(function(test_category){
+        
+        // first letter capital
+        
+       
         test_text += "<tr>" +
-                        "<td colspan=2><h4>" + test_category + "</h4></td>";
+                        "<td colspan=2><h4>" +
+                          //solution by Little Roys at https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript/53930826#53930826
+                          test_category.replace(/^./, str => str.toUpperCase()) +
+                        "</h4></td>";
         Object.keys(Collector.tests[test_category]).forEach(function(this_test){
           test_text += "<tr>" +
                          "<td class='text-primary'>" + Collector.tests[test_category][this_test].text    + "</td>" +

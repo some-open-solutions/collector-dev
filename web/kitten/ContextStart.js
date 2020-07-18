@@ -34,6 +34,8 @@ switch(Collector.detect_context()){
     wait_till_exists("check_authenticated");  //check dropbox    
     break;
   case "localhost":
+    Collector.tests.pass("helper",
+                         "startup");          // this can't fail in localhost version
 		eel.expose(python_bootbox);
     function python_bootbox(message){
       Collector.custom_alert(message);

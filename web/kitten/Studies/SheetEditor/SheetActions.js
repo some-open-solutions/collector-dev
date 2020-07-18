@@ -34,7 +34,7 @@ $("#delete_exp_btn").on("click",function(){
 				if(dropbox_check()){
 					dbx.filesDelete({path:"/experiments/"+exp_name+".json"})
 						.then(function(response) {
-							$('#experiment_list option:contains('+ exp_name +')')[0].remove();
+              $('#experiment_list option:contains('+ exp_name +')')[0].remove();
 							if(document.getElementById('experiment_list').options[0] !== undefined){
 								$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
 							}
@@ -85,7 +85,7 @@ $("#new_experiment_button").on("click",function(){
 				new_experiment(result);
 				$("#save_btn").click();
 			}
-		}
+		}    
 	});
 });
 $("#new_proc_button").on("click",function(){
@@ -520,9 +520,6 @@ $("#save_btn").on("click", function(){
             return cleaned_row;
           });
         });
-
-        proc_file = $("#proc_select").val();
-        createExpEditorHoT(this_exp.all_procs[proc_file], "Procedure",   proc_file);
 
         trialtypes = trialtypes.filter(Boolean); //remove blanks
         if(typeof(this_exp.trialtypes) == "undefined"){

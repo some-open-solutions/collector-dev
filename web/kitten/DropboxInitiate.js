@@ -82,53 +82,64 @@ function isAuthenticated() { // If the user was just redirected from authenticat
 
 function check_authenticated(){
   if(isAuthenticated()){
-    help_div_content = $(".help_general").html();
-    startup_dialog = bootbox.dialog({
-      title: 'Welcome!',
-      message: '<p id="startup_prog"><i class="fa fa-spin fa-spinner"></i> Loading your master file <br><br> Refresh page if this message is here for more than a minute</p>' +
-      help_div_content +
-      '<button class="btn btn-primary change_tip">Previous</button>' +
-      '<button class="btn btn-primary change_tip">Next</button>' +
-      "<button class='btn btn-primary' id='startup_btn' style='display:none'>Start!</button>"
-    });
-    $(".change_tip").on("click",function(){
-      if(this.innerHTML == "Next"){
-        help_obj.tip_no++;
-      } else {
-        help_obj.tip_no--;
-      }
-      help_obj.tip_no = help_obj.tip_no < 0 ? help_obj.main.length - 1
-                      : help_obj.tip_no == help_obj.main.length ? 0
-                      : help_obj.tip_no;
-
-      $(".general_tip").hide();
-      $(".tip"+help_obj.tip_no).show();
-    });
-  // Create an instance of Dropbox with the access token and use it to
-    // fetch and render the files in the users root directory.
-    if(Collector.detect_context() == "gitpod"){
-      if(typeof(dbx) == "undefined"){
-        dbx = new Dropbox({ accessToken: "zX0EGDhNy2AAAAAAAAAAIW8Ew9QBdD0LofB7depK5AB5fUK9_18t5qQWVeV2VGZs" }); //this may require frequent updating :-(
-      }
-
-    } else {
-      dbx = new Dropbox({ accessToken: getAccessTokenFromUrl() });
-    }
     
-    dbx.usersGetCurrentAccount()
-    .then(function(account_info){
-      $("#dropbox_account_email").html(account_info.email);
-      $("#startup_prog").html("Dropbox account: <a href='https://www.dropbox.com/home/Apps/Collector-SOS' target='_blank'>" + account_info.email + "</a> <button class='btn btn-info' id='intro_switch_dbx'>Switch account</button>");
-      $("#intro_switch_dbx").on("click",function(){
-        force_reauth_dbx();
-      });
-      initiate_master_json();
-    })
-    .catch(function(error){
-      console.dir("Dropbox not logged in yet");
-      console.dir(error);
-    });
+    /*
+    * wait until $(".help_general") exists before loading welcome dialog
+    */
+    var waiting_help_general = setInterval(function(){
+      if($(".help_general").length > 0){
+        clearInterval(waiting_help_general);
+        Collector.tests.pass("helper",
+                             "startup");
+        help_div_content = $(".help_general").html();
+        startup_dialog = bootbox.dialog({
+          title: 'Welcome!',
+          message: '<p id="startup_prog"><i class="fa fa-spin fa-spinner"></i> Loading your master file <br><br> Refresh page if this message is here for more than a minute</p>' +
+          help_div_content +
+          '<button class="btn btn-primary change_tip">Previous</button>' +
+          '<button class="btn btn-primary change_tip">Next</button>' +
+          "<button class='btn btn-primary' id='startup_btn' style='display:none'>Start!</button>"
+        });
+        $(".change_tip").on("click",function(){
+          if(this.innerHTML == "Next"){
+            help_obj.tip_no++;
+          } else {
+            help_obj.tip_no--;
+          }
+          help_obj.tip_no = help_obj.tip_no < 0 ? help_obj.main.length - 1
+                          : help_obj.tip_no == help_obj.main.length ? 0
+                          : help_obj.tip_no;
 
+          $(".general_tip").hide();
+          $(".tip"+help_obj.tip_no).show();
+        });
+      // Create an instance of Dropbox with the access token and use it to
+        // fetch and render the files in the users root directory.
+        if(Collector.detect_context() == "gitpod"){
+          if(typeof(dbx) == "undefined"){
+            dbx = new Dropbox({ accessToken: "zX0EGDhNy2AAAAAAAAAAIW8Ew9QBdD0LofB7depK5AB5fUK9_18t5qQWVeV2VGZs" }); //this may require frequent updating :-(
+          }
+
+        } else {
+          dbx = new Dropbox({ accessToken: getAccessTokenFromUrl() });
+        }
+        
+        dbx.usersGetCurrentAccount()
+        .then(function(account_info){
+          $("#dropbox_account_email").html(account_info.email);
+          $("#startup_prog").html("Dropbox account: <a href='https://www.dropbox.com/home/Apps/Collector-SOS' target='_blank'>" + account_info.email + "</a> <button class='btn btn-info' id='intro_switch_dbx'>Switch account</button>");
+          $("#intro_switch_dbx").on("click",function(){
+            force_reauth_dbx();
+          });
+          initiate_master_json();
+        })
+        .catch(function(error){
+          console.dir("Dropbox not logged in yet");
+          console.dir(error);
+        });
+      }        
+    },1000);
+    
   }	else {
     // Set the login anchors href using dbx.getAuthenticationUrl()
     dropbox_login();
@@ -220,6 +231,9 @@ function legacy_initiate_uber(){
 }
 function load_master_json(link_created){
 	$.get(link_created.url.replace("www.","dl."),function(returned_data){
+    //moving what to do to the "done" outcome below:
+	})
+  .done(function(returned_data){
     master_json = JSON.parse(returned_data);
 
     //probable would be good to have a list of things that follow, but for now:
@@ -245,7 +259,11 @@ function load_master_json(link_created){
 		}
 		renderItems();
 		
-	});
+  })
+  .fail(function(){
+    bootbox.alert("An attempt to load you resources from dropbox failed, trying again...");
+    load_master_json(link_created);
+  });
 }
 function new_dropbox_account(dropbox_dialog){
   $.get("Default/master.json",function(this_json){
