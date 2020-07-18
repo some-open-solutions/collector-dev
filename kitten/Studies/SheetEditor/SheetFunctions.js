@@ -60,7 +60,6 @@ function clean_conditions(){
       bootbox.alert("You have a space in your condition: " + row.name + ". Please change the name to not have any spaces");
     }
   });
-  exp_json
   update_handsontables();
 }
 function createExpEditorHoT(sheet,selected_handsonTable, sheet_name) {
@@ -179,19 +178,19 @@ function new_experiment(experiment){
 		bootbox.alert("Name already exists. Please try again.");
 	} else {
 
-		//create it first in dropbox, THEN update table with location
+    //create it first in dropbox, THEN update table with location
 		master_json.exp_mgmt.experiments[experiment] = new_experiment_data;
-
-    update_handsontables();
-    update_master_json();
-
-		var this_path = "/Experiments/"+experiment+".json";
+    
+		var this_path = "/Experiments/" + experiment + ".json";
 
     function update_experiment_list(experiment){
       $('#experiment_list').append($('<option>', {
         text : experiment
       }));
       $("#experiment_list").val(experiment);
+      update_handsontables();
+      update_master_json();
+
       $("#save_btn").click();
     }
     if(dropbox_check()){
