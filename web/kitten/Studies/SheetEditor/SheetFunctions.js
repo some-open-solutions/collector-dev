@@ -51,11 +51,10 @@ function check_trialtypes_in_proc(procedure,post_trialtype){
 }
 function clean_conditions(){
   exp_json = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
+  console.dir(exp_json);
 	exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
   exp_json.conditions = exp_json.conditions.filter(row => row.procedure !== "");
   exp_json.conditions.forEach(function(row){
-    console.dir(row);
-    console.dir(row.name);
     if(row.name.indexOf(" ") !== -1){
       bootbox.alert("You have a space in your condition: " + row.name + ". Please change the name to not have any spaces");
     }
