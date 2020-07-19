@@ -1,21 +1,12 @@
 /*
-* check that images have loaded succesfully, and reload if not
+* This only works on Chrome - but it's possible that it's only chrome that sometime loses the images in the first place?
 */
-alert("HO");
+
 $("img").on("load", function() {
-  // nothing to do, it all worked well
+  // nothing to do, it all worked well  
 })
 .on("error", function() {
   d = new Date();
-  $(this).attr("src",                               // replace this
-               "https://dl.dropbox.com/s/zcpro7lzj4lm7zu/GAAP1_AR.png?dl=0" + //$(this).attr("src") +
-               "?" +
-               d.getTime());  // with this
-})
-.each(function(){
-  if(this.complete){
-    $(this).load();
-  } else if(this.error) {
-    $(this).error();
-  }
+  $("#" + $(this)[0].id).attr("src",                     // replace this
+               $(this).attr("src") + "?" + d.getTime()); // with this
 });

@@ -112,7 +112,7 @@ $("#welcome_html").load("Welcome.html");
 <input type="hidden" id="completion_code" name="completion_code"/>
 <input type="hidden" id="prehashed_code" name="prehashed_code"/>
 <script>
-
+a = 7;
 
 
 exp_json = {}; //this will get updated
@@ -184,6 +184,23 @@ Study = {
   /*
   * Trial functions 
   */
+  detect_context: function(){
+    //turn to false to make use of eel and python
+		if(document.URL.indexOf("localhost") !== -1){
+			if(typeof(parent.dropbox_developer) !== "undefined" &&
+								parent.dropbox_developer  ==  true){
+				return "github";
+			} else {
+				return "localhost";
+			}
+		} else if(document.URL.indexOf("github.io") !== -1) { //assume it's github
+			return "github";
+		} else if(document.URL.indexOf("gitpod.io") !== -1){
+			return "gitpod"
+		} else {
+			return "server";
+		}
+  },
   finish_trial: function(go_to_info){
 
     trial_end_ms = (new Date()).getTime();
@@ -345,19 +362,6 @@ Study = {
 		});
     this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox"); // in case the user forgets
     
-    /*
-    * add the random seed to each dropbox img, vid or audio file here 
-    
-    var dl0_to_replace = (this_trialtype.match(/dl=0/g) || []).length;
-    for (var i = 0; i < dl0_to_replace; i++){
-      this_trialtype = this_trialtype.replace("?dl=0","?dl=0&someRandomSeed=" + Math.random().toString(36));
-    }
-    
-    var dl1_to_replace = (this_trialtype.match(/dl=1/g) || []).length;
-    for (var i = 0; i < dl1_to_replace; i++){
-      this_trialtype = this_trialtype.replace("?dl=1","?dl=1&someRandomSeed=" + Math.random().toString(36));
-    }
-    */
 		return this_trialtype;
 	},
   
@@ -606,7 +610,7 @@ function final_trial(){
 			}			
       function online_save_check(){
         setTimeout(function(){
-          if(online_data_obj.saves_started == online_data_obj.saves_ended){
+          if(online_data_obj.saves_started <= online_data_obj.saves_ended){
             online_data_obj.finished_and_stored = true;
             $("#google_progress").css("width","100%");
             setTimeout(function(){
