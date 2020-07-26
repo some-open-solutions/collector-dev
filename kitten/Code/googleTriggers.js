@@ -29,6 +29,7 @@ function google_save(experiment_id,
   };
   function recursive_google_save(save_script_url,
                                  data){
+    console.dir("sending data...");
     $.ajax({
       type: 'POST',
       url: save_script_url, //"https://script.google.com/macros/s/AKfycbyuUWN7Jc1j62OuUh1JrJFuHn7e2VXLZdZ9FJs4dvwX_D6JI7M7/exec",
