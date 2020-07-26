@@ -112,8 +112,6 @@ $("#welcome_html").load("Welcome.html");
 <input type="hidden" id="completion_code" name="completion_code"/>
 <input type="hidden" id="prehashed_code" name="prehashed_code"/>
 <script>
-a = 7;
-
 
 exp_json = {}; //this will get updated
 
@@ -278,8 +276,8 @@ Study = {
         eel.save_data(Study.get_vars.location,
                       $("#participant_code").val(),
                       $("#completion_code").val(),
-                      Papa.unparse(complete_csv(exp_json.responses),{
-                        quotes: false, //or array of booleans
+                      Papa.unparse(Collector.complete_csv(exp_json.responses),{
+                        quotes: false,        //or array of booleans
                         header: true,
                         skipEmptyLines: true, //or 'greedy',
                       }));                    //the data
