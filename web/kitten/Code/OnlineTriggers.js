@@ -56,12 +56,14 @@ function online_save(experiment_id,
             success:function(result){
               console.dir("data sending result:");
               console.dir(result);
-              if(result == "success"){          
-                after_function();
+              if(result.indexOf("success") == 0){
+                if(typeof(after_function) == "function"){
+                  after_function();
+                }
               } else {
                 attempt_no++;
                 console.dir("failed to save, attempting again");
-                recursive_google_save(save_script_url,
+                recursive_save(save_script_url,
                                       data,
                                       attempt_no,
                                       after_function);
@@ -71,16 +73,17 @@ function online_save(experiment_id,
           .catch(function(error){
             attempt_no++;
             console.dir("failed to save, attempting again");
-            recursive_google_save(save_script_url,
-                                  data,
-                                  attempt_no,
-                                  after_function);
+            recursive_save(save_script_url,
+                           data,
+                           attempt_no,
+                           after_function);
           });
         }
       }
-      recursive_google_save(save_script_url,
-                            data,
-                            0);
+      recursive_save(save_script_url,
+                     data,
+                     0);
+    }
 	}
 	var script_list = [];
 	Object.keys(data_scripts).forEach(function(server){
