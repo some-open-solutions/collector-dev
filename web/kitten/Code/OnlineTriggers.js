@@ -56,9 +56,11 @@ function online_save(experiment_id,
             success:function(result){
               console.dir("data sending result:");
               console.dir(result);
+              console.dir("after_function");
+              console.dir(after_function);
               if(result.indexOf("success") == 0){
                 if(typeof(after_function) == "function"){
-                  after_function();
+                  after_function(result);
                 }
               } else {
                 attempt_no++;
@@ -82,7 +84,8 @@ function online_save(experiment_id,
       }
       recursive_save(save_script_url,
                      data,
-                     0);
+                     0,
+                     after_function);
     }
 	}
 	var script_list = [];
