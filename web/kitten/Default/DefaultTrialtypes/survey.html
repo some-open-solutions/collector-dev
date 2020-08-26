@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-  Kitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
+  Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
 -->
 <style>
 body{
@@ -232,12 +232,14 @@ $("#proceed_button").on("click",function(){
   var proceed = true;
   var tabs    = document.getElementsByClassName('show_tab active');
   if(tabs.length > 0){
-    var current_tab       = document.getElementsByClassName('show_tab active')[0].id.replace("_button","").replace("tab_","");
+    var current_tab       = document.getElementsByClassName('show_tab active')[0]
+                                    .id
+                                    .replace("_button", "")
+                                    .replace("tab_",    "");
     var response_elements = $('#table_'+current_tab).find('.response_element');
 
   } else {
     response_elements = $(".table_break:visible").find(".response_element");
-    //response_elements     = $('.response_element');
   }
 
   for(var i = 0; i < response_elements.length; i++){
@@ -257,6 +259,7 @@ $("#proceed_button").on("click",function(){
     } else {
       min_resp_length = 0;
     }
+
 
     var quest_resp = isJSON($("#"+response_elements[i].id).val());
     if (quest_resp.length < min_resp_length){
@@ -302,11 +305,29 @@ $("#proceed_button").on("click",function(){
   }
 });
 
+//by qwerty at https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
+String.prototype.replaceAll = function(str1, str2, ignore){
+  return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+}
+
 
 ///////////////
 // Functions //
 ///////////////
 
+function clean_item(this_item){
+  if(this_item.indexOf("'") !== -1 |
+     this_item.indexOf('"') !== -1){
+    bootbox.alert("Please avoid apostraphe's or quote marks in the responses the participant can give. These cause problems with smooth running of surveys. This occurs when you wrote:<br><br>" + this_item);
+  }
+  
+  /*
+  this_item = this_item.replaceAll("'","")
+                       .replaceAll('"','');
+  */
+  
+  return(this_item);
+}
 
 function load_survey(survey){
   // are we in preview?
@@ -602,8 +623,8 @@ function process_survey_question(this_row,row_no){
 									'class="custom-select ' + 
 													'text-primary ' +
 													this_row["item_name"] + 
-													'_item row_' + row_no + '" ' +
-													'collector_button' +
+													'_item row_' + row_no + 
+													'collector_button "' +
 										'onchange="response_check(this)" ' +
 										'name="survey_' + this_row["item_name"].toLowerCase() + '">' +
 										'<option selected disabled hidden>-- no option selected --</option>';
@@ -662,6 +683,7 @@ function process_survey_question(this_row,row_no){
               
 							
 							for(var i=0; i<options.length;i++){
+                var this_option = clean_item(options[i]);
                 question_td +=  '<button type="button" '+
 																	'class="btn '+
 																				 'survey_btn ' +
@@ -670,8 +692,8 @@ function process_survey_question(this_row,row_no){
 																				 '"autocomplete="off"' +
 																	'id = "likert_' + row_no + '_' + i + '" ' +
 																	'style = "' + btn_style + '" ' +
-																	'onclick="likert_update(this,\''+options[i]+'\',\''+values[i]+'\')">'+ 
-																		options[i] +
+																	'onclick="likert_update(this,\''+this_option+'\',\''+values[i]+'\')">'+ 
+																		this_option +
 																'</button>';
 
               }
@@ -814,6 +836,8 @@ function quest_resp_perc(quest_resp_rat){
 }
 
 function response_check(submitted_element){
+  console.dir("submitted_element");
+  console.dir(submitted_element);
   switch(submitted_element.type){
     case "checkbox":
       var checked_responses = $("[name='"+submitted_element.name+"']:checked");

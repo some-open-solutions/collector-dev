@@ -1,3 +1,23 @@
 item,trial type,max time,text,Shuffle 1,
-2 to 37,mousetracker,user,This is the start of a new experiment.,off,
+0,text,user,"<video id=""movie_area""
+       class=""movie_area"" 
+       style=""width:600px;
+              height:600px"";
+       controls>
+  <source src=""../User/Stimuli/mt_exemplar/Collector_voiceover.mp4"" type=""video/mp4"">
+    Your browser does not support the video tag.
+</video><br>
+<button class=""btn btn-primary""
+        onclick=""Trial.submit()""
+        id=""proceed_btn""
+        style=""display:none"">Proceed</button>
+<script>
+Trial.set_timer(function(){
+  $(""#proceed_btn"").show();
+},10000);
+</script>
+",off,
+2 to 5,mousetracker,user,,practice,
+0,instruct,user,You've completed the practice trials. You are about to begin the main trials,off,
+6 to 37,mousetracker,user,,trials,
 ,,,,,

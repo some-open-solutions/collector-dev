@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-		Kitten release (2019-20) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
+		Kitten release (2019-20) author: Dr. Anthony Haffey (team@someopen.solutions)
 -->
 <head>
   <link rel="shortcut icon" type="image/x-icon" href="../logos/collector.ico.png" />
@@ -236,11 +236,13 @@ Study = {
         return r;
     }, {});
 
-    response_data["post_"+exp_json.post_no+"_trial_end_ms"]   = trial_end_ms;
-    response_data["post_"+exp_json.post_no+"_rt_ms"] = trial_end_ms - response_data["post_"+exp_json.post_no+"_trial_start_ms"]
-    response_data["post_"+exp_json.post_no+"_trial_end_date"] = new Date(parseInt(trial_end_ms, 10)).toString('MM/dd/yy HH:mm:ss');
-    exp_json.this_trial = response_data;
-    response_data["participant_browser"] = participant_browser;
+    response_data["post_"+exp_json.post_no+"_trial_window_inner_width"]  = window.innerWidth;
+    response_data["post_"+exp_json.post_no+"_trial_window_inner_height"] = window.innerHeight;
+    response_data["post_"+exp_json.post_no+"_trial_end_ms"]              = trial_end_ms;
+    response_data["post_"+exp_json.post_no+"_rt_ms"]                     = trial_end_ms - response_data["post_"+exp_json.post_no+"_trial_start_ms"];
+    response_data["post_"+exp_json.post_no+"_trial_end_date"]            = new Date(parseInt(trial_end_ms, 10)).toString('MM/dd/yy HH:mm:ss');
+    exp_json.this_trial                                                  = response_data;
+    response_data["participant_browser"]                                 = participant_browser;
 
     $("#trial"+exp_json.trial_no).contents().children().find("iframe").length;
     

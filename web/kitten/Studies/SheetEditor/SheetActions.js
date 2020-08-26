@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-		Kitten release (2019-2020) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
+		Kitten release (2019-2020) author: Dr. Anthony Haffey (team@someopen.solutions)
 */
 $("#default_experiments_select").on("change",function(){
 	if($("#default_experiments_select").val() !== "Select an experiment"){
