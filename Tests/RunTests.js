@@ -191,8 +191,12 @@ Collector.tests = {
   */  
   report_error: function(error,collector_error_message){
     if(typeof(collector_error_message) !== "undefined"){
-      bootbox.alert(collector_error_message);
+      bootbox.alert(collector_error_message + 
+                    ":" +
+                    error + 
+                    " - please send this information to your administrator or put it on the collectalk.com forum with a description of what lead to it.");
     }
+    
     if(typeof(eel) !== "undefined"){
       eel.report_error(error);
       custom_alert("Error - check the error report in web/Tests/errors.txt");

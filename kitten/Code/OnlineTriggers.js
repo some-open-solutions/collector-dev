@@ -33,15 +33,11 @@ function online_save(experiment_id,
 		if(script_list.length > 0){
 			var save_script_url = script_list.shift();
 			
-			console.dir("save_script_url");
-			console.dir(save_script_url);
-      console.dir("sending data");
-			
       function recursive_save(save_script_url,
                               data,
                               attempt_no,
                               after_function){
-        if(attempt_no == 3){
+        if(attempt_no == 10){
           until_successful_script(script_list,																	
                                   data,
                                   after_function);
