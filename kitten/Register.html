@@ -36,6 +36,7 @@
 }
 .create_account_btn,
 .delete_account_btn,
+.delete_server_btn,
 .forgot_password_btn{
   margin:2px;
   width:100%;
@@ -71,7 +72,7 @@
 				<div class="row">
 					<div class="g-recaptcha" data-sitekey="6LelCO4UAAAAAFEh_KGJlAQ5lthFI-kDY4_kv33_"></div>
 				</div>
-        <button class="btn btn-primary" id="sos_server_query">Can I use SOS servers?</button>
+        <button class="btn btn-primary" id="sos_server_query">Update SOS servers info</button>
         <div id="server_table_div"></div>
         <div class="row">
           <button class="btn btn-primary" id="add_server" style="width:100%">Add Server/Script</button>
@@ -86,8 +87,8 @@
 $("#add_server").on("click",function(){
   //resume here
   var this_server_info = {
-    save_url:'',
-    registration_url:'',
+    storage_url      : '',
+    registration_url : '',    
     name:''
   }
   bootbox.prompt("What is the url of the script that will save your data (and/or email it)?",function(script_url){
@@ -101,13 +102,14 @@ $("#add_server").on("click",function(){
             if(typeof(master_json.data.servers[server_name]) !== "undefined"){
               bootbox.confirm("You already have a server called <b>" + server_name + "</b> - do you want to override it?", function(result){
                 master_json.data.servers[this_server_info.name] = {
-                  url : this_server_info.url
+                  storage_url      : this_server_info.url,
+                  registration_url : this_server_info.registration_url
                 }
               });
             } else {
               master_json.data.servers[this_server_info.name] = {
-                url : this_server_info.url,
-                registration_url: this_server_info.registration_url
+                storage_url      : this_server_info.url,
+                registration_url : this_server_info.registration_url
               }
               update_server_table();
             }
@@ -124,22 +126,17 @@ $("#sos_server_query").on("click",function(){
   $.post("https://ocollector.org/ValidateUser.php",{
     "email" : user_email
   },function(updated_server_info){
-    if(updated_server_info.indexOf("data_scripts") !== -1){
-      
+    if(updated_server_info.indexOf("storage_scripts") !== -1){
       updated_server_info      = JSON.parse(updated_server_info);
       var server_names         = updated_server_info.server_names.split(",");
       var registration_scripts = updated_server_info.registration_scripts.split(",");
-      var data_scripts         = updated_server_info.data_scripts.split(",");
+      var storage_scripts      = updated_server_info.storage_scripts.split(",");
       
       server_names.forEach(function(server_name,this_index){
-        console.dir("server_name");
-        console.dir(server_name);
-        console.dir("registration_scripts[this_index]");
-        console.dir(registration_scripts[this_index]);
         master_json.data.servers[server_name] = {
-          server          : server_name,
-          registration_url: registration_scripts[this_index],
-          script_url      : data_scripts[this_index]
+          server           : server_name,
+          registration_url : registration_scripts[this_index],
+          storage_url      : storage_scripts[this_index]
         }
       });
       
@@ -210,6 +207,17 @@ function bind_delete_account_btns(){
 	});
 }
 
+function bind_delete_server_btns(){
+  $(".delete_server_btn").unbind();
+  $(".delete_server_btn").on("click",function(){
+    
+    //find span 
+    var server_name = $(this).find("span")[0].innerHTML;
+    delete(master_json.data.servers[server_name]);
+    list_servers();
+  });
+}
+
 function bind_forgot_password_btn(){
 	$(".forgot_password_btn").unbind();																		// to avoid multiple triggers
 	$(".forgot_password_btn").on("click",function(){                       
@@ -266,6 +274,7 @@ function bind_unpublish_btn(){
 function publish_experiment(this_exp,                                   // object with location
 														experiment,																	// experiment name
 														register_url){
+  var this_pub_exp = this_exp;
 	$.post( register_url,{
 				  location:               this_exp.location,
 				  experiment:             experiment,
@@ -286,23 +295,27 @@ function publish_experiment(this_exp,                                   // objec
 																 " your colleague who originally " +
 																 "created this experiment"){
 						var server_name;
-						var script_url; 
-						server_info.forEach(function(row){
-							if(row.register_url == register_url){
-								server_name = row.server;
-								script_url  = row.script_url;
-							}
-						});
+						var storage_url; 
+            var server_info = master_json.data.servers;
+            Object.keys(server_info).forEach(function(this_server_name){
+              console.dir(this_server_name);
+              if(server_info[this_server_name].registration_url == register_url){
+                server_name = this_server_name;
+                storage_url  = server_info[server_name].storage_url;
+              }
+            });
 						var experiment = $("#experiment_list").val();
 						var this_exp   = master_json.exp_mgmt.experiments[experiment];
-						if(typeof(this_exp.data_scripts) == "undefined"){
-							this_exp.data_scripts = {};
+            
+            if(typeof(this_exp.storage_scripts) == "undefined"){
+							this_exp.storage_scripts = {};
 						}
-						this_exp.data_scripts[server_name] = script_url;
+						this_exp.storage_scripts[server_name] = storage_url;
+            
 						$("#save_btn").click();
 					} else {
 						bootbox.alert("Something went wrong, " +
-													"please contact Anthony");
+													"please contact your admin.");
 					}
 				})
 				.catch(function(error){
@@ -313,9 +326,9 @@ function publish_experiment(this_exp,                                   // objec
 
 function bind_publish_btn(){
 	$(".publish_btn").on("click",function(){
-		if($("#email_input").val().length == 0){													// if missing email	
+		if($("#email_input").val().length == 0){													  // if missing email	
 			bootbox.alert("You are missing your email address");
-		} else if($("#password_input").val().length < 8) {									// if missing password (or password too short)
+		} else if($("#password_input").val().length < 8) {								  // if missing password (or password too short)
 			bootbox.alert("You need a password that is" +
 										"at least 8 characters");
 		} else {
@@ -384,14 +397,6 @@ function bind_publish_btn(){
 	});
 }
 
-var network_members_csv;
-$.get("NetworkMembers.csv", function(network_members_csv){
-  network_members_csv = Collector.PapaParsed(network_members_csv);
-  console.dir("network_members_csv");
-  console.dir(network_members_csv);
-});
-
-
 
 function update_server_table(){
   if(typeof(master_json.data.servers) == "undefined"){
@@ -412,7 +417,13 @@ function update_server_table(){
     
     if(server_row.registration_url == "" |
        server_row.registration_url == null){
-      account_buttons = "No need to register with the link: (popout here)" + server_row.url;
+      account_buttons = 'No need to register with this ' +
+                        '<button class="btn btn-primary" data-toggle="popover" title="script url:" data-content="' + server_row.storage_url + '"> link</button>' +
+                        '<button class="btn btn-info delete_server_btn">Delete<span style="display:none">' + this_server + '</span></button>';
+                          
+      
+      
+      //<span href='" + server_row.url + "' target='_blank'>link</a>";
       if($("#experiment_list").val() == undefined || 
         $("#experiment_list").val() == null){
         var publish_btn_html      = "no experiment selected";      
@@ -420,7 +431,6 @@ function update_server_table(){
         var publish_btn_html = "code here to send the data to this script";
       }
     } else {
-      //check if the server is in the list of exp.data_scripts
       if($("#experiment_list").val() == undefined || 
         $("#experiment_list").val() == null){
         var publish_btn_html      = "no experiment selected";      
@@ -443,7 +453,7 @@ function update_server_table(){
                               "</span>" +
                             "</button>" + 
                             "<button class='delete_server_btn btn btn-info'>" +
-                              "Delete Server -not implemented" +
+                              "Delete Server" +
                               "<span style='display:none'>" + 
                                 server_row.server + 
                               "</span>" +
@@ -462,8 +472,15 @@ function update_server_table(){
   
   server_table += "</table>";
   $("#server_table_div").html(server_table);		
+  
+  
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  });
+  
   bind_create_account_btns();
   bind_delete_account_btns();
+  bind_delete_server_btns();
   bind_forgot_password_btn();
   bind_publish_btn();
   bind_unpublish_btn();

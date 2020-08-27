@@ -127,6 +127,8 @@ online_data_obj = {
   run_save:function(){
     var this_save = online_data_obj.save_queue.pop();
     this_save();
+    console.dir("this_save");
+    console.dir(this_save);
     if(online_data_obj.save_queue.length > 0){         //keep going until all saves done.
       online_data_obj.run_save();
     }

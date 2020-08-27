@@ -60,6 +60,7 @@ switch(Collector.detect_context()){
       wait_till_exists("initiate_actions");
       autoload_mods();
       wait_till_exists("list_keys");
+      wait_till_exists("list_data_servers");
       wait_till_exists("list_servers");    
     }
 

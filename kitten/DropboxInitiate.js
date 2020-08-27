@@ -241,6 +241,7 @@ function load_master_json(link_created){
       encrypt_obj.generate_keys();
     } else {
 			list_keys();
+      list_data_servers();
 		}
 		if(typeof(master_json.data) == "undefined"){
 			master_json.data = {};
