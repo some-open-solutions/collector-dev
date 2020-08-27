@@ -141,14 +141,140 @@ function loadFileAsText(){
 </div>
 
 
+<hr>
+<div id="data_management_login">
+  <div class="form-group row">
+    <label for="data_user_email" class="col-sm-2 col-form-label">Email</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="data_user_email">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="data_user_password" class="col-sm-2 col-form-label">Password</label>
+    <div class="col-sm-10">
+      <input type="password" class="form-control" id="data_user_password">
+    </div>
+  </div>    
 
-<!--
-<div id="public_key"></div>
-<div id="private_key"></div>
--->
+</div>
+<div id="select_server"></div>
+<hr>
+<button class="btn btn-primary" id="list_data_btn">Check my data</button>
+<hr>
+<div id="data_management_interface">
+  <table>
+    <tr>
+      <td>
+        <div id="server_data"></div>
+      </td>
+      <td>
+      
+      </td>
+      <td>
+      
+      </td>
+    </tr>
+  </table>
+</div>
 
 
 <script>
+
+function unclean_location(location){
+  location = location.replaceAll("_slash_","/");
+  location = location.replaceAll("_dot_",".");
+  location = location.replaceAll("_at_","@");
+  location = location.replaceAll("_hashtag_","#");
+  location = location.replaceAll("_dollar_","$");
+  location = location.replaceAll("_less_","<");
+  location = location.replaceAll("_greater_",">");
+  location = location.replaceAll("_colon_",":");
+  location = location.replaceAll("_semi_",";");
+  location = location.replaceAll("_question_","?");
+  
+  return(location);
+  /*
+  $clean_location = str_replace("https://www.dropbox.com/","",$location);
+  
+	$clean_location = str_ireplace("q","_question_", $clean_location);
+  */
+}
+
+
+function request_data_list(){
+  $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+    email:    $("#data_user_email").val(),
+    password: $("#data_user_password").val(),
+    action:   "list_data"
+  },function(result){
+    var server_data_obj = JSON.parse(result);
+    
+    server_data_html = '<div class="accordion" id="accordionExample">';
+    Object.keys(server_data_obj).forEach(function(location, collapse_no){
+      server_data_html += '<div class="card">' + 
+                            '<div class="card-header">' +
+                              '<h2 class="mb-0">' +
+                                '<button class="btn btn-link" type="button" data-toggle="collapse" data-target="#server_data_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
+                                  unclean_location(location) +
+                                '</button>' +
+                              '</h2>' +
+                            '</div>' +
+                            '<div id="server_data_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
+                              '<div class="card-body">';
+                              
+      server_data_html += "<table>";
+      Object.keys(server_data_obj[location]).forEach(function(this_index){        
+        server_data_html += 
+          "<tr>" + 
+            "<td>" + 
+              server_data_obj[location][this_index] + 
+            "</td>" +
+            "<td>" +
+              "<button class='btn btn-primary'>Download</button>" + 
+            "</td>" +
+            "<td>" +
+              "<button class='btn btn-danger'>Delete</button>" +
+            "</td>"
+          "</tr>";
+      });
+      server_data_html += "</table>";
+                              
+      server_data_html +=     '</div>' +
+                            '</div>' +
+                          '</div>';
+    });
+    $("#server_data").html(server_data_html);
+    
+  });
+}
+
+$("#list_data_btn").on("click",function(){
+  
+  
+  if($("#data_user_email").val() == ""){
+    bootbox.alert("Please put in your email address that is registered with the server selected.");
+  } else if($("#data_user_password").val() == ""){
+    bootbox.alert("Please put in a password.");
+  } else if($("#select_data_server").val() == null){
+    bootbox.alert("Please select a server");
+  } else {
+    
+    
+    if(typeof(master_json.data.servers[$("#select_data_server").val()].manage_url) == "undefined"){
+      //fix the lack of a manage_url now (perhaps auto click the update );
+      
+      
+      // then request list
+      request_data_list();
+      
+    } else {
+      //retrieve the data here
+      request_data_list();
+    }
+  }
+  
+});
+
 
 encrypt_obj = {
   _decrypt_request:function(encrypted_content,default_filename,batch_status){
@@ -425,4 +551,22 @@ function list_keys(){
   }
 }
 
+function list_data_servers(){
+  var select_server_html = "<select class='form-control' id='select_data_server'>" +
+                                "<option disabled selected>--Please select a server--</option>";
+  Object.keys(master_json.data.servers).forEach(function(this_server){
+    var this_server_info = master_json.data.servers[this_server];
+    
+    if(typeof(this_server_info.registration_url) !== "undefined"){
+    
+      select_server_html += "<option>" + this_server + "</option>";
+      
+    }
+  });
+  select_server_html += "</select>";
+  $("#select_server").html(select_server_html);
+  
+}
+
 </script>
+
