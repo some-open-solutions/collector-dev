@@ -32,6 +32,11 @@ if(isset($_SESSION['user_email']) == false){
   width:500px;
   height:500px;
 }
+.delete_data_btn,
+.download_data_btn{
+  margin:5px;
+}
+
 </style>
 
 
@@ -193,11 +198,6 @@ function unclean_location(location){
   location = location.replaceAll("_question_","?");
   
   return(location);
-  /*
-  $clean_location = str_replace("https://www.dropbox.com/","",$location);
-  
-	$clean_location = str_ireplace("q","_question_", $clean_location);
-  */
 }
 
 
@@ -225,16 +225,16 @@ function request_data_list(){
       server_data_html += "<table>";
       Object.keys(server_data_obj[location]).forEach(function(this_index){        
         server_data_html += 
-          "<tr>" + 
-            "<td>" + 
+          "<tr>"    + 
+            "<td>"  + 
               server_data_obj[location][this_index] + 
             "</td>" +
-            "<td>" +
-              "<button class='btn btn-primary'>Download</button>" + 
+            "<td>"  +
+              "<button class='btn btn-primary download_server_data_btn'>Download<span style='display:none'>" + unclean_location(location) + "_____" + server_data_obj[location][this_index] + "</span></button>" + 
             "</td>" +
-            "<td>" +
-              "<button class='btn btn-danger'>Delete</button>" +
-            "</td>"
+            "<td>"  +
+              "<button class='btn btn-danger delete_server_data_btn'>Delete<span style='display:none'>"     + unclean_location(location) + "_____" + server_data_obj[location][this_index] + "</span></button>" + 
+            "</td>" +
           "</tr>";
       });
       server_data_html += "</table>";
@@ -245,6 +245,42 @@ function request_data_list(){
     });
     $("#server_data").html(server_data_html);
     
+    $(".delete_server_data_btn").unbind();
+    $(".delete_server_data_btn").on("click",function(){
+      var this_file = $(this).find("span")[0].innerHTML;
+      alert(this_file);
+    });
+    $(".download_server_data_btn").unbind();
+    $(".download_server_data_btn").on("click",function(){
+      var this_folder = $(this).find("span")[0].innerHTML;
+      $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+        email:       $("#data_user_email").val(),
+        password:    $("#data_user_password").val(),
+        action:      "download_server_data",
+        this_folder: this_folder
+      },function(result){
+        console.dir(result);
+        console.dir();
+        var encrypted_data = JSON.parse(result);
+        var listed_data = [];
+        Object.keys(encrypted_data).forEach(function(row_name){
+          listed_data.push(JSON.parse(encrypted_data[row_name]));
+        });
+        encrypt_obj.current_batch = [];
+        //var textFromFileLoaded = listed_data.pop();
+        for(var i = 0; i < listed_data.length; i++){
+          if(i == listed_data.length - 1){
+            encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                         this_folder.split("_____")[1],
+                                         "none");
+          } else {
+            encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                         this_folder.split("_____")[1],
+                                         "add");
+          }
+        }
+      });      
+    });
   });
 }
 
@@ -277,7 +313,9 @@ $("#list_data_btn").on("click",function(){
 
 
 encrypt_obj = {
-  _decrypt_request:function(encrypted_content,default_filename,batch_status){
+  _decrypt_request:function(encrypted_content,
+                            default_filename,
+                            batch_status){
     encrypt_obj.current_batch.push([default_filename, encrypted_content]);
     console.dir("batch_status");
     console.dir(batch_status);
