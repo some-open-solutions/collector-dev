@@ -3,7 +3,7 @@ function online_save(experiment_id,
                      completion_code,
                      prehashed_code,
                      encrypted_data,
-                     data_scripts,
+                     storage_scripts,
                      after_function,
 										 trial_all,
 										 trial_no){
@@ -15,14 +15,14 @@ function online_save(experiment_id,
 	}
 	
   data = {
-    completion_code:  completion_code,
-    encrypted_data:   encrypted_data,
-    experiment_id:    experiment_id,
-    participant_id:   participant_id,
-    prehashed_code:   prehashed_code,
-		dropbox_location: exp_json.location,
-		trial_all:        trial_all,
-		trial_no:         trial_no,
+    completion_code: completion_code,
+    encrypted_data:  encrypted_data,
+    experiment_id:   experiment_id,
+    participant_id:  participant_id,
+    prehashed_code:  prehashed_code,
+		study_location:  exp_json.location,
+		trial_all:       trial_all,
+		trial_no:        trial_no,
   };
 	
 	
@@ -85,9 +85,9 @@ function online_save(experiment_id,
     }
 	}
 	var script_list = [];
-	Object.keys(data_scripts).forEach(function(server){
+	Object.keys(storage_scripts).forEach(function(server){
     if(server !== "free"){                               // temp fix for invalid script
-      script_list.push(data_scripts[server]);
+      script_list.push(storage_scripts[server]);
     }
 	});
 	until_successful_script(script_list,

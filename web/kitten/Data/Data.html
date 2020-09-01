@@ -32,6 +32,8 @@ if(isset($_SESSION['user_email']) == false){
   width:500px;
   height:500px;
 }
+.delete_server_data_btn,
+.download_server_data_btn,
 .delete_data_btn,
 .download_data_btn{
   margin:5px;
@@ -201,7 +203,7 @@ function loadFileAsText(){
         <div id="server_data"></div>
       </td>
       <td>
-      
+        <div id="storage_data"></div>
       </td>
       <td>
       
@@ -228,45 +230,35 @@ function unclean_location(location){
   return(location);
 }
 
-
-function request_data_list(){
-  $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
-    email:    $("#data_user_email").val(),
-    password: $("#data_user_password").val(),
-    action:   "list_data"
-  },function(result){
-    var mega_data_obj = JSON.parse(result);
-    console.dir("server_data_obj");
-    console.dir(mega_data_obj);
-    
-    $("#used_server_space").html((mega_data_obj.server_info.used_space/100000) + " MB");
-    $("#max_server_space").html((mega_data_obj.server_info.max_space) + " MB");
-    
-    var server_data_obj = mega_data_obj.server_info.file_structure;
-    
-    server_data_html = '<div class="accordion" id="accordionExample">';
-    Object.keys(server_data_obj).forEach(function(location, collapse_no){
-      server_data_html += '<div class="card" type="button" data-toggle="collapse" data-target="#server_data_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
-                            '<div class="card-header text-white bg-primary">' +
+function populate_data_div(data_div_id,
+                           data_obj,
+                           bootstrap_class){
+  server_data_html = '<div class="accordion" id="accordionExample">';
+  Object.keys(data_obj).forEach(function(location, collapse_no){
+    if(Object.keys(data_obj[location]).length > 0){
+      server_data_html += '<div class="card" type="button" data-toggle="collapse" data-target="#' + data_div_id + '_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
+                            '<div class="card-header text-white bg-' + bootstrap_class +'">' +
                               '<h5 class="mb-0">' +
                                   unclean_location(location) +
                               '</h5>' +
                             '</div>' +
-                            '<div id="server_data_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
+                            '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
                               '<div class="card-body">';
                               
-      server_data_html += "<table>";
-      Object.keys(server_data_obj[location]).forEach(function(this_index){        
+      server_data_html += "<button style='width:100%'>Download All</button>"; //need to make this actually work
+      server_data_html += "<button style='width:100%'>Delete All</button>"; //need to make this actually work
+      server_data_html += "<table>";                             
+      Object.keys(data_obj[location]).forEach(function(this_index){        
         server_data_html += 
           "<tr>"    + 
             "<td>"  + 
-              server_data_obj[location][this_index] + 
+              data_obj[location][this_index] + 
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-primary download_server_data_btn'>Download<span style='display:none'>" + unclean_location(location) + "_____" + server_data_obj[location][this_index] + "</span></button>" + 
+              "<button class='btn btn-" + bootstrap_class + " download_server_data_btn'>Download<span style='display:none'>" + unclean_location(location) + "_____" + data_obj[location][this_index] + "</span></button>" + 
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-danger delete_server_data_btn'>Delete<span style='display:none'>"     + unclean_location(location) + "_____" + server_data_obj[location][this_index] + "</span></button>" + 
+              "<button class='btn btn-danger delete_server_data_btn'>Delete<span style='display:none'>"     + unclean_location(location) + "_____" + data_obj[location][this_index] + "</span></button>" + 
             "</td>" +
           "</tr>";
       });
@@ -275,45 +267,88 @@ function request_data_list(){
       server_data_html +=     '</div>' +
                             '</div>' +
                           '</div>';
-    });
-    $("#server_data").html(server_data_html);
+    }
+  });
+  $("#" + data_div_id).html(server_data_html);
+}
+
+function request_data_list(){
+  $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+    email:    $("#data_user_email").val(),
+    password: $("#data_user_password").val(),
+    action:   "list_data"
+  },function(result){
+    console.dir(result);
     
-    $(".delete_server_data_btn").unbind();
-    $(".delete_server_data_btn").on("click",function(){
-      var this_file = $(this).find("span")[0].innerHTML;
-      alert(this_file);
-    });
-    $(".download_server_data_btn").unbind();
-    $(".download_server_data_btn").on("click",function(){
-      var this_folder = $(this).find("span")[0].innerHTML;
-      $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
-        email:       $("#data_user_email").val(),
-        password:    $("#data_user_password").val(),
-        action:      "download_server_data",
-        this_folder: this_folder
-      },function(result){
-        console.dir(result);
-        console.dir();
-        var encrypted_data = JSON.parse(result);
-        var listed_data = [];
-        Object.keys(encrypted_data).forEach(function(row_name){
-          listed_data.push(JSON.parse(encrypted_data[row_name]));
+    try{
+      console.dir(JSON.parse(result));
+      var mega_data_obj = JSON.parse(result);
+      $("#used_server_space").html((mega_data_obj.server_info.used_space/1000000) + " MB");
+      
+      $("#max_server_space").html((mega_data_obj.server_info.max_space) + " MB");
+      $("#max_storage_space").html((mega_data_obj.storage_info.max_space) + " GB");
+      
+      var server_data_obj  = mega_data_obj.server_info.file_structure;
+      var storage_data_obj = mega_data_obj.storage_info.file_structure;
+      
+      populate_data_div("server_data",
+                        server_data_obj,
+                        "primary");
+      
+      populate_data_div("storage_data",
+                        storage_data_obj,
+                        "success");
+      
+      
+      $(".delete_server_data_btn").unbind();
+      $(".delete_server_data_btn").on("click",function(){
+        var this_folder = $(this).find("span")[0].innerHTML;
+        $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+          email:       $("#data_user_email").val(),
+          password:    $("#data_user_password").val(),
+          action:      "delete_server_data",
+          this_folder: this_folder
+        },function(result){
+          bootbox.alert(result);
+          $("#list_data_btn").click();
         });
-        encrypt_obj.current_batch = [];
-        //var textFromFileLoaded = listed_data.pop();
-        for(var i = 0; i < listed_data.length; i++){
-          if(i == listed_data.length - 1){
-            encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
-                                         this_folder.split("_____")[1],
-                                         "none");
+      });
+      $(".download_server_data_btn").unbind();
+      $(".download_server_data_btn").on("click",function(){
+        var this_folder = $(this).find("span")[0].innerHTML;
+        $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+          email:       $("#data_user_email").val(),
+          password:    $("#data_user_password").val(),
+          action:      "download_server_data",
+          this_folder: this_folder
+        },function(result){
+          if(result == "verification of user and password failed"){
+            bootbox.alert("verification of user and password failed");
           } else {
-            encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
-                                         this_folder.split("_____")[1],
-                                         "add");
+            var encrypted_data = JSON.parse(result);
+            var listed_data = [];
+            Object.keys(encrypted_data).forEach(function(row_name){
+              listed_data.push(JSON.parse(encrypted_data[row_name]));
+            });
+            encrypt_obj.current_batch = [];
+            //var textFromFileLoaded = listed_data.pop();
+            for(var i = 0; i < listed_data.length; i++){
+              if(i == listed_data.length - 1){
+                encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                             this_folder.split("_____")[1],
+                                             "none");
+              } else {
+                encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                             this_folder.split("_____")[1],
+                                             "add");
+              }
+            }
           }
-        }
-      });      
-    });
+        });      
+      });
+    } catch(error){
+      bootbox.alert("Failed to retrieve a list of your files - please double check your password and email address");
+    }
   });
 }
 
@@ -350,8 +385,6 @@ encrypt_obj = {
                             default_filename,
                             batch_status){
     encrypt_obj.current_batch.push([default_filename, encrypted_content]);
-    console.dir("batch_status");
-    console.dir(batch_status);
     switch(batch_status){
       case "none":
       case "end":
