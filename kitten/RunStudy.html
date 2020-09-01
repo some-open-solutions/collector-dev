@@ -243,6 +243,11 @@ Study = {
     response_data["post_"+exp_json.post_no+"_trial_end_ms"]              = trial_end_ms;
     response_data["post_"+exp_json.post_no+"_rt_ms"]                     = trial_end_ms - response_data["post_"+exp_json.post_no+"_trial_start_ms"];
     response_data["post_"+exp_json.post_no+"_trial_end_date"]            = new Date(parseInt(trial_end_ms, 10)).toString('MM/dd/yy HH:mm:ss');
+    
+    Object.keys(exp_json.this_condition).forEach(function(condition_item){
+      response_data["condition_" + condition_item] = exp_json.this_condition[condition_item];
+    });
+    
     exp_json.this_trial                                                  = response_data;
     response_data["participant_browser"]                                 = participant_browser;
 
@@ -535,7 +540,7 @@ function final_trial(){
                       $("#prehashed_code").val(),
                       JSON.stringify(encrypt(exp_json.public_key,    //the public key
                       JSON.stringify(exp_json.responses))),          //the data
-					exp_json.data_scripts,
+					exp_json.storage_scripts,
 					function(returned_data){
 						message_data = returned_data.split(" encrypted data = ");
 						if(message_data.length == 1){
