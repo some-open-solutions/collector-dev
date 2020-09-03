@@ -34,6 +34,10 @@ if(isset($_SESSION['user_email']) == false){
 }
 .delete_server_data_btn,
 .download_server_data_btn,
+.delete_storage_data_btn,
+.download_storage_data_btn,
+.delete_backup_data_btn,
+.download_backup_data_btn,
 .delete_data_btn,
 .download_data_btn{
   margin:5px;
@@ -93,8 +97,6 @@ function loadFileAsText(){
 			batch_proc   = false;
       var batch_status = "end";
     }
-    console.dir("batch_status earlier");
-    console.dir(batch_status);
     var fileToLoad = document.getElementById("fileToLoad").files[batch_no];
     var default_filename = document.getElementById("fileToLoad").files[batch_no]
                                                                 .name
@@ -196,50 +198,37 @@ function loadFileAsText(){
 </table>
 
 <hr>
-<div id="data_management_interface">
-  <table>
-    <tr>
-      <td>
-        <div id="server_data"></div>
-      </td>
-      <td>
-        <div id="storage_data"></div>
-      </td>
-      <td>
-      
-      </td>
-    </tr>
-  </table>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <h1 class='text-primary'>Server</h1>
+      <div id="server_data"></div>
+    </div>
+    <div class="col-sm">
+      <h1 class='text-success'>Storage</h1>
+      <div id="storage_data"></div>
+    </div>
+    <div class="col-sm">
+      <h1 class='text-info'>Backup</h1>
+      <div id="backup_data"></div>
+    </div>
+  </div>
 </div>
 
-
 <script>
-
-function unclean_location(location){
-  location = location.replaceAll("_slash_","/");
-  location = location.replaceAll("_dot_",".");
-  location = location.replaceAll("_at_","@");
-  location = location.replaceAll("_hashtag_","#");
-  location = location.replaceAll("_dollar_","$");
-  location = location.replaceAll("_less_","<");
-  location = location.replaceAll("_greater_",">");
-  location = location.replaceAll("_colon_",":");
-  location = location.replaceAll("_semi_",";");
-  location = location.replaceAll("_question_","?");
-  
-  return(location);
-}
 
 function populate_data_div(data_div_id,
                            data_obj,
                            bootstrap_class){
   server_data_html = '<div class="accordion" id="accordionExample">';
-  Object.keys(data_obj).forEach(function(location, collapse_no){
-    if(Object.keys(data_obj[location]).length > 0){
+  Object.keys(data_obj).forEach(function(experiment_name, 
+                                         collapse_no){
+    if(Object.keys(data_obj[experiment_name]).length > 0){
       server_data_html += '<div class="card" type="button" data-toggle="collapse" data-target="#' + data_div_id + '_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
                             '<div class="card-header text-white bg-' + bootstrap_class +'">' +
                               '<h5 class="mb-0">' +
-                                  unclean_location(location) +
+                                  experiment_name +
                               '</h5>' +
                             '</div>' +
                             '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
@@ -247,21 +236,36 @@ function populate_data_div(data_div_id,
                               
       server_data_html += "<button style='width:100%'>Download All</button>"; //need to make this actually work
       server_data_html += "<button style='width:100%'>Delete All</button>"; //need to make this actually work
-      server_data_html += "<table>";                             
-      Object.keys(data_obj[location]).forEach(function(this_index){        
+      server_data_html += "<table>";
+
+      
+      
+      Object.keys(data_obj[experiment_name]).forEach(function(this_participant){
+        if(data_obj[experiment_name][this_participant].all_data){
+          file_info = data_obj[experiment_name][this_participant].all_data;
+        } else {
+          file_info = data_obj[experiment_name][this_participant].files.join("|");
+        }
+      
         server_data_html += 
           "<tr>"    + 
             "<td>"  + 
-              data_obj[location][this_index] + 
+              this_participant +
+              " - " +
+              data_obj[experiment_name][this_participant].size + 
+              " bytes " +
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-" + bootstrap_class + " download_server_data_btn'>Download<span style='display:none'>" + unclean_location(location) + "_____" + data_obj[location][this_index] + "</span></button>" + 
+            
+              "<button class='btn btn-" + bootstrap_class + " download_" + data_div_id + "_btn'>Download<span style='display:none'>" + experiment_name + "_____" + this_participant + "_____" + file_info + "</span></button>" + 
+              
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-danger delete_server_data_btn'>Delete<span style='display:none'>"     + unclean_location(location) + "_____" + data_obj[location][this_index] + "</span></button>" + 
+              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>"     + experiment_name + "_____" + this_participant + "</span></button>" + 
             "</td>" +
           "</tr>";
       });
+
       server_data_html += "</table>";
                               
       server_data_html +=     '</div>' +
@@ -271,33 +275,86 @@ function populate_data_div(data_div_id,
   });
   $("#" + data_div_id).html(server_data_html);
 }
-
+var data_stuff;
 function request_data_list(){
   $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
     email:    $("#data_user_email").val(),
     password: $("#data_user_password").val(),
     action:   "list_data"
   },function(result){
-    console.dir(result);
-    
+    data_stuff = result;
     try{
-      console.dir(JSON.parse(result));
       var mega_data_obj = JSON.parse(result);
-      $("#used_server_space").html((mega_data_obj.server_info.used_space/1000000) + " MB");
+      var server_data_obj  = mega_data_obj.server_info.used_space;
       
+      var used_server_space_mb = 0;
+      Object.keys(server_data_obj).forEach(function(this_experiment){
+        Object.keys(server_data_obj[this_experiment]).forEach(function(this_pp){
+          used_server_space_mb += server_data_obj[this_experiment][this_pp].size;
+        });
+      });
+      used_server_space_mb = used_server_space_mb/1000000;
+      
+      $("#used_server_space").html(used_server_space_mb + " MB");
       $("#max_server_space").html((mega_data_obj.server_info.max_space) + " MB");
-      $("#max_storage_space").html((mega_data_obj.storage_info.max_space) + " GB");
       
-      var server_data_obj  = mega_data_obj.server_info.file_structure;
-      var storage_data_obj = mega_data_obj.storage_info.file_structure;
       
       populate_data_div("server_data",
                         server_data_obj,
                         "primary");
-      
-      populate_data_div("storage_data",
-                        storage_data_obj,
-                        "success");
+
+      if(typeof(mega_data_obj.storage_info) !== "undefined"){
+        
+        var storage_data_obj = mega_data_obj.storage_info.used_space;
+        
+        /*
+        need to tidy this up to merge files where appropriate to make participants
+        */
+        
+        Object.keys(storage_data_obj).forEach(function(this_experiment){
+          var participant_list = [];
+          Object.keys(storage_data_obj[this_experiment]).forEach(function(raw_participant){
+            var all_data_pp = raw_participant.split("_all_data.").length == 2 ? true : false;
+            
+            this_participant = raw_participant.split("_trial_")[0]
+                                              .split("_all_data.")[0];
+            if(typeof(participant_list[this_participant]) == "undefined"){
+              participant_list[this_participant] = {
+                all_data: all_data_pp,
+                size: parseFloat(storage_data_obj[this_experiment][raw_participant].size)
+              };
+              if(all_data_pp == false){
+                participant_list[this_participant].files = [raw_participant];
+              } else {
+                participant_list[this_participant].files = [];
+              }
+            } else if(all_data_pp) {
+              participant_list[this_participant].all_data = true;
+              participant_list[this_participant].size += parseFloat(storage_data_obj[this_experiment][raw_participant].size);
+            } else {
+              participant_list[this_participant].size += parseFloat(storage_data_obj[this_experiment][raw_participant].size);
+              participant_list[this_participant].files.push(raw_participant);
+            }
+          });
+          storage_data_obj[this_experiment] = participant_list;
+        });
+        
+        
+        var used_storage_space_gb = 0;
+        Object.keys(storage_data_obj).forEach(function(this_experiment){
+          Object.keys(storage_data_obj[this_experiment]).forEach(function(this_pp){
+            used_storage_space_gb += parseFloat(storage_data_obj[this_experiment][this_pp].size);
+          });
+        });
+        used_storage_space_gb = used_storage_space_gb/1000000000;
+        
+        $("#used_storage_space").html(used_storage_space_gb + " GB");
+        $("#max_storage_space").html((mega_data_obj.storage_info.max_space) + " GB");
+        
+        populate_data_div("storage_data",
+                          storage_data_obj,
+                          "success");
+      }
       
       
       $(".delete_server_data_btn").unbind();
@@ -345,6 +402,37 @@ function request_data_list(){
             }
           }
         });      
+      });
+      $(".download_storage_data_btn").unbind();
+      $(".download_storage_data_btn").on("click",function(){
+        var this_folder = $(this).find("span")[0].innerHTML;
+        $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+          email:       $("#data_user_email").val(),
+          password:    $("#data_user_password").val(),
+          action:      "download_storage_data",
+          this_folder: this_folder
+        },function(result){
+          var encrypted_data = JSON.parse(result);
+          var listed_data = [];
+          Object.keys(encrypted_data).forEach(function(row_name){
+            Object.keys(encrypted_data[row_name]).forEach(function(trial_row){
+              listed_data.push(JSON.parse(encrypted_data[row_name][trial_row]));
+            });
+          });
+          
+          encrypt_obj.current_batch = [];                                         // reset the current batch
+          for(var i = 0; i < listed_data.length; i++){
+            if(i == listed_data.length - 1){
+              encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                           this_folder.split("_____")[1],
+                                           "none");
+            } else {
+              encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                           this_folder.split("_____")[1],
+                                           "add");
+            }
+          }
+        });
       });
     } catch(error){
       bootbox.alert("Failed to retrieve a list of your files - please double check your password and email address");
@@ -412,8 +500,6 @@ encrypt_obj = {
                     all_decrypted = [];
                     encrypt_obj.current_batch.map(function([default_filename,encrypted_content]){
                       this_decrypted_message = JSON.parse(encrypt_obj.decrypt(decrypted_private_key,JSON.parse(encrypted_content)));
-                      console.dir("this_decrypted_message");
-                      console.dir(this_decrypted_message);
                       this_decrypted_message = this_decrypted_message.map(function(row){
                         try{
 													row["username"] = default_filename;
@@ -436,7 +522,8 @@ encrypt_obj = {
               }
 
               function process_decrypted(this_decrypted_message,batch_single){
-                response_headers 		 = [];
+                var response_headers = [];
+                var usernames        = [];
                 for(var i = 0; i < this_decrypted_message.length ; i++) {
                   decrypted_data = this_decrypted_message[i];
                   Object.keys(decrypted_data).forEach(function(header){
@@ -446,40 +533,101 @@ encrypt_obj = {
                   });
                 }
 
-                for(var i =0; i < this_decrypted_message.length; i++){
+                for(var i = 0; i < this_decrypted_message.length; i++){
                   response_headers.forEach(function(this_header){
                     if(typeof(this_decrypted_message[i][this_header]) == "undefined"){
                       this_decrypted_message[i][this_header] = "";
                     }
                   });
                 }
-
-
-                if(batch_single == "batch"){
-                  default_filename = "batch"; //ideally this would actually be the experiment name instead; need this encoded when the participant is saving
-                }
-                //download the data file here
-
-                //
-                bootbox.prompt({
-                  title: "What would you like to name this file?",
-                  value: default_filename,
-                  callback: function(result) {
-										if(result){
-											var filename = result.toLowerCase().replace(".csv","") + ".csv";
-											Collector.save_data (filename, Papa.unparse(this_decrypted_message,{
-												quotes: false, //or array of booleans
-												quoteChar: '"',
-												escapeChar: '"',
-												delimiter: ",",
-												header: true,
-												newline: "\r\n",
-												skipEmptyLines: true, //or 'greedy',
-												columns: null //or array of strings
-											}));
-										}
+                
+                
+                for(var i = 0; i < this_decrypted_message.length; i++){
+                  delete(this_decrypted_message[i][""]);   // Delete blank column if present
+                  if(usernames.indexOf(this_decrypted_message[i].username) == -1){
+                    usernames.push(this_decrypted_message[i].username);
                   }
-                });
+                }
+                
+                if(usernames.length > 1){
+                  bootbox.confirm("There are multiple participants - would you like separate files for each participant? (press cancel if you would like one big file for all participants)",function(result){
+                    if(result){
+                      function recursive_username_decryption(usernames){
+                        if(usernames.length > 0){
+                          var username = usernames.pop();
+                          this_participant_message = this_decrypted_message.filter(row => row.username == username);
+                          bootbox.prompt({
+                            title: "What would you like to name this file?",
+                            value: username,
+                            callback: function(result) {
+                              if(result){
+                                var filename = result.toLowerCase().replace(".csv","") + ".csv";
+                                Collector.save_data (filename, Papa.unparse(this_participant_message,{
+                                  quotes: false, //or array of booleans
+                                  quoteChar: '"',
+                                  escapeChar: '"',
+                                  delimiter: ",",
+                                  header: true,
+                                  newline: "\r\n",
+                                  skipEmptyLines: true, //or 'greedy',
+                                  columns: null //or array of strings
+                                }));
+                              }
+                            }
+                          });
+                          recursive_username_decryption(usernames);
+                        }
+                      }
+                      recursive_username_decryption(usernames);
+                      
+                    } else {
+                      //do all participants in one go
+                      default_filename = "batch";
+                      //download the data file here
+                      bootbox.prompt({
+                        title: "What would you like to name this file?",
+                        value: default_filename,
+                        callback: function(result) {
+                          if(result){
+                            var filename = result.toLowerCase().replace(".csv","") + ".csv";
+                            Collector.save_data (filename, Papa.unparse(this_decrypted_message,{
+                              quotes: false, //or array of booleans
+                              quoteChar: '"',
+                              escapeChar: '"',
+                              delimiter: ",",
+                              header: true,
+                              newline: "\r\n",
+                              skipEmptyLines: true, //or 'greedy',
+                              columns: null //or array of strings
+                            }));
+                          }
+                        }
+                      });
+                    }
+                  });
+                } else {
+                  default_filename = usernames[0];
+                  //download the data file here
+                  bootbox.prompt({
+                    title: "What would you like to name this file?",
+                    value: default_filename,
+                    callback: function(result) {
+                      if(result){
+                        var filename = result.toLowerCase().replace(".csv","") + ".csv";
+                        Collector.save_data (filename, Papa.unparse(this_decrypted_message,{
+                          quotes: false, //or array of booleans
+                          quoteChar: '"',
+                          escapeChar: '"',
+                          delimiter: ",",
+                          header: true,
+                          newline: "\r\n",
+                          skipEmptyLines: true, //or 'greedy',
+                          columns: null //or array of strings
+                        }));
+                      }
+                    }
+                  });
+                }
               }
               if(typeof(master_json.keys.archived) == "undefined"){
                 master_json.keys.archived = [];
@@ -624,7 +772,6 @@ encrypt_obj = {
               var plaintext = decrypted.toString(CryptoJS.enc.Utf8);
 
               if(plaintext == receiverSecretKey){
-                console.dir("all good");
                 master_json.keys.encrypted_private_key = encryptedAES_string;
                 encrypt_obj.confirm_keys();
                 list_keys();
