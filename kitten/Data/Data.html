@@ -261,7 +261,7 @@ function populate_data_div(data_div_id,
               
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>"     + experiment_name + "_____" + this_participant + "</span></button>" + 
+              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>" + experiment_name + "_____" + this_participant  + "_____" + data_obj[experiment_name][this_participant].files.join("|") + "</span></button>" + 
             "</td>" +
           "</tr>";
       });
@@ -321,13 +321,9 @@ function request_data_list(){
             if(typeof(participant_list[this_participant]) == "undefined"){
               participant_list[this_participant] = {
                 all_data: all_data_pp,
-                size: parseFloat(storage_data_obj[this_experiment][raw_participant].size)
+                files:    [raw_participant],
+                size:     parseFloat(storage_data_obj[this_experiment][raw_participant].size)
               };
-              if(all_data_pp == false){
-                participant_list[this_participant].files = [raw_participant];
-              } else {
-                participant_list[this_participant].files = [];
-              }
             } else if(all_data_pp) {
               participant_list[this_participant].all_data = true;
               participant_list[this_participant].size += parseFloat(storage_data_obj[this_experiment][raw_participant].size);
@@ -412,6 +408,7 @@ function request_data_list(){
           action:      "download_storage_data",
           this_folder: this_folder
         },function(result){
+          console.dir(result);
           var encrypted_data = JSON.parse(result);
           var listed_data = [];
           Object.keys(encrypted_data).forEach(function(row_name){
@@ -432,6 +429,19 @@ function request_data_list(){
                                            "add");
             }
           }
+        });
+      });
+      $(".delete_storage_data_btn").unbind();
+      $(".delete_storage_data_btn").on("click",function(){
+        var this_folder = $(this).find("span")[0].innerHTML;
+        $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+          email:       $("#data_user_email").val(),
+          password:    $("#data_user_password").val(),
+          action:      "delete_storage_data",
+          this_folder: this_folder
+        },function(result){
+          bootbox.alert(result);
+          $("#list_data_btn").click();
         });
       });
     } catch(error){
