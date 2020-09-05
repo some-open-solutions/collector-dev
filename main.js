@@ -1,16 +1,23 @@
 // Modules to control application life and create native browser window
+//require('coffee-script').register();
+
+//const remote = require('remote');
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+
 
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    //width: 600,
+    //height: 600,
+    icon: __dirname + "/logos/collector.ico.png",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      enableRemoteModule: true
     }
   })
+  mainWindow.maximize()
 
   // and load the index.html of the app.
   mainWindow.loadFile('kitten/index_local.html')
@@ -39,5 +46,29 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+/*
+* To allow right click to inspect element:
+*/
+
+// const contextMenu = require('electron-context-menu');
+//
+//
+// contextMenu({
+//     prepend: (defaultActions, params, browserWindow) => [
+//         /* some examples of more sophisticated things you can do
+//         {
+//             label: 'Rainbow',
+//             // Only show it when right-clicking images
+//             visible: params.mediaType === 'image'
+//         },
+//         {
+//             label: 'Search Google for “{selection}”',
+//             // Only show it when right-clicking text
+//             visible: params.selectionText.trim().length > 0,
+//             click: () => {
+//                 shell.openExternal(`https://google.com/search?q=${encodeURIComponent(params.selectionText)}`);
+//             }
+//         }
+//         */
+//     ]
+// });

@@ -33,11 +33,11 @@ function collector_live(){
 
 setInterval(function(){
 	$("#top_navbar").removeClass("bg-primary");   			  		// change background until validated that Collector is live
-	
+
 	/*
 	* detect if online or installed version
 	*/
-	switch(Collector.detect_context()){  								  		
+	switch(Collector.detect_context()){
 		/*
 		* if online
 		*/
@@ -48,7 +48,7 @@ setInterval(function(){
 				/*
 				* Restore normal banner
 				*/
-				collector_live();															  		
+				collector_live();
 			} else {
 				bootbox.alert("You seem to not be connected to the internet - changes will not be saved until you are connected again.");
 			}
@@ -57,12 +57,6 @@ setInterval(function(){
 		* if installed version
 		*/
 		case "localhost":
-			eel.collector_live();
-			setTimeout(function(){
-				if($("#top_navbar").hasClass("bg-primary") == false){
-					bootbox.alert("It seems like localhost turned off some time in the last minute. Changes will not be saved until localhost is started again. You can just open Collector again and resume in the current window once it's (re)started.");
-				}
-			},15000);
-			break;
+			//do nothing
 	}
 },30000);

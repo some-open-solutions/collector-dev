@@ -31,15 +31,17 @@ switch(Collector.detect_context()){
   case "gitpod":
   case "server":
   case "github":
-    wait_till_exists("check_authenticated");  //check dropbox    
+    wait_till_exists("check_authenticated");  //check dropbox
     break;
   case "localhost":
     Collector.tests.pass("helper",
                          "startup");          // this can't fail in localhost version
-		eel.expose(python_bootbox);
+    /*
+    eel.expose(python_bootbox);
     function python_bootbox(message){
       Collector.custom_alert(message);
     }
+
 
     eel.expose(python_hide_bb);
     function python_hide_bb(){
@@ -47,8 +49,8 @@ switch(Collector.detect_context()){
         //python_dialog.modal("hide");
       },1000);
     }
+    */
 
-    eel.expose(load_master_json);
     function load_master_json(this_json){
 			master_json = this_json;
       list_surveys();
@@ -61,9 +63,18 @@ switch(Collector.detect_context()){
       autoload_mods();
       wait_till_exists("list_keys");
       wait_till_exists("list_data_servers");
-      wait_till_exists("list_servers");    
+      wait_till_exists("list_servers");
+    }
+    try{
+      //assume we're in development mode first
+      $.get("../User/master.json",function(result){
+        load_master_json(result);
+      });
+    } catch(error){
+      alert("HI");
+      //nothing
     }
 
-    eel.load_master_json();     // don't use dropbox
+    load_master_json();     // don't use dropbox
     break;
 }
