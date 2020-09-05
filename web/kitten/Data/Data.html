@@ -126,6 +126,9 @@ function loadFileAsText(){
 
 </script>
 <br><br><br>
+<button id="syncBtn" style='width:100px;height:100px'>beepbop</button>
+<button id="asyncBtn" style='width:100px;height:100px'>beepbop</button>
+<div id="reply"></div>
 
 <br><br><br>
 <div>
@@ -163,7 +166,7 @@ function loadFileAsText(){
     <div class="col-sm-10">
       <input type="password" class="form-control" id="data_user_password">
     </div>
-  </div>    
+  </div>
 
 </div>
 <div id="select_server"></div>
@@ -222,7 +225,7 @@ function populate_data_div(data_div_id,
                            data_obj,
                            bootstrap_class){
   server_data_html = '<div class="accordion" id="accordionExample">';
-  Object.keys(data_obj).forEach(function(experiment_name, 
+  Object.keys(data_obj).forEach(function(experiment_name,
                                          collapse_no){
     if(Object.keys(data_obj[experiment_name]).length > 0){
       server_data_html += '<div class="card" type="button" data-toggle="collapse" data-target="#' + data_div_id + '_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
@@ -233,41 +236,41 @@ function populate_data_div(data_div_id,
                             '</div>' +
                             '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
                               '<div class="card-body">';
-                              
+
       server_data_html += "<button style='width:100%'>Download All</button>"; //need to make this actually work
       server_data_html += "<button style='width:100%'>Delete All</button>"; //need to make this actually work
       server_data_html += "<table>";
 
-      
-      
+
+
       Object.keys(data_obj[experiment_name]).forEach(function(this_participant){
         if(data_obj[experiment_name][this_participant].all_data){
           file_info = data_obj[experiment_name][this_participant].all_data;
         } else {
           file_info = data_obj[experiment_name][this_participant].files.join("|");
         }
-      
-        server_data_html += 
-          "<tr>"    + 
-            "<td>"  + 
+
+        server_data_html +=
+          "<tr>"    +
+            "<td>"  +
               this_participant +
               " - " +
-              data_obj[experiment_name][this_participant].size + 
+              data_obj[experiment_name][this_participant].size +
               " bytes " +
             "</td>" +
             "<td>"  +
-            
-              "<button class='btn btn-" + bootstrap_class + " download_" + data_div_id + "_btn'>Download<span style='display:none'>" + experiment_name + "_____" + this_participant + "_____" + file_info + "</span></button>" + 
-              
+
+              "<button class='btn btn-" + bootstrap_class + " download_" + data_div_id + "_btn'>Download<span style='display:none'>" + experiment_name + "_____" + this_participant + "_____" + file_info + "</span></button>" +
+
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>" + experiment_name + "_____" + this_participant  + "_____" + data_obj[experiment_name][this_participant].files.join("|") + "</span></button>" + 
+              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>" + experiment_name + "_____" + this_participant  + "_____" + data_obj[experiment_name][this_participant].files.join("|") + "</span></button>" +
             "</td>" +
           "</tr>";
       });
 
       server_data_html += "</table>";
-                              
+
       server_data_html +=     '</div>' +
                             '</div>' +
                           '</div>';
@@ -286,7 +289,7 @@ function request_data_list(){
     try{
       var mega_data_obj = JSON.parse(result);
       var server_data_obj  = mega_data_obj.server_info.used_space;
-      
+
       var used_server_space_mb = 0;
       Object.keys(server_data_obj).forEach(function(this_experiment){
         Object.keys(server_data_obj[this_experiment]).forEach(function(this_pp){
@@ -294,28 +297,28 @@ function request_data_list(){
         });
       });
       used_server_space_mb = used_server_space_mb/1000000;
-      
+
       $("#used_server_space").html(used_server_space_mb + " MB");
       $("#max_server_space").html((mega_data_obj.server_info.max_space) + " MB");
-      
-      
+
+
       populate_data_div("server_data",
                         server_data_obj,
                         "primary");
 
       if(typeof(mega_data_obj.storage_info) !== "undefined"){
-        
+
         var storage_data_obj = mega_data_obj.storage_info.used_space;
-        
+
         /*
         need to tidy this up to merge files where appropriate to make participants
         */
-        
+
         Object.keys(storage_data_obj).forEach(function(this_experiment){
           var participant_list = [];
           Object.keys(storage_data_obj[this_experiment]).forEach(function(raw_participant){
             var all_data_pp = raw_participant.split("_all_data.").length == 2 ? true : false;
-            
+
             this_participant = raw_participant.split("_trial_")[0]
                                               .split("_all_data.")[0];
             if(typeof(participant_list[this_participant]) == "undefined"){
@@ -334,8 +337,8 @@ function request_data_list(){
           });
           storage_data_obj[this_experiment] = participant_list;
         });
-        
-        
+
+
         var used_storage_space_gb = 0;
         Object.keys(storage_data_obj).forEach(function(this_experiment){
           Object.keys(storage_data_obj[this_experiment]).forEach(function(this_pp){
@@ -343,16 +346,16 @@ function request_data_list(){
           });
         });
         used_storage_space_gb = used_storage_space_gb/1000000000;
-        
+
         $("#used_storage_space").html(used_storage_space_gb + " GB");
         $("#max_storage_space").html((mega_data_obj.storage_info.max_space) + " GB");
-        
+
         populate_data_div("storage_data",
                           storage_data_obj,
                           "success");
       }
-      
-      
+
+
       $(".delete_server_data_btn").unbind();
       $(".delete_server_data_btn").on("click",function(){
         var this_folder = $(this).find("span")[0].innerHTML;
@@ -397,7 +400,7 @@ function request_data_list(){
               }
             }
           }
-        });      
+        });
       });
       $(".download_storage_data_btn").unbind();
       $(".download_storage_data_btn").on("click",function(){
@@ -416,7 +419,7 @@ function request_data_list(){
               listed_data.push(JSON.parse(encrypted_data[row_name][trial_row]));
             });
           });
-          
+
           encrypt_obj.current_batch = [];                                         // reset the current batch
           for(var i = 0; i < listed_data.length; i++){
             if(i == listed_data.length - 1){
@@ -451,8 +454,8 @@ function request_data_list(){
 }
 
 $("#list_data_btn").on("click",function(){
-  
-  
+
+
   if($("#data_user_email").val() == ""){
     bootbox.alert("Please put in your email address that is registered with the server selected.");
   } else if($("#data_user_password").val() == ""){
@@ -460,21 +463,21 @@ $("#list_data_btn").on("click",function(){
   } else if($("#select_data_server").val() == null){
     bootbox.alert("Please select a server");
   } else {
-    
-    
+
+
     if(typeof(master_json.data.servers[$("#select_data_server").val()].manage_url) == "undefined"){
       //fix the lack of a manage_url now (perhaps auto click the update );
-      
-      
+
+
       // then request list
       request_data_list();
-      
+
     } else {
       //retrieve the data here
       request_data_list();
     }
   }
-  
+
 });
 
 
@@ -550,15 +553,15 @@ encrypt_obj = {
                     }
                   });
                 }
-                
-                
+
+
                 for(var i = 0; i < this_decrypted_message.length; i++){
                   delete(this_decrypted_message[i][""]);   // Delete blank column if present
                   if(usernames.indexOf(this_decrypted_message[i].username) == -1){
                     usernames.push(this_decrypted_message[i].username);
                   }
                 }
-                
+
                 if(usernames.length > 1){
                   bootbox.confirm("There are multiple participants - would you like separate files for each participant? (press cancel if you would like one big file for all participants)",function(result){
                     if(result){
@@ -589,7 +592,7 @@ encrypt_obj = {
                         }
                       }
                       recursive_username_decryption(usernames);
-                      
+
                     } else {
                       //do all participants in one go
                       default_filename = "batch";
@@ -659,12 +662,12 @@ encrypt_obj = {
   },
 	add_script: function(){
 		bootbox.prompt("Please complete the instructions on how to automatically have your data saved or e-mailed and then copy in the script address below",function(this_url){
-			
-			/* 
+
+			/*
 			this functionality will be in version 1
       master_json.data.save_script = this_url;
 			*/
-			
+
     })
 	},
   archive_keys:function(){
@@ -769,7 +772,7 @@ encrypt_obj = {
     }
 
     master_json.keys.public_key = receiverPublicKey;
-    
+
     if(typeof(encrypt_dialog) == "undefined"){
       encrypt_dialog = bootbox.prompt("In order to encrypt and decrypt your participants' data, we need a password. Make sure you will remember this password, if you forget it then any data that is encrypted will be lost forever.",function(result){
         if(result){
@@ -817,17 +820,16 @@ function list_data_servers(){
                                 "<option disabled selected>--Please select a server--</option>";
   Object.keys(master_json.data.servers).forEach(function(this_server){
     var this_server_info = master_json.data.servers[this_server];
-    
+
     if(typeof(this_server_info.registration_url) !== "undefined"){
-    
+
       select_server_html += "<option>" + this_server + "</option>";
-      
+
     }
   });
   select_server_html += "</select>";
   $("#select_server").html(select_server_html);
-  
+
 }
 
 </script>
-
