@@ -55,15 +55,20 @@ app.on('activate', function () {
 
 
 ipc.on('read_file', (event,args) => {
-  console.log(args);
-  var content = fs.readFileSync("User/" +
-                                  args["user_folder"] + "/" +
-                                  args["this_file"]   + "/",
-                                'utf8');
-  // Invoke the next step here however you like
-  console.log(content);   // Put all of the code here (not the best solution)
-  event.returnValue = content; //Math.random();
-
+  /*
+  * Security checks
+  */
+  if(args["user_folder"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else if(args["this_file"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else {
+    var content = fs.readFileSync("User/" +
+                                    args["user_folder"] + "/" +
+                                    args["this_file"]   + "/",
+                                  'utf8');
+    event.returnValue = content;
+  }
 });
 
 

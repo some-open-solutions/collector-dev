@@ -11,12 +11,23 @@ window.onload=function(){
           "this_file"   : this_file
         });
         file_action(file_content);
-      },
-      first_function:function(){
-        console.dir("howdy");
       }
     }
 
+    Collector.electron.read_file("","master.json",function(result){
+
+      master_json = JSON.parse(result);
+      wait_till_exists("list_studies");
+      wait_till_exists("list_graphics");
+      list_mods();
+      wait_till_exists("list_trialtypes");
+      wait_till_exists("initiate_actions");
+      autoload_mods();
+      wait_till_exists("list_keys");
+      wait_till_exists("list_data_servers");
+      wait_till_exists("list_servers");
+    });
+  },5000);
 
     /*
 
@@ -41,5 +52,4 @@ window.onload=function(){
      replyDiv.innerHTML = args;
     });
     */
-  },5000);
 }
