@@ -36,45 +36,6 @@ switch(Collector.detect_context()){
   case "localhost":
     Collector.tests.pass("helper",
                          "startup");          // this can't fail in localhost version
-    /*
-    eel.expose(python_bootbox);
-    function python_bootbox(message){
-      Collector.custom_alert(message);
-    }
-
-
-    eel.expose(python_hide_bb);
-    function python_hide_bb(){
-      setTimeout(function(){
-        //python_dialog.modal("hide");
-      },1000);
-    }
-    */
-
-    function load_master_json(this_json){
-			master_json = this_json;
-      list_surveys();
-      first_load = true;
-      wait_till_exists("list_studies");
-      wait_till_exists("list_graphics");
-      list_mods();
-      wait_till_exists("list_trialtypes");
-      wait_till_exists("initiate_actions");
-      autoload_mods();
-      wait_till_exists("list_keys");
-      wait_till_exists("list_data_servers");
-      wait_till_exists("list_servers");
-    }
-    try{
-      //assume we're in development mode first
-      $.get("../User/master.json",function(result){
-        load_master_json(result);
-      });
-    } catch(error){
-      alert("HI");
-      //nothing
-    }
-
-    load_master_json();     // don't use dropbox
+    wait_till_exists("load_electron");
     break;
 }

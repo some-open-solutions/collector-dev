@@ -58,5 +58,6 @@ setInterval(function(){
 		*/
 		case "localhost":
 			//do nothing
+      break;
 	}
 },30000);
