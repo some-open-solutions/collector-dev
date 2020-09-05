@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "coffee-script": "^1.12.7",
+    "electron-builder": "^22.8.0",
+    "menu": "^0.2.5",
+    "remote": "^0.2.6",
+    "require": "^2.4.20"
+  }
+}

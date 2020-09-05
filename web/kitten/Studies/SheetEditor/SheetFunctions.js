@@ -128,7 +128,7 @@ function list_studies(){
         } else {
           remove_from_list("Select a dropbox experiment");
           first_load = false;
-        }			
+        }
         exp_json = master_json.exp_mgmt.experiments[this.value];
         clean_conditions();
         $("#dropbox_inputs").show();
@@ -179,7 +179,7 @@ function new_experiment(experiment){
 
     //create it first in dropbox, THEN update table with location
 		master_json.exp_mgmt.experiments[experiment] = new_experiment_data;
-    
+
 		var this_path = "/Experiments/" + experiment + ".json";
 
     function update_experiment_list(experiment){
@@ -238,7 +238,7 @@ function renderItems() {
 	list_graphics();
   list_servers();
 	initiate_actions();
-  autoload_mods();  
+  autoload_mods();
 }
 function stim_proc_defaults(proc_values,stim_values){
 	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
@@ -273,7 +273,7 @@ function synch_experiment(entry_name){
 			Collector.tests.report_error("problem synching the experiment","problem synching the experiment");
 		});
 }
-function update_dropdown_lists(){	
+function update_dropdown_lists(){
 	var this_exp   = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
 	var stim_values = [];
 	var proc_values = [];
@@ -364,7 +364,7 @@ function update_handsontables(){
 }
 function update_master_json(){
 	dbx_obj.new_upload({path:"/master.json",
-                      contents:JSON.stringify(master_json),
+                      contents:JSON.stringify(master_json,null,2),
                       mode:'overwrite'},
                       function(result){
 
@@ -431,7 +431,7 @@ function upload_exp_contents(these_contents,this_filename){
 		list_studies();
     upload_trialtypes(this_content);
     upload_surveys(this_content);
-    list_surveys();		
+    list_surveys();
 	}
   function upload_surveys(this_content){
     function unique_survey(suggested_name,survey_content){

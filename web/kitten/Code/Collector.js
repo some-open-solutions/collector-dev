@@ -32,9 +32,9 @@ Collector = {
 		function create_alerts_container() {
 			if (typeof(alerts_ready) !== "undefined" && alerts_ready) return;
 
-			var top_padding = parseFloat($("#sim_navbar").css("height").replace("px","")) + 
+			var top_padding = parseFloat($("#sim_navbar").css("height").replace("px","")) +
 												parseFloat($("#top_navbar").css("height").replace("px",""));
-			
+
 			var el = $("<div>");
 			el.css({
 					position: "fixed",
@@ -78,9 +78,8 @@ Collector = {
 	},
 	detect_context: function(){
 		//turn to false to make use of eel and python
-		if(document.URL.indexOf("localhost") !== -1){
-			if(typeof(parent.dropbox_developer) !== "undefined" &&
-								parent.dropbox_developer  ==  true){
+		if(typeof(parent.dropbox_developer) !== "undefined"){
+			if(parent.dropbox_developer  ==  true){
 				return "github";
 			} else {
 				return "localhost";
@@ -169,7 +168,7 @@ Collector = {
 // online solutions //
 //////////////////////
 
-// solution by csharptest.net at 
+// solution by csharptest.net at
 // https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
 //////////////////////////////////////////////////////////////////////////////////////////////
 Collector.makeid = function(length) {
@@ -187,7 +186,7 @@ Collector.makeid = function(length) {
 */
 
 /*
-* SessionCheck.js 
+* SessionCheck.js
 */
 // add session
 // add create_session()
@@ -198,7 +197,7 @@ Collector.makeid = function(length) {
 * by qwerty at
 * https://stackoverflow.com/questions/2116558/fastest-method-to-replace-all-instances-of-a-character-in-a-string
 */
-String.prototype.replaceAll = function(str1, str2, ignore) 
+String.prototype.replaceAll = function(str1, str2, ignore)
 {
   return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }

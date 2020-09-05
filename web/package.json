@@ -1,22 +1,67 @@
 {
-  "name": "electron-quick-start",
+  "name": "Collector",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "An Open-Source package for online research",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
-    "Electron",
+    "Online Research",
     "quick",
     "start",
     "tutorial",
     "demo"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Mikey Garcia, Dr. Nate Kornell, Tyson Kerr, Dr. Adam Blake, Dr. Anthony Haffey",
+  "license": "GNU General Public License",
   "devDependencies": {
-    "electron": "^10.1.1"
+    "coffee-script": "~1.6.3",
+    "electron": "^10.1.1",
+    "electron-builder": "^22.8.0"
+  },
+  "build": {
+    "appId": "yourappid",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "directories": {
+      "buildResources": "resources"
+    },
+    "extraFiles": [
+      "User/**"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "logos/kitten.png"
+    }
+  },
+  "dependencies": {
+    "electron-context-menu": "^2.3.0",
+    "require": "^2.4.20"
   }
 }
