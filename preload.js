@@ -32,6 +32,15 @@ window.onload=function(){
           });
           file_action(file_content);
         },
+        write_experiment: function(this_experiment,
+                                   file_content,
+                                   file_action){
+          write_response = ipc.sendSync('write_experiment',{
+            "this_experiment" : this_experiment,
+            "file_content"    : file_content
+          });
+          file_action(write_response);
+        },
         write_file: function(user_folder,
                              this_file,
                              file_content,

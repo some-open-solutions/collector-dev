@@ -14,8 +14,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
- 		
-		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)		
+
+		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
 */
 var this_sheet;
 var this_selection;
@@ -63,7 +63,7 @@ function shuffleRenderer(instance, td, row, col, prop, value, cellProperties) {
 	if (value === '') {
 		td.style.background = '#DDD';
 	} else if (
-		typeof value === 'string' 
+		typeof value === 'string'
 	 && (   value.indexOf('#') !== -1
 		 || value.toLowerCase() === 'off'
 		)
@@ -114,10 +114,10 @@ function createHoT(container, data,sheet_name) {
 	var table = new Handsontable(container, {
 		data: data,
 		minSpareCols: 1,
-		minSpareRows: 1,            
-        
+		minSpareRows: 1,
+
 		afterChange: function(changes, source) {
-			
+
 			var middleColEmpty=0;
 			var middleRowEmpty=0;
 			var postEmptyCol=0; //identify if there is a used col after empty one
@@ -135,7 +135,7 @@ function createHoT(container, data,sheet_name) {
 						}	else {                                                                              // otherwise we assume it's matching a previous header
 							this.setDataAtCell(0,k,this.getDataAtCell(0,k)+'*');                                // add a star to the title to avoid identical titles
 							bootbox.alert("You have identical headers for two columns '" + 											// let the user know the change has happened
-														this.getDataAtCell(0,k) + "', we have added a * to address this");    
+														this.getDataAtCell(0,k) + "', we have added a * to address this");
 						}
 					}
 				}
@@ -144,43 +144,43 @@ function createHoT(container, data,sheet_name) {
 				if(k >= this.countCols()){  																											        // if the loop has gone past the last column
 					break;                                                                                  // then stop looping through the columns
 				}
-				
+
 				if(this.getDataAtCell(0,k).toLowerCase()=="item"){      																	// checking for invalid item number (i.e. one)
 					for(m = 0; m < this.countRows(); m++){                																	// loop through each row
 						if(this.getDataAtCell(m,k) == 1){                																			// if the value in the row is one
-							bootbox.alert("Warning v1: 1 does not refer to any row in the Stimuli sheet!" +     // warn the user 
-														"The first row is row 2 (as row 1 is the header). Fix row " + (m+1) +  
-														"in your Procedure's Item column.");                                   
+							bootbox.alert("Warning v1: 1 does not refer to any row in the Stimuli sheet!" +     // warn the user
+														"The first row is row 2 (as row 1 is the header). Fix row " + (m+1) +
+														"in your Procedure's Item column.");
 						}
 						if(this.getDataAtCell(m,k) !== null){                                                 // if the value is something
 							if(this.getDataAtCell(m,k).indexOf(":") !== -1){																		// check if the user is using a ":" (deprecated)
 								this.setDataAtCell(m,k,this.getDataAtCell(m,k).replace(":"," to "));              // and then replace the colon with " to "
 							}
-						}						
+						}
 					}
 				}
-				
+
 				if(this.isEmptyCol(k)){																																		// if this is an empty middle column
 					this.alter("remove_col",k);																															// remove this empty middle column
 					k--;																																										// and then check this column number again
-				}				
+				}
 			}
-			
+
 			for (var k=0; k<this.countRows()-1; k++){																										// go through each row
-				
+
 				if(k >= this.countRows()){  																											        // if the loop has gone past the last row
 					break;                                                                                  // then stop looping through the rows
 				}
-			
+
 				if (this.isEmptyRow(k)){																																	// if the row is empty
 					this.alter("remove_row",k); 																													  // delete this empty row
 					k--;																																										// and then check this row number again.
-				}            
-			}			
+				}
+			}
 
       var experiment = $("#experiment_list").val();
 			var this_exp   = master_json.exp_mgmt.experiments[experiment];
-			
+
 			if(sheet_name.toLowerCase() == "conditions.csv"){
 				this_exp.cond_array = this.getData();
 			} else {
@@ -189,7 +189,7 @@ function createHoT(container, data,sheet_name) {
 				}	else if(typeof(this_exp.all_procs[sheet_name]) !== "undefined"){
 					this_exp.all_procs[sheet_name] = this.getData();
 				}	else {
-					alert("error - "+sheet_name+" not found in "+experiment);
+					alert("error - " + sheet_name + " not found in " + experiment);
 				}
 			}
 		},
@@ -210,9 +210,9 @@ function createHoT(container, data,sheet_name) {
     },
     afterSelectionEnd: function(){
       thisCellValue = this.getValue();
-      
+
       var coords        = this.getSelected();
-      var column        = this.getDataAtCell(0,coords[1]); 
+      var column        = this.getDataAtCell(0,coords[1]);
       var thisCellValue = this.getDataAtCell(coords[0],coords[1]);
       console.dir(column);
       console.dir(thisCellValue);
@@ -223,7 +223,7 @@ function createHoT(container, data,sheet_name) {
       helperActivate(column, thisCellValue,sheet_name);
     },
     cells: function(row, col, prop) {
-		var cellProperties = {};        
+		var cellProperties = {};
 		if (row === 0) {
 			cellProperties.renderer = firstRowRenderer;
 		} else {
@@ -246,7 +246,7 @@ function createHoT(container, data,sheet_name) {
 			} else {
 				cellProperties.renderer = Handsontable.renderers.TextRenderer;
 			}
-		}                
+		}
 		return cellProperties;
 	},
 	cells: function(row, col, prop) {},
@@ -265,20 +265,20 @@ function createHoT(container, data,sheet_name) {
 					this_sheet = this;
 					$('#cell_editor_div').fadeIn();
 					this_selection = selection;
-					
-					cell_editor_obj.content_before = this_sheet.getDataAtCell(selection.start.row, 
+
+					cell_editor_obj.content_before = this_sheet.getDataAtCell(selection.start.row,
 																																		selection.start.col);
 
-					cell_editor.setValue(this_sheet.getDataAtCell(selection.start.row, 
+					cell_editor.setValue(this_sheet.getDataAtCell(selection.start.row,
 																												selection.start.col),-1);
-													
-					
-					
+
+
+
 					//var cell_editor_width = parseFloat($("#cell_editor_div").css("width").replace("px",""));
 
 					if($("#help_content").is(":visible")){
 						var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
-						
+
 						$("#cell_editor_div").animate({
 							"width": window.innerWidth - helper_width
 						}, 500,function(){
@@ -301,7 +301,7 @@ function createHoT(container, data,sheet_name) {
       },
 			"row_below": {
         name: 'Insert row below'
-      },			
+      },
 			"col_left": {
         name: 'Insert column left'
       },
@@ -319,7 +319,7 @@ function createHoT(container, data,sheet_name) {
       },
 			"redo": {
         name: 'Redo'
-      },			
+      },
 			"make_read_only": {
         name: 'Read only'
       },
@@ -330,7 +330,7 @@ function createHoT(container, data,sheet_name) {
 	},
 	rowHeaders: true,
 	});
-	return table;    
+	return table;
 }
 
 //solution by Jeffrey Harmon at https://stackoverflow.com/questions/1064089/inserting-a-text-where-cursor-is-using-javascript-jquery
@@ -353,6 +353,6 @@ $(window).resize(function() {
 	resizeTimer = window.setTimeout(function() {
 		updateDimensions(stimTable);
 	}, 100);
-	window.clearTimeout(resizeTimer);        
+	window.clearTimeout(resizeTimer);
 });
 */

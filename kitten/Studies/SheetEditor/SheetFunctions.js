@@ -183,16 +183,15 @@ function new_experiment(experiment){
 		var this_path = "/Experiments/" + experiment + ".json";
 
     function update_experiment_list(experiment){
-      $('#experiment_list').append($('<option>', {
+			$('#experiment_list').append($('<option>', {
         text : experiment
       }));
       $("#experiment_list").val(experiment);
       update_handsontables();
       update_master_json();
-
-      $("#save_btn").click();
+			$("#save_btn").click();
     }
-    if(dropbox_check()){
+		if(dropbox_check()){
       dbx_obj.new_upload({path:this_path,contents:JSON.stringify(new_experiment_data)},function(result){
         dbx.sharingCreateSharedLink({path:this_path})
           .then(function(returned_link){
@@ -211,10 +210,13 @@ function new_experiment(experiment){
         Collector.tests.report_error("new_experiment trying to upload template to dropbox","new_experiment trying to upload template to dropbox");
       },
       "filesUpload");
+
     } else {
-      update_experiment_list(experiment);
+
+			update_experiment_list(experiment);
     }
 	}
+
 }
 function remove_from_list(experiment){
 	var x = document.getElementById("experiment_list");
@@ -307,13 +309,13 @@ function update_handsontables(){
   proc_file = Object.keys(this_exp.all_procs)[0];
 
 
-
 	function load_spreadsheet(experiment,
 														sheet_type,
 														sheet_name,
 													  exp_mgmt_location,
 														sheet_content){
 		if(sheet_content.split(",").length > 1){
+			console.dir("howdy");
 			createExpEditorHoT(Papa.parse(sheet_content).data,
 												 sheet_type,
 												 sheet_name);
@@ -330,32 +332,63 @@ function update_handsontables(){
 
   switch(Collector.detect_context()){
       case "localhost":
-				Collector.electron.read_file("Experiments/"  + $("#experiment_list").val(),
-																		 "conditions.csv",
-																		 function(sheet_content){
-																			 load_spreadsheet($("#experiment_list").val(),
-																												 "Conditions",
-																												 "conditions.csv",
-																												 "cond_array",
-																											   sheet_content);
-																		 });
-				 Collector.electron.read_file("Experiments/"  + $("#experiment_list").val(),
-																			 stim_file,
-																			 function(sheet_content){
-																				 load_spreadsheet($("#experiment_list").val(),
-																													 "Stimuli",
-																													 stim_file,
-																													 "all_stims[sheet_name]",
-																												   sheet_content);
-																			 });
-				 Collector.electron.read_file("Experiments/"  + $("#experiment_list").val(),
-																			 proc_file,
-																			 function(sheet_content){
-																				 load_spreadsheet($("#experiment_list").val(),
-																													 "Procedure",
-																													 proc_file,
-																													 "all_procs[sheet_name]",
-																												   sheet_content);
+
+
+				Collector
+					.electron
+					.read_file("Experiments/"  + $("#experiment_list").val(),
+										 "conditions.csv",
+										 function(sheet_content){
+											 // fall back on master_json if the local load didn't work
+											 if(sheet_content == ""){
+												 sheet_content = Papa.unparse(master_json
+																		 								 	.exp_mgmt
+																											.experiments
+																										 	[$("#experiment_list").val()]
+																											.cond_array);
+											 }
+											 load_spreadsheet($("#experiment_list").val(),
+																					 "Conditions",
+																					 "conditions.csv",
+																					 "cond_array",
+																				   sheet_content);
+
+		 									 });
+				 Collector
+				 	.electron
+					.read_file("Experiments/"  + $("#experiment_list").val(),
+										 stim_file,
+										 function(sheet_content){
+											 if(sheet_content == ""){
+												 sheet_content = Papa.unparse(master_json
+																		 								 	.exp_mgmt
+																											.experiments
+																										 	[$("#experiment_list").val()]
+																											.all_stims[stim_file]);
+											 }
+											 load_spreadsheet($("#experiment_list").val(),
+																				 "Stimuli",
+																				 stim_file,
+																				 "all_stims[sheet_name]",
+																			   sheet_content);
+											 });
+				 Collector
+				 	.electron
+					.read_file("Experiments/"  + $("#experiment_list").val(),
+										 proc_file,
+										 function(sheet_content){
+											 if(sheet_content == ""){
+												 sheet_content = Papa.unparse(master_json
+																		 								 	.exp_mgmt
+																											.experiments
+																										 	[$("#experiment_list").val()]
+																											.all_procs[proc_file]);
+											 }
+											 load_spreadsheet($("#experiment_list").val(),
+																				 "Procedure",
+																				 proc_file,
+																				 "all_procs[sheet_name]",
+																			   sheet_content);
 																			 });
       case "github":
       default:
@@ -378,54 +411,8 @@ function update_master_json(){
 	},
 	"filesUpload");
 };
-function update_this_setting(setting){
-  new_val = $("#online-" + setting.replaceAll(".","-")).val();
-  eval( "master_json." + setting + " = " + "'" + new_val + "'");
-  eel.save_master_json(master_json);
-}
-function update_trial_json(){
-	// list all the trialtypes currently existing;
-	var this_exp   		= master_json.exp_mgmt.experiments[$("#experiment_list").val()];
-	var proc_trialtypes = {};
-	var proc_keys		= Object.keys(this_exp.all_procs);
 
-	//list all columns with trialtype in them
-	var post_trialtypes = this_exp.all_procs["Procedure_1"][0].filter(function(key){
-		return /trial type/.test(key);
-	});
-	proc_keys.forEach(function(procedure){
-		post_trialtypes.forEach(function(trialtype){
-			check_trialtypes_in_proc(procedure,trialtype.toLowerCase());
-		});
-	});
-}
-function update_spreadsheet_selection() {
-	var current_experiment = $("#experiment_name").val();
 
-	var exp_data = experiment_files[current_experiment];
-
-	var select_html = '<option class="condOption" value="Conditions.csv">Conditions</option>';
-
-	select_html += '<optgroup label="Stimuli" class="stimOptions">';
-
-	for (var i=0; i<exp_data['Stimuli'].length; ++i) {
-		var file = exp_data['Stimuli'][i];
-		select_html += '<option value="Stimuli/' + file + '">' + file + '</option>';
-	}
-
-	select_html += '</optgroup>';
-
-	select_html += '<optgroup label="Procedures" class="procOptions">';
-
-	for (var i=0; i<exp_data['Procedures'].length; ++i) {
-		var file = exp_data['Procedures'][i];
-		select_html += '<option value="Procedure/' + file + '">' + file + '</option>';
-	}
-
-	select_html += '</optgroup>';
-
-	//$("#spreadsheet_selection").html(select_html);
-}
 function upload_exp_contents(these_contents,this_filename){
 	parsed_contents  = JSON.parse(these_contents)
 	cleaned_filename = this_filename.toLowerCase().replace(".json","");

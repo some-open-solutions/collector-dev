@@ -100,6 +100,40 @@ ipc.on('read_file', (event,args) => {
   }
 });
 
+ipc.on('write_experiment', (event,args) => {
+
+  /*
+  * Security checks
+  */
+
+  if(args["this_experiment"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else {
+    try{
+      //save JSON
+      var content = fs.writeFileSync("Experiments/" +
+                                       args["this_experiment"] + "/" +
+                                       args["file_content"],
+                                     'utf8');
+
+      //save folder
+      /*
+      var content = fs.writeFileSync("Experiments/" +
+                                       args["user_folder"] + "/" +
+                                       args["this_file"]   + "/",
+                                       args["file_content"],
+                                     'utf8');
+      */
+      event.returnValue = "success";
+    } catch(error){
+      //to trigger an attempt to load a trialtype from the master_json
+      event.returnValue = "failed to save";
+    }
+
+  }
+});
+
+
 ipc.on('write_file', (event,args) => {
 
   /*
