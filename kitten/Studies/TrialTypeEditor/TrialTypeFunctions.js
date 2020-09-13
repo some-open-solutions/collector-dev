@@ -75,33 +75,30 @@ trialtypes_obj = {
 
 		var trialtype = master_json.trialtypes.trialtype;
 
-		if(typeof(eel) !== "undefined"){
-			eel.expose(python_trialtype);
-			function python_trialtype(content){
-				console.dir("content");
-				console.dir(content);
-				if(content == ""){
-					content = master_json.trialtypes[user_default+"s"][trialtype];
-				}
-				editor.setValue(content);
-			}
-		}
-
     //python load if localhost
     switch(Collector.detect_context()){
       case "localhost":
         cleaned_trialtype = trialtype.toLowerCase()
                                      .replace(".html","") +
                                      ".html";
-        console.dir(cleaned_trialtype);
-				$.get("../User/Trialtypes" + cleaned_trialtype,function(result){
-					editor.setValue(result);
-				});
 
+				Collector
+					.electron
+					.read_file("Trialtypes",
+										 cleaned_trialtype,
+									   function(trialtype_content){
+											 if(trialtype_content == ""){
+												 editor.setValue(master_json.trialtypes
+													 													[user_default + "s"]
+																										[trialtype]);
+											 } else {
+												 editor.setValue(trialtype_content);
+											 }
+										 });
 				//var content = eel.load_trialtype(cleaned_trialtype);
         break;
       default:
-        var content = master_json.trialtypes[user_default+"s"][trialtype];
+				var content = master_json.trialtypes[user_default+"s"][trialtype];
         editor.setValue(content);
         break;
     }

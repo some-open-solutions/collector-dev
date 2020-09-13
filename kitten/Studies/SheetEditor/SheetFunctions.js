@@ -122,8 +122,8 @@ function list_studies(){
       select_html += "</select>";
       $("#experiments").html(select_html);
       $("#experiment_list").on("change",function(){
-        if(first_load == false){
-          master_json.exp_mgmt.any_loaded = true;
+        if(typeof(first_load) == "undefined" ||
+				 	 first_load	== false){
           $("#save_btn").click();
         } else {
           remove_from_list("Select a dropbox experiment");
@@ -264,7 +264,6 @@ function stim_proc_selection(stim_proc,sheet_selected){
 function synch_experiment(entry_name){
 	dbx.sharingCreateSharedLink({path:"/experiments/" + entry_name + ".json"})
 		.then(function(result){
-			console.dir(result);
 			$.get(result.url.replace("www.","dl."), function(exp_json){
 				master_json.exp_mgmt.experiments[entry_name] = JSON.parse(exp_json);
 			});
@@ -307,48 +306,57 @@ function update_handsontables(){
   stim_file = Object.keys(this_exp.all_stims)[0];
   proc_file = Object.keys(this_exp.all_procs)[0];
 
+
+
+	function load_spreadsheet(experiment,
+														sheet_type,
+														sheet_name,
+													  exp_mgmt_location,
+														sheet_content){
+		if(sheet_content.split(",").length > 1){
+			createExpEditorHoT(Papa.parse(sheet_content).data,
+												 sheet_type,
+												 sheet_name);
+		} else {
+			var experiment = sheet_content; //focusing on loading from master_json
+			var sheet_json = master_json.exp_mgmt
+																	.experiments[experiment]
+																	[exp_mgmt_location];
+			createExpEditorHoT(sheet_json,
+												 sheet_type,
+												 sheet_name);
+		}
+	}
+
   switch(Collector.detect_context()){
       case "localhost":
-        eel.expose(receive_sheet);
-        function receive_sheet(sheet_content,
-                               sheet_type,
-                               sheet_name){
-          if(sheet_content.split(",").length > 1){
-            createExpEditorHoT(Papa.parse(sheet_content).data,
-                               sheet_type,
-                               sheet_name);
-          } else {
-            var experiment = sheet_content; //focusing on loading from master_json
-            if(sheet_type == "Conditions"){
-              var sheet_json = master_json.exp_mgmt
-                                          .experiments[experiment]
-                                          .cond_array;
-            } else if(sheet_type == "Stimuli") {
-              var sheet_json = master_json.exp_mgmt
-                                          .experiments[experiment]
-                                          .all_stims[sheet_name];
-            } else if(sheet_type == "Procedure"){
-              var sheet_json = master_json.exp_mgmt
-                                          .experiments[experiment]
-                                          .all_procs[sheet_name];
-            } else {
-              bootbox.alert("Problem loading experiment - not sure what type of sheet <b>" + sheet_type + "</b> is.");
-            }
-            createExpEditorHoT(sheet_json,
-                               sheet_type,
-                               sheet_name);
-          }
-        }
-        //check each sheet exists first
-        eel.request_sheet($("#experiment_list").val(),
-                          "Conditions",
-                          "conditions.csv");
-        eel.request_sheet($("#experiment_list").val(),
-                          "Stimuli",
-                          stim_file);
-        eel.request_sheet($("#experiment_list").val(),
-                          "Procedure",
-                          proc_file);
+				Collector.electron.read_file("Experiments/"  + $("#experiment_list").val(),
+																		 "conditions.csv",
+																		 function(sheet_content){
+																			 load_spreadsheet($("#experiment_list").val(),
+																												 "Conditions",
+																												 "conditions.csv",
+																												 "cond_array",
+																											   sheet_content);
+																		 });
+				 Collector.electron.read_file("Experiments/"  + $("#experiment_list").val(),
+																			 stim_file,
+																			 function(sheet_content){
+																				 load_spreadsheet($("#experiment_list").val(),
+																													 "Stimuli",
+																													 stim_file,
+																													 "all_stims[sheet_name]",
+																												   sheet_content);
+																			 });
+				 Collector.electron.read_file("Experiments/"  + $("#experiment_list").val(),
+																			 proc_file,
+																			 function(sheet_content){
+																				 load_spreadsheet($("#experiment_list").val(),
+																													 "Procedure",
+																													 proc_file,
+																													 "all_procs[sheet_name]",
+																												   sheet_content);
+																			 });
       case "github":
       default:
       	createExpEditorHoT(this_exp.all_stims[stim_file], "Stimuli",   stim_file);
@@ -357,9 +365,6 @@ function update_handsontables(){
         break;
 
   }
-
-
-	master_json.exp_mgmt.any_loaded = true;
 	$("#dropbox_inputs").show();
 }
 function update_master_json(){
