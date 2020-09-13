@@ -36,6 +36,22 @@ switch(Collector.detect_context()){
   case "localhost":
     Collector.tests.pass("helper",
                          "startup");          // this can't fail in localhost version
-    wait_till_exists("load_electron");
+    wait_for_electron = setInterval(function(){
+      if(typeof(Collector.electron) !== "undefined"){
+        clearInterval(wait_for_electron);
+        Collector.electron.read_file("","master.json",function(result){
+          master_json = JSON.parse(result);
+          wait_till_exists("list_studies");
+          wait_till_exists("list_graphics");
+          list_mods();
+          wait_till_exists("list_trialtypes");
+          wait_till_exists("initiate_actions");
+          autoload_mods();
+          wait_till_exists("list_keys");
+          wait_till_exists("list_data_servers");
+          wait_till_exists("list_servers");
+        });
+      }
+    },100);
     break;
 }

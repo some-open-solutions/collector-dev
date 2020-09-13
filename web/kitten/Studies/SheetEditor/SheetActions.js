@@ -55,7 +55,19 @@ $("#delete_exp_btn").on("click",function(){
 
 					//delete the local file if this is
 					if(Collector.detect_context() == "localhost"){
-						eel.delete_exp(exp_name);
+						Collector
+							.electron
+							.delete_experiment(exp_name,
+								function(response){
+									if(response !== "success"){
+										bootbox.alert(response);
+									}
+								}
+						);
+
+
+						// eel.delete_exp(exp_name); delete this line when the above works
+
 					}
 				}
 			}
@@ -85,7 +97,7 @@ $("#new_experiment_button").on("click",function(){
 				new_experiment(result);
 				$("#save_btn").click();
 			}
-		}    
+		}
 	});
 });
 $("#new_proc_button").on("click",function(){
@@ -157,7 +169,7 @@ $("#rename_exp_btn").on("click",function(){
           .then(function(result){
 						update_master_json();
 						list_studies();
-						$("#experiment_list").val(new_name);					
+						$("#experiment_list").val(new_name);
           })
           .catch(function(error){
             Collector.tests.report_error("problem moving an experiment", "problem moving an experiment");
@@ -242,10 +254,10 @@ $("#run_btn").on("click",function(){
 		select_html += "<option>" + condition.name + "</option>";
 	});
 	select_html += "</select>";
-  
-  
 
-  
+
+
+
 	switch(Collector.detect_context()){
 		case "github":
 		case "server":
@@ -259,7 +271,7 @@ $("#run_btn").on("click",function(){
 						callback: function(){
 							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 
-							var this_url = window.location.href.split("/" + Collector.version)[0] + 
+							var this_url = window.location.href.split("/" + Collector.version)[0] +
 																												"/" + Collector.version + "/";
 
 							window.open(this_url  	+ "RunStudy.html?platform=github&" +
@@ -274,7 +286,7 @@ $("#run_btn").on("click",function(){
 						callback: function(){
 							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 
-							var this_url = window.location.href.split("/" + Collector.version)[0] + 
+							var this_url = window.location.href.split("/" + Collector.version)[0] +
 																												"/" + Collector.version + "/";
 																"/";
 							window.open(this_url  	+ "RunStudy.html?platform=preview&" +
@@ -396,20 +408,20 @@ $("#save_btn").on("click", function(){
     $("#save_trial_type_button").click();
     $("#save_survey_btn").click();
     $("#save_snip_btn").click();
-    
+
     if(typeof(master_json.keys) == "undefined" ||
        typeof(master_json.keys.public_key) == "undefined"){
          encrypt_obj.generate_keys();
     }
-    
+
     var experiment = $("#experiment_list").val();
-    
+
     /*
     * Only try to save an experiment if there is a valid experiment loaded
     */
     if(typeof(experiment) !== "undefined"){
       var this_exp 	 = master_json.exp_mgmt.experiments[experiment];
-    
+
       if(typeof(this_exp) !== "undefined"){
         this_exp.public_key   = master_json.keys.public_key;
       }
@@ -565,7 +577,7 @@ $("#save_btn").on("click", function(){
                       Collector.custom_alert("check console for error saving location");
                       bootbox.alert(error.error + "<br> Perhaps wait a bit and save again?");;
                     },
-                    "filesUpload");              
+                    "filesUpload");
                 })
                 .catch(function(error){
                   Collector.tests.report_error("problem uploading an experiment", "problem uploading an experiment");
@@ -583,7 +595,7 @@ $("#save_btn").on("click", function(){
         eel.save_master_json(master_json);
       }
     }
-    
+
     Collector.tests.pass("studies",
                          "save_at_start");
   } catch (error){

@@ -23,41 +23,29 @@
 /*
 * Check if Collector is still connected
 */
-if(typeof(eel) !== "undefined"){
-  eel.expose(collector_live);
-}
 function collector_live(){
   $("#top_navbar").addClass("bg-primary");
 }
 
 
 setInterval(function(){
-	$("#top_navbar").removeClass("bg-primary");   			  		// change background until validated that Collector is live
-
 	/*
 	* detect if online or installed version
 	*/
 	switch(Collector.detect_context()){
-		/*
-		* if online
-		*/
 		case "github":
 		case "github":
 		case "server":
 			if(navigator.onLine){
-				/*
-				* Restore normal banner
-				*/
 				collector_live();
 			} else {
-				bootbox.alert("You seem to not be connected to the internet - changes will not be saved until you are connected again.");
+        // change background until validated that Collector is live
+        $("#top_navbar").removeClass("bg-primary");
+				bootbox.alert("You seem to not be connected to the internet " +
+                      "- changes will not be saved until you are connected again.");
 			}
 			break;
-		/*
-		* if installed version
-		*/
 		case "localhost":
-			//do nothing
       break;
 	}
 },30000);
