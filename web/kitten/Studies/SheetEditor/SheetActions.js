@@ -156,7 +156,12 @@ $("#rename_exp_btn").on("click",function(){
 
       switch(Collector.detect_context()){
         case "localhost":
-          eel.save_experiment(new_name,master_json.exp_mgmt.experiments[new_name]);
+					Collector
+						.electron
+						.save_experiment()
+						
+
+					eel.save_experiment(new_name,master_json.exp_mgmt.experiments[new_name]);
           eel.delete_exp(original_name);
           update_master_json();
           list_studies();
