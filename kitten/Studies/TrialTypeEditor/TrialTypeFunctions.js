@@ -90,21 +90,19 @@ trialtypes_obj = {
         cleaned_trialtype = trialtype.toLowerCase()
                                      .replace(".html","") +
                                      ".html";
-
-				Collector
-					.electron
-					.read_file("Trialtypes",
-										 cleaned_trialtype,
-									   function(trialtype_content){
-											 if(trialtype_content == ""){
-												 editor.setValue(master_json.trialtypes
-													 													[user_default + "s"]
-																										[trialtype]);
-											 } else {
-												 editor.setValue(trialtype_content);
-											 }
-										 });
-				//var content = eel.load_trialtype(cleaned_trialtype);
+				trialtype_content = Collector.electron.read_file(
+          "Trialtypes",
+					cleaned_trialtype
+        )
+				if(trialtype_content == ""){
+				  editor.setValue(
+            master_json.trialtypes
+						[user_default + "s"]
+            [trialtype]
+          );
+        } else {
+				  editor.setValue(trialtype_content);
+		    }
         break;
       default:
 				var content = master_json.trialtypes[user_default+"s"][trialtype];
@@ -151,18 +149,16 @@ trialtypes_obj = {
 		},
 		"filesUpload");
 		if(typeof(Collector.electron) !== "undefined"){
-			Collector
-				.electron
-				.write_file("Trialtypes",
-										name
-											.toLowerCase()
-											.replace(".html","") + ".html",
-										content,
-										function(result){
-											if(result !== "success"){
-												bootbox.alert(result);
-											}
-										});
+			var write_response = Collector.electron.write_file(
+        "Trialtypes",
+				name
+					.toLowerCase()
+					.replace(".html","") + ".html",
+				content
+      )
+			if(write_response !== "success"){
+			     bootbox.alert(result);
+			}
 		}
 	},
 	synchTrialtypesFolder:function(){
@@ -188,32 +184,25 @@ trialtypes_obj = {
 }
 function list_trialtypes(to_do_after){
 	try{
-    if(typeof(eel) !== "undefined"){
-      eel.expose(list_python_trialtypes);
-      function list_python_trialtypes(python_trialtypes){
-        var python_user_trialtypes = [];
-        python_trialtypes.forEach(function(python_trialtype){
-          var split_trialtype = python_trialtype.replaceAll("\\","/")
-                                                .split("/");
-          var this_trialtype = split_trialtype[split_trialtype.length - 1];
-              this_trialtype = this_trialtype.toLowerCase()
-                                             .replace(".html","");
+		if(typeof(Collector.electron) !== "undefined"){
+      var trialtypes = Collector.electron.list_trialtypes();
+          trialtypes = JSON.parse(trialtypes);
+          trialtypes = trialtypes.map(item => item.replaceAll(".html",""));
+          trialtypes.forEach(function(trialtype){
+            if(Object.keys(master_json.trialtypes.user_trialtypes).indexOf(trialtype) == -1){
+              master_json
+                .trialtypes
+                .user_trialtypes
+                [trialtype] = Collector
+                                .electron
+                                .read_file("Trialtypes",
+                                           trialtype + ".html");
+            }
+          });
+		}
 
-          if(Object.keys(master_json.trialtypes.user_trialtypes).indexOf(this_trialtype) == -1){
-            python_user_trialtypes.push(this_trialtype);
-            $.get("../User/Trialtypes/" + this_trialtype + ".html", function(trialtype_content){
-              master_json.trialtypes.user_trialtypes[this_trialtype] = trialtype_content;
-            });
-          }
-        });
-        python_user_trialtypes.forEach(function(this_trialtype){
-          $("#trial_type_select").append("<option class='user_trialtype'>" + this_trialtype + "</option>");
-        });
-        if(typeof(to_do_after) !== "undefined"){
-          to_do_after();
-        }
-      }
-    }
+
+
 
     function process_returned(returned_data){
 
@@ -249,10 +238,6 @@ function list_trialtypes(to_do_after){
           if(typeof(to_do_after) !== "undefined"){
             to_do_after();
           }
-          break;
-        /*
-          eel.list_trialtypes();
-				*/
           break;
       }
     }
