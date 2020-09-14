@@ -315,7 +315,6 @@ function update_handsontables(){
 													  exp_mgmt_location,
 														sheet_content){
 		if(sheet_content.split(",").length > 1){
-			console.dir("howdy");
 			createExpEditorHoT(Papa.parse(sheet_content).data,
 												 sheet_type,
 												 sheet_name);
@@ -332,64 +331,67 @@ function update_handsontables(){
 
   switch(Collector.detect_context()){
       case "localhost":
+				var conditions_sheet = Collector.electron.read_file(
+          "Experiments/"  + $("#experiment_list").val(),
+				  "conditions.csv"
+        )
 
+			 if(conditions_sheet == ""){
+				 conditions_sheet = Papa.unparse(
+           master_json
+             .exp_mgmt
+             .experiments
+             [$("#experiment_list").val()]
+             .cond_array
+         );
+			 }
+       load_spreadsheet($("#experiment_list").val(),
+											 "Conditions",
+											 "conditions.csv",
+											 "cond_array",
+										   conditions_sheet);
 
-				Collector
-					.electron
-					.read_file("Experiments/"  + $("#experiment_list").val(),
-										 "conditions.csv",
-										 function(sheet_content){
-											 // fall back on master_json if the local load didn't work
-											 if(sheet_content == ""){
-												 sheet_content = Papa.unparse(master_json
-																		 								 	.exp_mgmt
-																											.experiments
-																										 	[$("#experiment_list").val()]
-																											.cond_array);
-											 }
-											 load_spreadsheet($("#experiment_list").val(),
-																					 "Conditions",
-																					 "conditions.csv",
-																					 "cond_array",
-																				   sheet_content);
+	    var stim_sheet = Collector.electron.read_file(
+        "Experiments/" + $("#experiment_list").val(),
+				stim_file
+      );
+		  if(stim_sheet == ""){
+				 stim_sheet = Papa.unparse(
+           master_json
+             .exp_mgmt
+             .experiments
+             [$("#experiment_list").val()]
+             .all_stims[stim_file]
+         );
+       }
+       load_spreadsheet(
+         $("#experiment_list").val(),
+				 "Stimuli",
+				 stim_file,
+				 "all_stims[sheet_name]",
+				 stim_sheet
+       );
 
-		 									 });
-				 Collector
-				 	.electron
-					.read_file("Experiments/"  + $("#experiment_list").val(),
-										 stim_file,
-										 function(sheet_content){
-											 if(sheet_content == ""){
-												 sheet_content = Papa.unparse(master_json
-																		 								 	.exp_mgmt
-																											.experiments
-																										 	[$("#experiment_list").val()]
-																											.all_stims[stim_file]);
-											 }
-											 load_spreadsheet($("#experiment_list").val(),
-																				 "Stimuli",
-																				 stim_file,
-																				 "all_stims[sheet_name]",
-																			   sheet_content);
-											 });
-				 Collector
-				 	.electron
-					.read_file("Experiments/"  + $("#experiment_list").val(),
-										 proc_file,
-										 function(sheet_content){
-											 if(sheet_content == ""){
-												 sheet_content = Papa.unparse(master_json
-																		 								 	.exp_mgmt
-																											.experiments
-																										 	[$("#experiment_list").val()]
-																											.all_procs[proc_file]);
-											 }
-											 load_spreadsheet($("#experiment_list").val(),
-																				 "Procedure",
-																				 proc_file,
-																				 "all_procs[sheet_name]",
-																			   sheet_content);
-																			 });
+       var proc_sheet = Collector.electron.read_file(
+         "Experiments/"  + $("#experiment_list").val(),
+       	 proc_file
+       );
+			 if(proc_sheet == ""){
+				 proc_sheet = Papa.unparse(
+           master_json
+            .exp_mgmt
+            .experiments
+            [$("#experiment_list").val()]
+            .all_procs[proc_file]);
+			 }
+       load_spreadsheet(
+         $("#experiment_list").val(),
+         "Procedure",
+         proc_file,
+         "all_procs[sheet_name]",
+				 proc_sheet
+       );
+       break;
       case "github":
       default:
       	createExpEditorHoT(this_exp.all_stims[stim_file], "Stimuli",   stim_file);
@@ -414,7 +416,7 @@ function update_master_json(){
 
 
 function upload_exp_contents(these_contents,this_filename){
-	parsed_contents  = JSON.parse(these_contents)
+  parsed_contents  = JSON.parse(these_contents)
 	cleaned_filename = this_filename.toLowerCase().replace(".json","");
 
 	// note that this is a local function. right?

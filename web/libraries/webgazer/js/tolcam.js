@@ -1,7 +1,7 @@
 /**
     This code from OSF repository https://osf.io/jmz79/ accompanies the publication "Online webcam-based eye tracking in cognitive science: a first look" by Semmelmann & Weigelt, published in Behavior Research Methods in 2017. Please find the abstract and information about the code, analyses, and data below. This work is intended for scientific use only.
     Written by Kilian Semmelmann, tolcam@ksemmelm.de, 2017
-    
+
     Minor updates by Anthony Haffey (a.haffey@reading.ac.uk) 2020
 **/
 
@@ -129,14 +129,14 @@ function loadWebgazer() {
 
 
 function initializeWebgazer() {
-    
+
     /*
     window.localStorage.set(localstorageLabel, undefined);
     for (var reg in regs) {
         regs[reg].setData([]);
     }
     */
-    
+
     //webgazer.clearData()
     webgazer.setRegression('ridge') /* currently must set regression and tracker */
         .setTracker('clmtrackr')
@@ -534,17 +534,17 @@ function saveData() {
 
 function sendData() {
   console.dir(data);
-      
+
   switch(parent.parent.dev_obj.context){
     case "localhost":
-      //eel.python_save(data);
+      
       break;
     case "":
       break;
   }
   /*
     - Anthony edit: removing all php use to make this work on Collector.
-  
+
     if (data.length > 0) {
         var d = data.shift();
         $.ajax({
@@ -923,8 +923,8 @@ function navigation(direction) {
 				console.log(design.blocks);
 			}
 		}
-		
-		
+
+
 
         if (d_consent !== undefined) {
             if (d_birthday != "" && d_gender != "" && d_visual != "") {
@@ -1061,14 +1061,14 @@ $('document').ready(function() {
     }
 
     window.localStorage.clear();
-    
+
     var ss = window.location.hash.substring(1);
     $('#cf_reference,#asd_reference,#rub_reference,#cf_code').hide();
     if (ss == "cf") { // crowdflower-reference
         $('#cf_reference,#cf_code').show();
     } else if (ss == "rub") {
         $('#rub_reference').show();
-	} else {		
+	} else {
         $('#asd_reference').show();
 	}
 

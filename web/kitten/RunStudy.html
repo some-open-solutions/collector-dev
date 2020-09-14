@@ -283,22 +283,19 @@ Study = {
 
     switch(Study.get_vars.platform){
       case "localhost":
-        Collector
-          .electron
-          .write_file("Data",
-                      Study.get_vars.location        + "/" +
-                        $("#participant_code").val() + "_" +
-                        $("#completion_code").val()  + ".csv",
-                        Papa.unparse(Collector.complete_csv(exp_json.responses),{
-                          quotes: false,        //or array of booleans
-                          header: true,
-                          skipEmptyLines: true, //or 'greedy',
-                        }),                    //the data
-                      function(result){
-                        if(result !== "success"){
-                          bootbox.alert("Tell the researcher that saving data is broken");
-                        }
-                      });
+        var data_response = Collector.electron.write_file(
+          "Data",
+          Study.get_vars.location        + "/" +
+            $("#participant_code").val() + "_" +
+            $("#completion_code").val()  + ".csv",
+            Papa.unparse(Collector.complete_csv(exp_json.responses),{
+              quotes: false,        //or array of booleans
+              header: true,
+              skipEmptyLines: true, //or 'greedy',
+            }));                    //the data
+        if(data_response !== "success"){
+          bootbox.alert("Tell the researcher that saving data is broken");
+        }
         break;
 			case "server":
       case "github":
@@ -1322,14 +1319,15 @@ function start_study(){
         electron_wait = setInterval(function(){
           if(typeof(Collector.electron.read_file) !== "undefined"){
             clearInterval(electron_wait);
-            Collector
-              .electron
-              .read_file("Experiments",
-                         Study.get_vars.location + ".json",
-                         function(result){
-                           exp_json = JSON.parse(result);
-                           Study.activate_pipe();
-                         });
+            exp_json = JSON.parse(
+              Collector
+                .electron
+                .read_file("Experiments",
+                           Study
+                            .get_vars
+                            .location + ".json"
+            );
+            Study.activate_pipe();
           }
         },100);
 				break;

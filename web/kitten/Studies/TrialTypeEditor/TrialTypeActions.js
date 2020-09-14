@@ -176,14 +176,29 @@ function initiate_actions(){
               });
 
             case "localhost":
-              eel.save_trialtype(new_name.replace(".html","") + ".html",
-                                 master_json.trialtypes.user_trialtypes[new_name]);
-              eel.delete_trialtype(original_name);
-              update_master_json();
-              list_trialtypes(function(){
-                $("#trial_type_select").val(new_name);
-                $("#trial_type_select").change();
-              });
+              var response = Collector.electron.write_file(
+                "Trialtypes",
+                new_name.replace(".html","") + ".html",
+                master_json
+                  .trialtypes
+                  .user_trialtypes
+                  [new_name])
+              if(write_response == "success"){
+                Collector.electron.delete_trialtype(
+                    original_name,
+                    function(response){
+                      if(response == "success"){
+                        update_master_json();
+                        list_trialtypes(function(){
+                          $("#trial_type_select").val(new_name);
+                          $("#trial_type_select").change();
+                        });
+                      } else {
+                        bootbox.alert(response);
+                      }
+                    }
+                  )
+                }
               break;
           }
         }

@@ -627,17 +627,13 @@ $("#save_btn").on("click", function(){
         update_master_json();
       }
       if(Collector.detect_context() == "localhost"){
-				Collector
-					.electron
-					.write_file("",
-						"master.json",
-						JSON.stringify(master_json, null, 2),
-						function(response){
-							if(response !== "success"){
-								bootbox.alert(response);
-							}
-						}
-					);
+				var write_response = Collector.electron.write_file(
+          "",
+					"master.json",
+					JSON.stringify(master_json, null, 2));
+			  if(write_response !== "success"){
+					bootbox.alert(response);
+				}
       }
     }
 
