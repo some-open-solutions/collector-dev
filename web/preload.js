@@ -12,6 +12,13 @@ window.onload=function(){
           });
           file_action(delete_response);
         },
+        delete_trialtype: function(exp_name,
+                                   file_action){
+          delete_response = ipc.sendSync('delete_trialtype',{
+            "trialtype_name" : exp_name
+          });
+          file_action(delete_response);
+        },
         /*
         delete_file: function(user_folder,
                               this_file,
@@ -41,10 +48,12 @@ window.onload=function(){
           });
           file_action(write_response);
         },
-        write_file: function(user_folder,
-                             this_file,
-                             file_content,
-                             file_action){
+        write_file: function(
+          user_folder,
+          this_file,
+          file_content,
+          file_action
+        ){
           write_response = ipc.sendSync('write_file',{
             "user_folder"  : user_folder,
             "this_file"    : this_file,
