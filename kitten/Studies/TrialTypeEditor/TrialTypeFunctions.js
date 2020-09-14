@@ -47,12 +47,21 @@ trialtypes_obj = {
 								//do nothing more
 							})
 							.catch(function(error){
-								Collector.tests.report_error("problem deleting a trialtype",
-														 "problem deleting a trialtype");
+								Collector
+									.tests
+									.report_error("problem deleting a trialtype",
+														 	  "problem deleting a trialtype");
 							});
 						break;
-					case "localhost":																						// i.e. they can edit local files
-            eel.delete_trialtype(deleted_trialtype);									// delete the local trialtype file
+					case "localhost":
+						Collector
+							.electron
+							.delete_trialtype(deleted_trialtype,
+								function(response){
+									if(response !== "success"){
+										bootbox.alert(response);
+									}
+								});
 						break;
 				}
 
@@ -141,8 +150,19 @@ trialtypes_obj = {
 			bootbox.alert("error: "+error.error+"<br> try saving again after waiting a little");
 		},
 		"filesUpload");
-		if(typeof(eel) !== "undefined"){
-			eel.save_trialtype(name.toLowerCase().replace(".html","") + ".html",content);
+		if(typeof(Collector.electron) !== "undefined"){
+			Collector
+				.electron
+				.write_file("Trialtypes",
+										name
+											.toLowerCase()
+											.replace(".html","") + ".html",
+										content,
+										function(result){
+											if(result !== "success"){
+												bootbox.alert(result);
+											}
+										});
 		}
 	},
 	synchTrialtypesFolder:function(){

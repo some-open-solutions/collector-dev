@@ -38,7 +38,7 @@ $("#delete_exp_btn").on("click",function(){
 							if(document.getElementById('experiment_list').options[0] !== undefined){
 								$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
 							}
-							Collector.custom_alert(exp_name +" succesfully deleted");
+							Collector.custom_alert(exp_name + " succesfully deleted");
 							update_master_json();
 							$("#save_btn").click();
 							update_handsontables();
@@ -64,10 +64,6 @@ $("#delete_exp_btn").on("click",function(){
 									}
 								}
 						);
-
-
-						// eel.delete_exp(exp_name); delete this line when the above works
-
 					}
 				}
 			}
@@ -158,15 +154,35 @@ $("#rename_exp_btn").on("click",function(){
         case "localhost":
 					Collector
 						.electron
-						.save_experiment()
-						
-
-					eel.save_experiment(new_name,master_json.exp_mgmt.experiments[new_name]);
-          eel.delete_exp(original_name);
-          update_master_json();
-          list_studies();
-          $("#experiment_list").val(new_name);
-          $("#experiment_list").change();
+						.write_experiment(
+							new_name,
+  						JSON.stringify(
+								master_json.exp_mgmt.experiments[new_name],
+								null,
+								2
+							),
+							function(response){
+								if(response == "success"){
+									Collector
+										.electron
+										.delete_experiment(
+											original_name,
+											function(response){
+												if(response == "success"){
+													update_master_json();
+								          list_studies();
+								          $("#experiment_list").val(new_name);
+								          $("#experiment_list").change();
+												} else {
+													bootbox.alert(response);
+												}
+											}
+										)
+								} else {
+									bootbox.alert(response);
+								}
+							}
+						);
           break;
       }
       if(typeof(dbx) !== "undefined"){
@@ -552,20 +568,34 @@ $("#save_btn").on("click", function(){
           }
         });
 
-        if(Collector.detect_context() == "localhost"){
-          python_exp = this_exp;
-          python_exp.python_procs = {};
-          python_exp.python_conditions = Papa.unparse(this_exp.cond_array);
-          Object.keys(this_exp.all_procs).forEach(function(this_proc){
-            python_exp.python_procs[this_proc] = Papa.unparse(this_exp.all_procs[this_proc]);
-          });
-          python_exp.python_stims = {};
-          Object.keys(this_exp.all_stims).forEach(function(this_stim){
-            python_exp.python_stims[this_stim] = Papa.unparse(this_exp.all_stims[this_stim]);
-          });
-          eel.save_experiment(experiment,  //experiment name
-                              python_exp); //experiment content
 
+        if(Collector.detect_context() == "localhost"){
+          json_exp = this_exp;
+          json_exp.procs_csv = {};
+					json_exp.stims_csv = {};
+
+					json_exp.conditions_csv = Papa.unparse(
+						this_exp.cond_array
+					);
+          Object.keys(this_exp.all_procs).forEach(function(this_proc){
+            json_exp.procs_csv[this_proc] = Papa.unparse(this_exp.all_procs[this_proc]);
+          });
+
+					Object.keys(this_exp.all_stims).forEach(function(this_stim){
+            json_exp.stims_csv[this_stim] = Papa.unparse(this_exp.all_stims[this_stim]);
+          });
+					json_exp = JSON.stringify(json_exp, null, 2);
+					Collector
+						.electron
+						.write_experiment(
+							experiment,
+							json_exp,
+							function(response){
+								if(response !== "success"){
+									bootbox.alert(response);
+								}
+							}
+						)
         }
 
         //dropbox check here
@@ -597,7 +627,17 @@ $("#save_btn").on("click", function(){
         update_master_json();
       }
       if(Collector.detect_context() == "localhost"){
-        eel.save_master_json(master_json);
+				Collector
+					.electron
+					.write_file("",
+						"master.json",
+						JSON.stringify(master_json, null, 2),
+						function(response){
+							if(response !== "success"){
+								bootbox.alert(response);
+							}
+						}
+					);
       }
     }
 
