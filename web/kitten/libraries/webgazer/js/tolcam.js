@@ -117,7 +117,7 @@ data.design = jQuery.extend(true, {}, design);
 function loadWebgazer() {
     $('canvas').remove();
     cam.initialized = 0;
-    $.getScript( "../libraries/webgazer/js/webgazer_old.js" )
+    $.getScript( "libraries/webgazer/js/webgazer_old.js" )
         .done(function( script, textStatus ) {
             initializeWebgazer();
             $('#message').html('Please allow for access on your Webcam on the top part of the screen. <br /><br />Remember: We will NOT transmit your video, but only process it locally and transmit numbers to our server.').show();
@@ -537,7 +537,7 @@ function sendData() {
 
   switch(parent.parent.dev_obj.context){
     case "localhost":
-      
+
       break;
     case "":
       break;
