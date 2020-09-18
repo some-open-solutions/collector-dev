@@ -1,4 +1,5 @@
 Collector.exe
+github_token.txt
 /build
 /dist
 /_pycache_
