@@ -29,17 +29,17 @@
 </head>
 
 
-<script src="../libraries/jquery-3.3.1.min.js"></script>
-<script src="../libraries/tweetnacl.js"></script>
-<script src="../libraries/tweetnacl-utils.js"></script>
-<script src="../libraries/crypto-js.min.js"></script>
-<script src="../libraries/papaparse.4.3.6.min.js"></script>
-<script src="../libraries/jquery-3.3.1.min.js"></script>
-<script src="../libraries/popper.min.js"></script>
-<script src="../libraries/bootbox.5.4.min.js"></script>
+<script src="libraries/jquery-3.3.1.min.js"></script>
+<script src="libraries/tweetnacl.js"></script>
+<script src="libraries/tweetnacl-utils.js"></script>
+<script src="libraries/crypto-js.min.js"></script>
+<script src="libraries/papaparse.4.3.6.min.js"></script>
+<script src="libraries/jquery-3.3.1.min.js"></script>
+<script src="libraries/popper.min.js"></script>
+<script src="libraries/bootbox.5.4.min.js"></script>
 
-<link rel="stylesheet" href="../libraries/bootstrapCollector.css">
-<script src="../libraries/bootstrap.4.0.min.js"></script>
+<link rel="stylesheet" href="libraries/bootstrapCollector.css">
+<script src="libraries/bootstrap.4.0.min.js"></script>
 
 <script src="Code/Collector.js"></script>
 <script src="Code/OnlineTriggers.js"></script>
@@ -102,9 +102,9 @@ $("#welcome_html").load("Welcome.html");
 
 <!-- will look into making the following libraries local in the future -->
 
-<script src="../libraries/ammap.js"></script>
-<script src="../libraries/worldLow.js"></script>
-<script src="../libraries/ammap_theme_light.js"></script>
+<script src="libraries/ammap.js"></script>
+<script src="libraries/worldLow.js"></script>
+<script src="libraries/ammap_theme_light.js"></script>
 
 
 
@@ -1311,6 +1311,12 @@ function start_restart(){
 }
 
 function start_study(){
+  /*
+  * Try to at least center the experiment window if the browser isn't maximised
+  */
+  window.moveTo(0, 0);
+  window.resizeTo(screen.availWidth, screen.availHeight);
+
 	//detect if resuming
 
 	if(Object.keys(exp_json) == 0){
@@ -1322,10 +1328,12 @@ function start_study(){
             exp_json = JSON.parse(
               Collector
                 .electron
-                .read_file("Experiments",
-                           Study
-                            .get_vars
-                            .location + ".json"
+                .read_file(
+                  "Experiments",
+                  Study
+                  .get_vars
+                  .location + ".json"
+                )
             );
             Study.activate_pipe();
           }
@@ -1476,12 +1484,14 @@ $(window).bind('keydown', function(event) {
 window.onbeforeunload = function() {
 
   if(online_data_obj.finished_and_stored == false){
-    precrypted_data(exp_json,"It looks like you're trying to leave the experiment before you're finished (or at least before the data has been e-mailed to the researcher. Please choose a filename to save your data as and e-mail it to the researcher. It should appear in your downloads folder.");
-    bootbox.confirm("Would you like to enable leaving the experiment early? This can result in lost data.",function(result){
+    bootbox.confirm("Would you like to leave the experiment early? If you didn't just download your data there's a risk of you losing your progress.",function(result){
       if(result){
         online_data_obj.finished_and_stored = true; //even though it's not
+        window.close();
       }
     });
+    precrypted_data(exp_json,"It looks like you're trying to leave the experiment before you're finished (or at least before the data has been e-mailed to the researcher. Please choose a filename to save your data as and e-mail it to the researcher. It should appear in your downloads folder.");
+
     return "Please do not try to refresh - you will have to restart if you do so.";
   }
 };

@@ -73,7 +73,7 @@ function load_default_surveys(){
           "Surveys",
           default_survey
         );
-        master_json.surveys.default_surveys[default_survey] = Collector.PapaParsed(survey_content);
+        master_json.surveys.default_surveys[default_survey] = Papa.parse(survey_content).data;
         $('#survey_select').append($('<option>', {
           value: "default|" + default_survey , //.value,
           text : default_survey, //.text
@@ -295,11 +295,14 @@ function create_survey_HoT(this_survey){
 					this.alter("remove_row",this.countRows);//delete the last row
 				}
 			}
-
+      /*
+      console.dir("this.getData()");
+      console.dir(this.getData());
 			var this_survey = this.getData().filter(function(row){ return row.join("") !== '' });
 			console.dir("this_survey");
 			console.dir(this_survey);
 			//master_json.
+      */
 		}
 	});
   preview_survey(this_survey);
@@ -388,13 +391,13 @@ function preview_survey(this_survey){
 
 		doc = document.getElementById('survey_preview').contentWindow.document;
 		doc.open();
-		doc.write('<scr' + 'ipt src="../libraries/jquery-3.3.1.min.js"></scr' + 'ipt>' +
-							'<scr' + 'ipt src= "../libraries/bootstrap.4.0.min.js"></scr' + 'ipt>' +
-							'<scr' + 'ipt src= "../libraries/bootbox.5.4.min.js"></scr' + 'ipt>' +
-							'<scr' + 'ipt src= "../libraries/popper.min.js"></scr' + 'ipt>' +
-							'<lin' + 'k rel="stylesheet" type="text/css" href="../libraries/bootstrapCollector.css">' +
-							'<lin' + 'k rel="stylesheet" type="text/css" href="../libraries/bootbox.fix.css">' +
-							'<scr' + 'ipt src= "../libraries/papaparse.4.3.6.min.js"></scr' + 'ipt>' +
+		doc.write('<scr' + 'ipt src="libraries/jquery-3.3.1.min.js"></scr' + 'ipt>' +
+							'<scr' + 'ipt src= "libraries/bootstrap.4.0.min.js"></scr' + 'ipt>' +
+							'<scr' + 'ipt src= "libraries/bootbox.5.4.min.js"></scr' + 'ipt>' +
+							'<scr' + 'ipt src= "libraries/popper.min.js"></scr' + 'ipt>' +
+							'<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootstrapCollector.css">' +
+							'<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootbox.fix.css">' +
+							'<scr' + 'ipt src= "libraries/papaparse.4.3.6.min.js"></scr' + 'ipt>' +
 							survey_template);
 		doc.close();
 

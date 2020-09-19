@@ -38,7 +38,7 @@
 </style>
 
 <div id="help_content" class="card help_class">
-  <b class="text-danger">To see the whole cell when editing the sheets, either press F2 or double click on the cell</b>
+  <b class="text-danger">To see the whole cell when editing the sheets, either press F2 or double click on the cell, or right click on the cell and select 'Edit cell'</b>
 	<div class="card-body">
 		<h5 class="card-title text-primary" id="help_title">Click on a something editable for help</h5>
 		<h6 class="card-subtitle mb-2 text-muted" id="help_subtitle">or Click on "Help" to hide</h6>
@@ -159,9 +159,9 @@ function helperActivate(help_title, cellValue,help_type){
   // give Survey advice
   /////////////////////
 	if (help_type == "survey"){
-		
+
 		if(help_title == "type"){
-			
+
 			$("#help_subtitle").html("What type of item?");
 			var item_type_html = 'You can choose from the following types of survey items: <br><br>';
 			var item_types = Object.keys(help_obj.surv.type);
@@ -279,8 +279,8 @@ $("#help_btn").on("click",function(){
 		$("#help_btn").addClass("btn-outline-primary");
 		$("#help_btn").addClass("bg-white");
 		$("#help_btn").removeClass("btn-primary");
-    
-    
+
+
     var helper_width = parseFloat($("#help_content").css("width").replace("px",""));
     var graphic_width = parseFloat($("#graphic_settings").css("width").replace("px",""));
     var max_width = Math.max(helper_width,
@@ -300,7 +300,7 @@ $("#help_btn").on("click",function(){
 		}, 500,function(){
 			cell_editor.resize();
 		});
-    
+
 	}
 });
 

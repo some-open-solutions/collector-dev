@@ -38,6 +38,6 @@ var libraries = '<meta http-equiv="Cache-Control" content="no-cache, no-store, m
 								'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.1/papaparse.min.js"></scr' + 'ipt>'+
 								'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/echarts/4.0.4/echarts.min.js"></scr' + 'ipt>'+
 								//'<scr' + 'ipt src = "https://www.open-streams.org/echarts-stat-master/dist/ecStat.min.js"></scr' + 'ipt>'+
-								//'<scr' + 'ipt src = "https://www.open-streams.org/libraries/echarts.js"></scr' + 'ipt>'+
+								//'<scr' + 'ipt src = "https://www.open-streams.orglibraries/echarts.js"></scr' + 'ipt>'+
 								'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></scr' + 'ipt>';
 			

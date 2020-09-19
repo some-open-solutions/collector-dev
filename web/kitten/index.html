@@ -30,27 +30,27 @@
 <!--
 	Publicly available javascript packages
 -->
-<script src= "../libraries/jquery-3.3.1.min.js"></script>
-<script src= "../libraries/popper.min.js"></script>
-<script src= "../libraries/bootstrap.4.0.min.js"></script>            
-<script src= "../libraries/bootbox.5.4.min.js"></script>            
-<script src= "../libraries/dropbox.2.5.13.min.js"></script>
-<script src= "../libraries/dropbox.dropins.js"></script>
-<script src= "../libraries/papaparse.4.3.6.min.js"></script>
-<script src= "../libraries/ace-master/ace.js"></script>
-<script src= "../libraries/ace-master/ext-language_tools.js"></script>
+<script src= "libraries/jquery-3.3.1.min.js"></script>
+<script src= "libraries/popper.min.js"></script>
+<script src= "libraries/bootstrap.4.0.min.js"></script>
+<script src= "libraries/bootbox.5.4.min.js"></script>
+<script src= "libraries/dropbox.2.5.13.min.js"></script>
+<script src= "libraries/dropbox.dropins.js"></script>
+<script src= "libraries/papaparse.4.3.6.min.js"></script>
+<script src= "libraries/ace-master/ace.js"></script>
+<script src= "libraries/ace-master/ext-language_tools.js"></script>
 <script src= "Handsontables/handsontables.full.js"></script>
 
 
 <!--
 	Publicly available css packages
 -->
-<link rel="stylesheet" type="text/css" href="../libraries/bootstrapCollector.css">
-<link rel="stylesheet" type="text/css" href="../libraries/bootbox.fix.css">
+<link rel="stylesheet" type="text/css" href="libraries/bootstrapCollector.css">
+<link rel="stylesheet" type="text/css" href="libraries/bootbox.fix.css">
 
 
-<!-- 
-	handsontable core code and collector specific code 
+<!--
+	handsontable core code and collector specific code
 -->
 <div id="handsontable_html"></div>
 <script>
@@ -63,7 +63,7 @@ $("#handsontable_html").load("Handsontables/CellEditor.html");
 -->
 <script src= "Handsontables/HandsontablesFunctions.js"></script>
 <script src= "Code/Collector.js"></script>
-<script src="../Tests/RunTests.js"></script>
+<script src= "Tests/RunTests.js"></script>
 <script src= "Code/BrowserCheck.js"></script>
 <script src= "CollectorMap.js"></script>
 <script src= "Code/SessionCheck.js"></script>
@@ -113,7 +113,7 @@ $("#handsontable_html").load("Handsontables/CellEditor.html");
 navbar_html = "";
 navbar_names.forEach(function(name,index){
   navbar_html +=  '<label class="btn btn-primary select_page"' +
-										'id="top_tab_' + name+'" ' +  
+										'id="top_tab_' + name+'" ' +
 										'data-toggle="collapse" ' +
 										'href="#collapse_' + name+'" ' +
 										'role="button" ' +
@@ -133,7 +133,7 @@ $(".select_page").on("click",function(){
 	$("#collapse_" + this.id.replace("top_tab_","")).show(); // show the current page
   $('.select_page').css("font-weight","normal");					 // make all tabs normal font-weight
   $(this).css("font-weight","bold");											 // but then make the current tab bold
-  $('.select_page').removeClass("bg-white");														
+  $('.select_page').removeClass("bg-white");
   $('.select_page').removeClass("text-primary");
   $(this).addClass("bg-white");
   $(this).addClass("text-primary");

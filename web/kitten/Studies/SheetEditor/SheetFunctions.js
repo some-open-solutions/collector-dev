@@ -123,18 +123,20 @@ function list_studies(){
       $("#experiments").html(select_html);
       $("#experiment_list").on("change",function(){
         if(typeof(first_load) == "undefined" ||
-				 	 first_load	== false){
-          $("#save_btn").click();
+				   first_load	== false){
+           $("#save_btn").click();
         } else {
           remove_from_list("Select a dropbox experiment");
           first_load = false;
         }
+
         exp_json = master_json.exp_mgmt.experiments[this.value];
         clean_conditions();
         $("#dropbox_inputs").show();
         update_handsontables();
         update_server_table();
         $("#save_btn").click();
+
       });
     }
     //do longer synch with dropbox if the user is using dropbox

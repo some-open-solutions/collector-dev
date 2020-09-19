@@ -1,5 +1,5 @@
-<?php
-/*  Collector (Garcia, Kornell, Kerr, Blake & Haffey)
+<!--
+    Collector (Garcia, Kornell, Kerr, Blake & Haffey)
     A program for running experiments on the web
     Copyright 2012-2016 Mikey Garcia & Nate Kornell
 
@@ -17,21 +17,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
-*/
-if(isset($_SESSION['user_email']) == false){
-	echo "Please log in to access your data.";
-} else {
 
-?>
+-->
 
 <style>
-#data_script_editor {
+#data_script_editor{
 	height:500px;
 }
-.key_textarea{
-  width:500px;
-  height:500px;
+
+#local_data_btn{
+  display:none;
 }
+
 .delete_server_data_btn,
 .download_server_data_btn,
 .delete_storage_data_btn,
@@ -43,17 +40,17 @@ if(isset($_SESSION['user_email']) == false){
   margin:5px;
 }
 
+.key_textarea{
+  width:500px;
+  height:500px;
+}
+
 </style>
 
 
-<!--
-
-Encryption code/interface
-
--->
-<script src="../libraries/tweetnacl.js"></script>
-<script src="../libraries/tweetnacl-utils.js"></script>
-<script src="../libraries/crypto-js.min.js"></script>
+<script src="libraries/tweetnacl.js"></script>
+<script src="libraries/tweetnacl-utils.js"></script>
+<script src="libraries/crypto-js.min.js"></script>
 
 
 <nav class="navbar navbar-primary bg-white fixed-top fixed-top-2">
@@ -62,12 +59,19 @@ Encryption code/interface
     <input type="file" id="fileToLoad" style="display:none" multiple>
     <button class="btn btn-primary" onclick="encrypt_obj.change_password()">Change password</button>
     <button class="btn btn-primary" id="google_script_btn">Google Script</button>
+    <button class="btn btn-primary" id="local_data_btn">Local Data</button>
   </span>
 </nav>
 
 
 
 <script>
+$("#fileToLoad").on("change",function(){
+  if($("#fileToLoad").val() !== ""){
+    loadFileAsText();
+  }
+});
+
 $("#google_script_btn").on("click",function(){
   $.get("Data/Google/CollectorSave.txt",function(google_script){
     bootbox.alert("//Select and copy the following to a <b>google apps script</b>: <br><br><textarea style='white-space: pre-wrap;' onclick='this.focus();this.select()' readonly='readonly'>" + google_script + "</textarea>");
@@ -78,11 +82,18 @@ $("#js_decrypt_btn").on("click",function(){
   $("#fileToLoad").val("");
   $("#fileToLoad").click();
 });
-$("#fileToLoad").on("change",function(){
-  if($("#fileToLoad").val() !== ""){
-    loadFileAsText();
-  }
-});
+
+switch(Collector.detect_context()){
+  case "localhost":
+    $("#local_data_btn").show(500);
+    $("#local_data_btn").on("click",function(){
+      //open windows explorer window
+
+    });
+    break;
+}
+
+
 
 function loadFileAsText(){
 	encrypt_obj.current_batch = [];
@@ -125,6 +136,7 @@ function loadFileAsText(){
 }
 
 </script>
+<br><br><br><br><br>
 <div>
   <table>
     <tr>
