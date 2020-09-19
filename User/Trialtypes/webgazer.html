@@ -7,13 +7,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="../libraries/webgazer/css/jquery-ui.css" type="text/css" rel="stylesheet">
-    <link href="../libraries/webgazer/css/jquery.mobile-1.4.5.css" type="text/css" rel="stylesheet">
-    <link href="../libraries/webgazer/css/tolcam.css" type="text/css" rel="stylesheet">
-    <script src="../libraries/webgazer/js/jquery-1.12.3.min.js"></script>
-    <script src="../libraries/webgazer/js/jquery-ui.js"></script>
-    <script src="../libraries/webgazer/js/jquery.mobile-1.4.2.min.js"></script>
-    <script src="../libraries/webgazer/js/simpleheat.js"></script>
+    <link href="libraries/webgazer/css/jquery-ui.css" type="text/css" rel="stylesheet">
+    <link href="libraries/webgazer/css/jquery.mobile-1.4.5.css" type="text/css" rel="stylesheet">
+    <link href="libraries/webgazer/css/tolcam.css" type="text/css" rel="stylesheet">
+    <script src="libraries/webgazer/js/jquery-1.12.3.min.js"></script>
+    <script src="libraries/webgazer/js/jquery-ui.js"></script>
+    <script src="libraries/webgazer/js/jquery.mobile-1.4.2.min.js"></script>
+    <script src="libraries/webgazer/js/simpleheat.js"></script>
 </head>
 <style>
 .stimuli_img{
@@ -64,7 +64,7 @@
           </div>
           <br />
           Please turn off your mobile phone and close all other programs and websites. Then carefully read and follow these instructions:<br />
-          <img src="../libraries/webgazer/imgs/instructions_donttilt.png" style = "width: 100%; margin-top: 20px; margin-bottom: 20px;"/>
+          <img src="libraries/webgazer/imgs/instructions_donttilt.png" style = "width: 100%; margin-top: 20px; margin-bottom: 20px;"/>
           <br />
           <span id="webcam_insert"></span>
           <br />
@@ -97,7 +97,7 @@
   </div>
 
   <div id="calibration_dot" class="stimuli"><div id="calibration_cnt">0</div></div>
-  <div id="stimulus" class="stimuli"><img src="../libraries/webgazer/imgs/talking.jpg" /></div>
+  <div id="stimulus" class="stimuli"><img src="libraries/webgazer/imgs/talking.jpg" /></div>
   <div id="stimuli_dot" class="stimuli"></div>
   <div id="stimuli_bar" class="stimuli"></div>
   <div id="stimuli_fixation" class="stimuli">+</div>
@@ -299,7 +299,7 @@ data.design = jQuery.extend(true, {}, design);
 function loadWebgazer() {
   $('canvas').remove();
   cam.initialized = 0;
-  $.getScript( "../libraries/webgazer/js/webgazer_old.js" )
+  $.getScript( "libraries/webgazer/js/webgazer_old.js" )
     .done(function( script, textStatus ) {
       initializeWebgazer();
       $('#message').html('Please allow for access on your Webcam on the top part of the screen. <br /><br />Remember: We will NOT transmit your video, but only process it locally and transmit numbers to our server.').show();

@@ -1,4 +1,4 @@
-var libraries = '<scr' + 'ipt src="https://code.jquery.com/jquery-3.2.1.min.js"></scr' + 'ipt>' +				
+var libraries = '<scr' + 'ipt src="https://code.jquery.com/jquery-3.2.1.min.js"></scr' + 'ipt>' +
 				'<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">' +
 				'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"></link>'+
 				'<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.theme.min.css"></link>'+
@@ -13,8 +13,4 @@ var libraries = '<scr' + 'ipt src="https://code.jquery.com/jquery-3.2.1.min.js">
 				'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js"></scr' + 'ipt>'+
 				'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.7/papaparse.min.js"></scr' + 'ipt>'+
 				'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/echarts/4.0.4/echarts.min.js"></scr' + 'ipt>'+
-				'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></scr' + 'ipt>'+
-				'<scr' + 'ipt src = "https://www.open-streams.org/echarts-stat-master/dist/ecStat.min.js"></scr' + 'ipt>'+
-				'<scr' + 'ipt src = "https://www.open-streams.org/StackOverflowFunctions.js"></scr' + 'ipt>'+
-				'<scr' + 'ipt src = "https://www.open-streams.org/libraries/echarts.js"></scr' + 'ipt>';
-				
+				'<scr' + 'ipt src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></scr' + 'ipt>';
