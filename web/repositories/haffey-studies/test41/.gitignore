@@ -1,0 +1,13 @@
+Collector.exe
+/venv
+/web/User/Data
+/build
+/dist
+/_pycache_
+/Updater/__pychache__
+/Updater/build
+/Updater/dist
+/Updater/UpdateCollector.spec
+/Installer/build
+/Installer/dist
+/Installer/installer.spec
