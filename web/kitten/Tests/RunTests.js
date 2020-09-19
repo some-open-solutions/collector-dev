@@ -30,12 +30,12 @@ Collector.tests = {
     "after_start"
   ],
   pipe_position: "start",
-  
+
   /*
   * categories of test
   */
   data:{
-    
+
   },
   helper:{
     startup:{
@@ -64,7 +64,7 @@ Collector.tests = {
       action: function(){
         $("#save_btn").click();
       }
-    }    
+    }
   },
   surveys:{
     list: {
@@ -74,7 +74,7 @@ Collector.tests = {
     }
   },
   trialtypes:{
-    list: {      
+    list: {
       outcome: "awaiting",
       text:    "Are trialtypes listed?",
       type:    "start"
@@ -99,20 +99,20 @@ Collector.tests = {
       // reached the end of the pipeline
     }
   },
-  
+
   count_remaining_tests: function(output_span){
     var this_type       = Collector.tests.pipe_position;
     var tests_remaining = 0;
-    
+
     this.categories.forEach(function(test_category){
       Object.keys(Collector.tests[test_category]).forEach(function(this_test){
-        
+
         if(Collector.tests[test_category][this_test].type    == this_type &&
            Collector.tests[test_category][this_test].outcome == "awaiting"){
-          tests_remaining++;          
+          tests_remaining++;
         }
-        
-      });    
+
+      });
     });
     if(tests_remaining == 0 &&
        Collector.tests.pipeline.indexOf(this_type) < Collector.tests.pipeline.length - 1){
@@ -123,14 +123,12 @@ Collector.tests = {
   fail:function(test_category,
                 this_test,
                 error){
-    console.dir("error");
-    console.dir(error);
     Collector.tests[test_category][this_test].outcome = "fail";
     $("#test_" +
-      test_category + 
+      test_category +
       "_" +
       this_test).html("<span class='text-danger'>Fail</span>");
-    bootbox.alert("error occurred - check the console for more information");
+    bootbox.alert("error occurred " + test_category + "-" + this_test);
   },
   pass:function(test_category,
                 this_test){
@@ -138,9 +136,9 @@ Collector.tests = {
     var this_id = "#test_" + test_category + "_" + this_test;
     $(this_id).fadeOut(function(){
       $(this_id).html("<span class='text-success'>Pass</span>");
-      $(this_id).fadeIn();  
+      $(this_id).fadeIn();
     });
-    
+
     /*
     * Check if all "start" tests have passed yet before moving on to "after start"
     */
@@ -154,10 +152,10 @@ Collector.tests = {
                       "<h4> After start tests remaining:<span id='after_start_tests_remaining_span'></span></h4>" +
                       "<table class='table'>";
      this.categories.forEach(function(test_category){
-        
+
         // first letter capital
-        
-       
+
+
         test_text += "<tr>" +
                         "<td colspan=2><h4>" +
                           //solution by Little Roys at https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript/53930826#53930826
@@ -167,44 +165,37 @@ Collector.tests = {
           test_text += "<tr>" +
                          "<td class='text-primary'>" + Collector.tests[test_category][this_test].text    + "</td>" +
                          "<td class='text-dark' " +
-                             "id='test_"+ 
-                                  test_category + 
+                             "id='test_"+
+                                  test_category +
                                   "_" +
-                                  this_test +"'>" + 
+                                  this_test +"'>" +
                                     '<div class="spinner-border text-secondary" role="status">' +
                                       '<span class="sr-only">Loading...</span>' +
                                     '</div>' +
-                                    "</td>" + 
+                                    "</td>" +
                        "</tr>";
         });
       });
       test_text += "</table>" +
                   "</div>";
-                        
+
       bootbox.alert(test_text);
       // And wait for other parts of Collector to trigger the tests
     }
   },
-  
+
   /*
   * reporting succeess and errors (note that success isn't used yet)
-  */  
+  */
   report_error: function(error,collector_error_message){
     if(typeof(collector_error_message) !== "undefined"){
-      bootbox.alert(collector_error_message + 
+      bootbox.alert(collector_error_message +
                     ":" +
-                    error + 
+                    error +
                     " - please send this information to your administrator or put it on the collectalk.com forum with a description of what lead to it.");
-    }
-    
-    if(typeof(eel) !== "undefined"){
-      eel.report_error(error);
-      custom_alert("Error - check the error report in web/Tests/errors.txt");
     }
   },
   report_success: function(success){
-    if(typeof(eel) !== "undefined"){
-      eel.report_success(success);
-    }
+    // this might become deprecated
   }
 }

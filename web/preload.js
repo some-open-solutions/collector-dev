@@ -2,10 +2,56 @@ window.onload=function(){
   const ipc      = require('electron').ipcRenderer;
 
   wait_for_collector = setInterval(function(){
-    console.dir(Collector);
     if(typeof(Collector) !== "undefined"){
       clearInterval(wait_for_collector);
       Collector.electron = {
+        git:{
+          /*
+          * not in alphaetical order, but order of pipeline
+          */
+
+          add_token: function(auth_token){
+            auth_response = ipc.sendSync('git_add_token',{
+              "auth_token": auth_token
+            });
+          },
+          init: function(repo_info){
+            var clone_response = ipc.sendSync(
+              'git_init',
+              repo_info
+            );
+            return clone_response;
+          },
+          local_repo: function(repo_info){
+            var local_repo_response = ipc.sendSync(
+              'git_local_repo',
+              repo_info
+            );
+            return local_repo_response;
+          },
+          download_collector: function(repo_info){
+            var download_repo_response = ipc.sendSync(
+              'git_download_collector',
+              repo_info
+            );
+            return download_repo_response;
+          },
+          push: function(repo_info){
+            var push_response = ipc.sendSync(
+              'git_push',
+              repo_info
+            );
+            return push_response;
+          },
+          pages: function(repo_info){
+            var pages_response = ipc.sendSync(
+              'git_pages',
+              repo_info
+            );
+            return pages_response;
+          }
+
+        },
         delete_experiment: function(exp_name,
                                     file_action){
           delete_response = ipc.sendSync('delete_experiment',{

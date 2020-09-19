@@ -25,6 +25,7 @@ function createWindow () {
       worldSafeExecuteJavaScript: true
     }
   })
+  mainWindow.setMenuBarVisibility(false)
   mainWindow.maximize()
 
   // and load the index.html of the app.
@@ -282,15 +283,157 @@ ipc.on('write_file', (event,args) => {
 });
 
 /*
+* Github management
+*/
+
+const { Octokit }       = require("@octokit/rest");
+const git_clone         = require('git-clone');
+const download_git_repo = require('download-git-repo');
+const simpleGit         = require('simple-git');
+const git               = simpleGit();
+
+
+ipc.on('git_add_token', (event,args) => {
+  try{
+    fs.writeFileSync(
+      "../github_token.txt",
+      args["auth_token"],
+      'utf8'
+    );
+    event.returnValue = "success";
+  } catch (error){
+    event.returnValue = error;
+  }
+});
+
+ipc.on('git_init', (event,args) => {
+
+  //progress updates
+
+  if(!fs.existsSync(
+      "../github_token.txt"
+    )
+  ){
+    event.returnValue = "auth token missing";
+  } else {
+    var auth_token = fs.readFileSync(
+      "../github_token.txt" ,
+      'utf8'
+    );
+    try{
+      const octokit = new Octokit({
+        auth: auth_token,
+      })
+      .repos.createInOrg({
+        org:  args["organisation"],
+        name: args["repository"],
+      })
+      event.returnValue = "success";
+    } catch(error){
+      event.returnValue = "error: " + error;
+    }
+  }
+});
+
+ipc.on('git_local_repo', (event,args) => {
+  try{
+    if(!fs.existsSync("repositories")){
+      fs.mkdirSync("repositories")
+    }
+    if(!fs.existsSync("repositories/"+args["organisation"])){
+      fs.mkdirSync("repositories/" + args["organisation"])
+    }
+    git.clone("https://github.com"   + "/" +
+                args["organisation"] + "/" +
+                args["repository"],
+              "repositories"         + "/" +
+                args["organisation"] + "/" +
+                args["repository"])
+       .then(function(error){
+         event.returnValue = "success";
+       });
+  } catch(error){
+    event.returnValue = "error: " + error;
+  }
+});
+
+ipc.on('git_download_collector', (event,args) =>{
+  download_git_repo(
+    "some-open-solutions/" +
+      "collector",
+    "repositories"         + "/" +
+      args["organisation"] + "/" +
+      args["repository"],
+    {
+      "clone" : false
+    },function(err){
+      event.returnValue = "error: " + err;
+    }
+  );
+});
+
+ipc.on('git_push', (event,arg) => {
+  /*
+  * check that auth token exists and deal with eventuality if it doesn't
+  */
+
+  var auth_token = fs.readFileSync(
+    "../github_token.txt" ,
+    'utf8'
+  );
+
+  var remote =  "https://" +
+                  arg["organisation"] + ":" +
+                  auth_token +
+                  "@github.com"       + "/" +
+                  arg["organisation"] + "/" +
+                  arg["repository"]   + ".git";
+  git.cwd(
+    "repositories"      + "/" +
+    arg["organisation"] + "/" +
+    arg["repository"]
+  ).
+    add("./*").
+    commit("first commit!").
+    push(remote, 'master').
+    then(function(new_err){
+      console.log(new_err)
+      event.returnValue = "success";
+    });
+});
+
+ipc.on('git_pages', (event,arg) => {
+  /*
+  * confirm authentication file exists
+  */
+  var auth_token = fs.readFileSync(
+    "../github_token.txt" ,
+    'utf8'
+  );
+  try{
+    const octokit = new Octokit({
+      auth: auth_token,
+    }).repos.createPagesSite({
+      "owner":          arg["organisation"],
+      "repo":           arg["repository"]
+    })
+    event.returnValue = "success";
+  } catch(error){
+    event.returnValue = "error: " + error;
+  }
+});
+
+
+
+
+
+/*
 * To allow right click to inspect element:
 */
 
 const contextMenu = require('electron-context-menu');
 
-
-
 function awaiting_trigger(){
-
 
   // Asynchronous read
   fs.readFile('hall_of_fame.csv', function (err, data) {
