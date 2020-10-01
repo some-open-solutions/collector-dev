@@ -13,10 +13,16 @@ const ipc = require('electron').ipcMain;
 const fs   = require('fs')
 const path = require('path')
 
+/*
+* Get the version
+*/
+const version = process.env.npm_package_version;
 
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
+    // frame: false,
+    title: "Collector: Kitten " + version,
     icon: __dirname + "/logos/collector.ico.png",
     webPreferences: {
       //contextIsolation:           true, //has to be false with the way I've designed this
@@ -48,7 +54,6 @@ app.on('activate', function () {
   createWindow()
  }
 })
-
 
 
 /*
@@ -162,6 +167,7 @@ ipc.on('read_default', (event,args) => {
   }
 });
 
+
 ipc.on('read_file', (event,args) => {
   /*
   * Security checks - should probably have more
@@ -174,7 +180,7 @@ ipc.on('read_file', (event,args) => {
     try{
       var content = fs.readFileSync("User/" +
                                       args["user_folder"] + "/" +
-                                      args["this_file"]   + "/",
+                                      args["this_file"],
                                     'utf8');
       event.returnValue = content;
     } catch(error){
@@ -234,7 +240,7 @@ ipc.on('write_experiment', (event,args) => {
          fs.writeFileSync(
            "User/Experiments/" +
             args["this_experiment"] + "/" +
-            this_proc + ".csv",
+            this_proc,
             parsed_contents.procs_csv[this_proc]
           );
        });
@@ -243,7 +249,7 @@ ipc.on('write_experiment', (event,args) => {
          fs.writeFileSync(
            "User/Experiments/" +
             args["this_experiment"] + "/" +
-            this_stim + ".csv",
+            this_stim,
             parsed_contents.stims_csv[this_stim]
           );
        });
@@ -255,6 +261,47 @@ ipc.on('write_experiment', (event,args) => {
   }
 });
 
+
+ipc.on('write_data', (event,args) => {
+
+  /*
+  * Security checks - should probably have more
+  */
+
+  if(args["experiment_folder"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else if(args["this_file"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else {
+    try{
+
+      /*
+      * create experiment folder if it doesn't exist yet
+      */
+
+      if(!fs.existsSync(
+          "User/Data/" + args["experiment_folder"]
+        )
+      ){
+        fs.mkdirSync(
+          "User/Data/" + args["experiment_folder"]
+        )
+      }
+      var content = fs.writeFileSync(
+        "User/Data/" + args["experiment_folder"] + "/" +
+        args["this_file"]   ,
+        args["file_content"],
+        'utf8'
+      );
+      event.returnValue = "success";
+    } catch(error){
+      //to trigger an attempt to load a trialtype from the master_json
+      event.returnValue = error;
+    }
+
+  }
+
+});
 
 ipc.on('write_file', (event,args) => {
 

@@ -1,0 +1,268 @@
+<!--
+-- Once Ant hears from Indu - finalise the stimuli list
+
+-- choose up to three times to unlock a video
+
+-- 1 vs. 1
+-- 1 vs. 2
+-- 1 vs. 3
+-- 2 vs. 2
+-- 2 vs. 3
+-- 3 vs. 3
+
+Locks are counterbalanced between social vs. nonsocial
+
+(look at Indu's matlab script to confirm). 
+
+--look through a datasheet after collecting one participant (make sure it's all gdpr)
+
+
+
+Debrief - give the participant a "withdrawal" code (e.g. their completion code). Make it clear to them that they can use this to withdraw.
+
+
+
+--ask Indu to send me the info and consent sheets (or the whole ethics; and debrief).
+
+write a protocol for Indu and her undergrad
+-->
+
+<style>
+#everything_div{
+  margin:auto;
+  width:725px;
+  /* padding:50px; */
+  height:400px;
+  text-align: center;
+  position:absolute;
+  top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+#left_img{
+  position:absolute;
+  left:0px;
+  top:0px;
+}
+
+#right_img{
+  position:absolute;
+  left:400px;
+  top:0px;
+}
+#block_left_lock_1{
+  left:125px;
+}
+#block_left_lock_2{
+  left:0px;
+}
+#block_left_lock_3{
+  left:250px;
+}
+#block_right_lock_1{
+  left:525px;
+}
+#block_right_lock_2{
+  left:400px;
+}
+#block_right_lock_3{
+  left:650px;
+}
+#countdown_div{
+  text-align: center;
+  padding:150px;
+  z-index:10;
+  font-size:100px;
+  background-color:white;
+  position:relative;
+  display:none;
+}
+#left_lock_1{
+  left:125px;
+}
+#left_lock_2{
+  left:0px;
+}
+#left_lock_3{
+  left:250px;
+}
+#right_lock_1{
+  left:525px;
+}
+#right_lock_2{
+  left:400px;
+}
+#right_lock_3{
+  left:650px;
+}
+.block_lock{
+  position:absolute;
+  width:50px;
+  height:50px;
+  z-index:2;
+  display:none;
+  top:0px;
+}
+.lock_img{
+  position:absolute;
+  width:50px;
+  height:50px;
+  z-index:2;
+  display:none;
+  top:0px;
+}
+.stim_style{
+  height:325px;
+  width:325px;
+  z-index:1;
+}
+.video_stim{
+  margin:auto;
+  display:none;
+  height:400px;
+  width:600px;
+  text-align: center;
+  position:absolute;
+  top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index:5;
+}
+</style>
+<div id="everything_div">
+  
+  <img id='left_img' src="{{left_back}}" class="stim_style" />
+  <video id="left_video" class="stim_style video_stim" muted>
+    <source src="{{left_video}}" type="video/mp4">
+  Your browser does not support the video tag.
+  </video>
+  <img id='right_img' src="{{right_back}}" class="stim_style" />
+  <video id="right_video"  class="stim_style video_stim" muted>
+    <source src="{{right_video}}" type="video/mp4">
+  Your browser does not support the video tag.
+  </video>
+  <img id="left_lock_1"        class="lock_img left_lock"  src="{{lock_img}}"/>
+  <img id="left_lock_2"        class="lock_img left_lock"  src="{{lock_img}}"/>
+  <img id="left_lock_3"        class="lock_img left_lock"  src="{{lock_img}}"/>
+  <img id="right_lock_1"       class="lock_img right_lock" src="{{lock_img}}"/>
+  <img id="right_lock_2"       class="lock_img right_lock" src="{{lock_img}}"/>
+  <img id="right_lock_3"       class="lock_img right_lock" src="{{lock_img}}"/>
+  <img id="block_left_lock_1"  class="block_lock"          src="{{block_lock_img}}"/>
+  <img id="block_left_lock_2"  class="block_lock"          src="{{block_lock_img}}"/>
+  <img id="block_left_lock_3"  class="block_lock"          src="{{block_lock_img}}"/>
+  <img id="block_right_lock_1" class="block_lock"          src="{{block_lock_img}}"/>
+  <img id="block_right_lock_2" class="block_lock"          src="{{block_lock_img}}"/>
+  <img id="block_right_lock_3" class="block_lock"          src="{{block_lock_img}}"/>
+  <div id="countdown_div"></div>
+</div>
+<input type="hidden" id="left_right_chosen" name="left_right_chosen">
+<input type="hidden" id="social_chosen"     name="social_chosen">
+<input type="hidden" id="lock_1_rt"         name="lock_1_rt">
+<input type="hidden" id="lock_2_rt"         name="lock_2_rt">
+<input type="hidden" id="lock_3_rt"         name="lock_3_rt">
+<input type="hidden" id="vid_rt"            name="vid_rt">
+
+<script>
+locks_obj = {
+  left_locks:   "{{left_locks}}",
+  right_locks:  "{{right_locks}}",
+  left_social:  "{{left_social}}",
+  right_social: "{{right_social}}",
+  locks_clicked: 0
+}
+$("#left_lock_1").show();
+
+if(locks_obj.left_locks > 1){
+  $("#left_lock_2").show();
+}
+if(locks_obj.left_locks == 3){
+  $("#left_lock_3").show();
+}
+
+
+$("#right_lock_1").show();
+if(locks_obj.right_locks > 1){
+  $("#right_lock_2").show();
+}
+if(locks_obj.right_locks == 3){
+  $("#right_lock_3").show();
+}
+
+function lock_click(this_id){
+  $(".lock_img").unbind();
+  setTimeout(function(){
+    bind_lock();
+  },{{lock_time}});
+  
+  
+  var left_right_lock = this_id.split("_")[0];
+  
+  var opposite_lock = left_right_lock == "left" ? "right" : "left";
+  
+  $("." + opposite_lock + "_lock").hide();
+  
+  //block_left_lock_1
+  var locks_loop = parseFloat(locks_obj[opposite_lock + "_locks"]) + 1;
+  for(var i = 1; i < locks_loop; i++){
+    
+    $("#block_" + opposite_lock + "_lock_" + i).show();
+    
+  }
+  
+  
+  locks_obj.locks_clicked++;
+  $("#lock_" + locks_obj.locks_clicked + "_rt").val(Trial.elapsed());
+  $("#" + this_id).fadeOut({{lock_time}});
+  $(".lock_img").unbind();
+  if($("." + left_right_lock + "_lock:visible").length == 1){
+    $("#left_right_chosen").val(left_right_lock);
+    $("#social_chosen").val(locks_obj[left_right_lock + "_social"]);
+    $(".block_lock").hide();
+    setTimeout(function(){
+      $("#" + left_right_lock + "_img").css("z-index",3);
+      $("#" + left_right_lock + "_img").animate({
+        left :  "0px",
+        top  :  "0px",
+        width:  "100%",
+        height: "100%"
+      },function(){
+        
+        
+        if(left_right_lock == "left"){
+          var countdown = "{{left_timer}}";
+        } else {
+          var countdown = "{{right_timer}}";
+        }
+        // add countdown here
+        $("#countdown_div").show();
+        $("#countdown_div").html(countdown);
+        var countdown_interval = setInterval(function(){
+          countdown--;
+          $("#countdown_div").html(countdown);
+          if(countdown < 0){
+            $("#countdown_div").hide();
+            clearInterval(countdown_interval);
+            $("#" + left_right_lock + "_video").show();
+            $("#" + left_right_lock + "_video")[0].play();
+            $("#" + left_right_lock  +"_video").on('ended',function(){
+              $("#vid_rt").val(Trial.elapsed());
+              Trial.submit();
+            });    
+          }
+        },1000);
+      });
+    },"{{lock_time}}");    
+  }
+}
+
+function bind_lock(){
+  $(".lock_img").on("click",function(){
+    this_id = $(this)[0].id;
+    lock_click(this_id);
+  });
+}
+bind_lock()
+</script>

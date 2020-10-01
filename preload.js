@@ -83,6 +83,14 @@ window.onload=function(){
           });
           return file_content;
         },
+        read_experiment_file: function(user_folder,
+                            this_file){
+          file_content = ipc.sendSync('read_experiment_file',{
+            "user_folder" : user_folder,
+            "this_file"   : this_file
+          });
+          return file_content;
+        },
         read_file: function(user_folder,
                             this_file){
           file_content = ipc.sendSync('read_file',{
@@ -99,6 +107,18 @@ window.onload=function(){
             "file_content"    : file_content
           });
           file_action(write_response);
+        },
+        write_data: function(
+          experiment_folder,
+          this_file,
+          file_content
+        ){
+          write_response = ipc.sendSync('write_data',{
+            "experiment_folder"  : experiment_folder,
+            "this_file"          : this_file,
+            "file_content"       : file_content
+          });
+          return write_response;
         },
         write_file: function(
           user_folder,

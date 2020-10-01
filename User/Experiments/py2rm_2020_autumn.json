@@ -1,0 +1,138 @@
+{
+  "all_procs": {
+    "procedure_1.csv": [
+      [
+        "item",
+        "trial type",
+        "max time",
+        "text",
+        "Shuffle 1",
+        ""
+      ],
+      [
+        "2",
+        "instruct",
+        "user",
+        "This is the start of a new experiment.",
+        "off",
+        ""
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    ]
+  },
+  "cond_array": [
+    [
+      "name",
+      "notes",
+      "stimuli",
+      "procedure",
+      "fullscreen",
+      "welcome",
+      "participant_id",
+      "end_message",
+      "start_message",
+      "buffer",
+      "scripts",
+      ""
+    ],
+    [
+      "condition_1",
+      "You can put more detailed notes in this field",
+      "stimuli_1.csv",
+      "procedure_1.csv",
+      "off",
+      "",
+      "on",
+      "",
+      "",
+      "5",
+      "",
+      ""
+    ],
+    [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  ],
+  "all_stims": {
+    "stimuli_1.csv": [
+      [
+        "cue",
+        "answer",
+        ""
+      ],
+      [
+        "A",
+        "Apple",
+        ""
+      ],
+      [
+        "B",
+        "Banana",
+        ""
+      ],
+      [
+        "",
+        "",
+        ""
+      ]
+    ]
+  },
+  "public_key": "o1MdjqkGllwCzH2nivg4Rnts94GQSmQRkHZc+7P4fi4=",
+  "parsed_procs": {
+    "procedure_1.csv": [
+      {
+        "item": "2",
+        "trial type": "instruct",
+        "max time": "user",
+        "text": "This is the start of a new experiment.",
+        "": "",
+        "shuffle 1": "off"
+      }
+    ]
+  },
+  "surveys": {},
+  "trialtypes": {
+    "instruct": "<!--\n/*  Collector (Garcia, Kornell, Kerr, Blake & Haffey)\n    A program for running experiments on the web\n    Copyright 2012-2016 Mikey Garcia & Nate Kornell\n\n\n    This program is free software: you can redistribute it and/or modify\n    it under the terms of the GNU General Public License version 3 as published by\n    the Free Software Foundation.\n\n    This program is distributed in the hope that it will be useful,\n    but WITHOUT ANY WARRANTY; without even the implied warranty of\n    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n    GNU General Public License for more details.\n\n    You should have received a copy of the GNU General Public License\n    along with this program.  If not, see <http://www.gnu.org/licenses/>\n \t\t\n\t\tKitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)\t\t\n*/\n-->\n<style>\n#instruct_text{\n  margin:auto;\n  width:500px;\n  padding:50px;\n  max-height:600px;\n  text-align: center;  \n}\n#proceed_button{\n  position:absolute;\n  right: 20px;\n}\n#trial_contents{\n  position: absolute;\n  top:0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  margin:auto;\n  width:600;\n  height:600;\n}\n</style>\n<div id=\"trial_contents\">\n  <div id=\"instruct_text\">{{text}}</div>\n  <div>\n    <button class=\"btn btn-primary\" id=\"proceed_button\" onclick=\"Trial.submit()\">Proceed</button>\n  </div>\n</div>"
+  },
+  "procs_csv": {
+    "procedure_1.csv": "item,trial type,max time,text,Shuffle 1,\r\n2,instruct,user,This is the start of a new experiment.,off,\r\n,,,,,"
+  },
+  "stims_csv": {
+    "stimuli_1.csv": "cue,answer,\r\nA,Apple,\r\nB,Banana,\r\n,,"
+  },
+  "conditions_csv": "name,notes,stimuli,procedure,fullscreen,welcome,participant_id,end_message,start_message,buffer,scripts,\r\ncondition_1,You can put more detailed notes in this field,stimuli_1.csv,procedure_1.csv,off,,on,,,5,,\r\n,,,,,,,,,,,",
+  "conditions": [
+    {
+      "name": "condition_1",
+      "notes": "You can put more detailed notes in this field",
+      "stimuli": "stimuli_1.csv",
+      "procedure": "procedure_1.csv",
+      "fullscreen": "off",
+      "welcome": "",
+      "participant_id": "on",
+      "end_message": "",
+      "start_message": "",
+      "buffer": "5",
+      "scripts": "",
+      "": ""
+    }
+  ]
+}
