@@ -283,9 +283,8 @@ Study = {
 
     switch(Study.get_vars.platform){
       case "localhost":
-        var data_response = Collector.electron.write_file(
-          "Data",
-          Study.get_vars.location        + "/" +
+        var data_response = Collector.electron.write_data(
+          Study.get_vars.location,
             $("#participant_code").val() + "_" +
             $("#completion_code").val()  + ".csv",
             Papa.unparse(Collector.complete_csv(exp_json.responses),{
@@ -294,7 +293,7 @@ Study = {
               skipEmptyLines: true, //or 'greedy',
             }));                    //the data
         if(data_response !== "success"){
-          bootbox.alert("Tell the researcher that saving data is broken");
+          bootbox.alert("Tell the researcher that saving data is broken:" + data_response);
         }
         break;
 			case "server":
@@ -821,6 +820,23 @@ function parse_sheets(){
 
   switch(Study.get_vars.platform){
     case "localhost":
+      var folder = "Experiments/"+ Study.get_vars.location;
+
+      var proc_sheet_content = Collector.electron.read_file(
+        folder,
+        proc_sheet_name
+      );
+
+      var stim_sheet_content = Collector.electron.read_file(
+        folder,
+        stim_sheet_name
+      );
+
+      exp_json.parsed_proc = Collector.PapaParsed(proc_sheet_content);
+      exp_json.parsed_stim = [null,null].concat(Collector.PapaParsed(stim_sheet_content));
+      Study.activate_pipe();
+
+      break;
     case "preview":
     case "github":
       if(typeof(Study.get_vars.dropbox) !== "undefined" && Study.get_vars.dropbox){
