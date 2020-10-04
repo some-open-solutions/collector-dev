@@ -233,15 +233,17 @@ function populate_data_div(data_div_id,
   server_data_html = '<div class="accordion" id="accordionExample">';
   Object.keys(data_obj).forEach(function(experiment_name,
                                          collapse_no){
+    console.dir("experiment_name");
+    console.dir(experiment_name);
     if(Object.keys(data_obj[experiment_name]).length > 0){
       server_data_html += '<div class="card" type="button" data-toggle="collapse" data-target="#' + data_div_id + '_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
-                            '<div class="card-header text-white bg-' + bootstrap_class +'">' +
-                              '<h5 class="mb-0">' +
-                                  experiment_name +
-                              '</h5>' +
-                            '</div>' +
-                            '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
-                              '<div class="card-body">';
+        '<div class="card-header text-white bg-' + bootstrap_class +'">' +
+          '<h5 class="mb-0">' +
+            experiment_name +
+          '</h5>' +
+        '</div>' +
+        '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
+          '<div class="card-body">';
 
       server_data_html += "<button style='width:100%'>Download All</button>"; //need to make this actually work
       server_data_html += "<button style='width:100%'>Delete All</button>"; //need to make this actually work
@@ -253,7 +255,9 @@ function populate_data_div(data_div_id,
         if(data_obj[experiment_name][this_participant].all_data){
           file_info = data_obj[experiment_name][this_participant].all_data;
         } else {
-          file_info = data_obj[experiment_name][this_participant].files.join("|");
+          console.dir("data_obj[experiment_name][this_participant]");
+          console.dir(data_obj[experiment_name][this_participant]);
+          file_info = Object.values(data_obj[experiment_name][this_participant].files).join("|");
         }
 
         server_data_html +=
@@ -270,7 +274,7 @@ function populate_data_div(data_div_id,
 
             "</td>" +
             "<td>"  +
-              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>" + experiment_name + "_____" + this_participant  + "_____" + data_obj[experiment_name][this_participant].files.join("|") + "</span></button>" +
+              "<button class='btn btn-danger delete_" + data_div_id + "_btn'>Delete<span style='display:none'>" + experiment_name + "_____" + this_participant  + "_____" + file_info + "</span></button>" +
             "</td>" +
           "</tr>";
       });

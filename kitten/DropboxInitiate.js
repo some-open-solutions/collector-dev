@@ -230,7 +230,7 @@ function legacy_initiate_uber(){
 		});
 }
 function load_master_json(link_created){
-	$.get(link_created.url.replace("www.","dl."),function(returned_data){
+  $.get(link_created.url.replace("www.","dl."),function(returned_data){
     //moving what to do to the "done" outcome below:
 	})
   .done(function(returned_data){

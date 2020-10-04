@@ -193,7 +193,14 @@ $("#rename_exp_btn").on("click",function(){
           break;
       }
       if(typeof(dbx) !== "undefined"){
-        dbx.filesMove({from_path:"/Experiments/"+original_name+".json",to_path:"/Experiments/"+new_name+".json"})
+        dbx.filesMove({
+          from_path: "/Experiments/" +
+                       original_name +
+                       ".json",
+          to_path:  "/Experiments/" +
+                      new_name +
+                      ".json"
+        })
           .then(function(result){
 						update_master_json();
 						list_studies();
@@ -304,7 +311,6 @@ $("#run_btn").on("click",function(){
 
 							var this_url = window.location.href.split("/" + Collector.version)[0] +
 																												"/" + Collector.version + "/";
-
 							window.open(this_url  	+ "RunStudy.html?platform=github&" +
 													"location=" + $("#experiment_list").val() + "&" +
 													"name="     + master_json.exp_mgmt.exp_condition + "&" +
@@ -357,30 +363,30 @@ $("#run_btn").on("click",function(){
 					}
 				});
 			}
-			/*
+      if(master_json.github.organisation !== ""){
+        var organisation = master_json.github.organisation;
+      } else {
+        var organisation = master_json.github.username;
+      }
+      var github_url =  "https://" +
+                        organisation +
+                        ".github.io/" +
+                        master_json.github.repository + "/" +
+                        Collector.version +
+                        "/" +  "RunStudy.html?platform=github&" +
+      															"location=" + $("#experiment_list").val() + "&" +
+      															"name="     + master_json.exp_mgmt.exp_condition;
 
-
-			password check here
-
-
-
-			if(typeof(master_json.data.save_script) == "undefined" ||
-				//test here for whether there is a github repository linked
-				master_json.data.save_script == ""){
-
-
-			}
-			*/
 
 			bootbox.dialog({
 				title:"Select a Condition",
-				message: "Which condition would you like to run? <br><br>" + select_html,
+				message: "Which condition would you like to run? <br><br>" + select_html + "<br> Online link (make sure you've pushed the latest changes and waited 5+ minutes): <input class='form-control' value='" + github_url + "' onfocus='this.select();'>",
 				buttons: {
 					local:{
 						label: "Localhost",
 						className: 'btn-primary',
 						callback: function(){
-							window.open("RunStudy.html?platform=localhost&" +
+              window.open("RunStudy.html?platform=localhost&" +
 													"location=" + $("#experiment_list").val() + "&" +
 													"name=" + $("#select_condition").val(),
                           "_blank");
@@ -390,25 +396,12 @@ $("#run_btn").on("click",function(){
 						label: "Online",
 						className: 'btn-primary',
 						callback: function(){
-							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
+              master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 							bootbox.confirm("This will go to the link you should send your participants. However, it can take 5+ minutes for this link to update from the moment you push the updates to github",function(result){
 								if(result){
-									if(master_json.github.organisation !== ""){
-										var organisation = master_json.github.organisation;
-									} else {
-										var organisation = master_json.github.username;
-									}
-									var github_url =  "https://" +
-																		organisation +
-																		".github.io/" +
-																		master_json.github.repository +
-																		"/web/" +
-																		Collector.version +
-																		"/";
 
-									window.open(github_url  + "RunStudy.html?platform=github&" +
-															"location=" + $("#experiment_list").val() + "&" +
-															"name="     + master_json.exp_mgmt.exp_condition ,"_blank");
+
+									window.open(github_url,"_blank");
 								}
 							});
 						}
@@ -625,7 +618,12 @@ $("#save_btn").on("click", function(){
       					JSON.stringify(master_json, null, 2));
       			  if(write_response !== "success"){
       					bootbox.alert(response);
-      				}
+      				} else {
+                Collector.custom_alert(
+                  "Succesfully saved " +
+                  experiment
+                )
+              }
             break;
           default:
             dbx_obj.new_upload({path: "/Experiments/"+experiment+".json", contents: JSON.stringify(this_exp), mode:'overwrite'},

@@ -14,15 +14,15 @@
   color:red;
 }
 
-body { 
+body {
   transformOrigin: center center;
-} 
+}
 </style>
 
 
 <div id="calibration_card">
   <div>Please zoom in or out until the card on the screen is the same size as a typical card in your wallet.</div>
-  
+
   <div class="text-danger"> This can generally be done by pressing CTRL and + or CTRL and -</div>
   <div>Please do not use a bank card or driving license for this sort of check</div>
   <div>Once the screen card is as close as possible to your card, please press "Proceed"</div>
@@ -36,20 +36,23 @@ body {
 <script>
 
 
-var current_zoom = 1;
+parent.parent.current_zoom = 1;
 
 function zoom_in(){
-  current_zoom += .1;
-  document.body.style.zoom = current_zoom;  
-  document.body.style.MozTransform = "scale(" + current_zoom + ")";  
+  parent.parent.current_zoom += .1;
+  document.body.style.zoom = parent.parent.current_zoom;
+  document.body.style.MozTransform = "scale(" +
+    parent.parent.current_zoom +
+  ")";
 }
 function zoom_out(){
-  current_zoom -= .1;
-  document.body.style.zoom = current_zoom;  
-  document.body.style.MozTransform = "scale(" + current_zoom + ")";  
+  parent.parent.current_zoom -= .1;
+  document.body.style.zoom = parent.parent.current_zoom;
+  document.body.style.MozTransform = "scale(" +
+    parent.parent.current_zoom +
+  ")";
 }
 
 document.getElementById("zoom_in_btn").onclick = zoom_in;
 document.getElementById("zoom_out_btn").onclick = zoom_out;
 </script>
-

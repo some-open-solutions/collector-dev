@@ -67,6 +67,7 @@
     "download-git-repo": "^3.0.2",
     "electron-context-menu": "^2.3.0",
     "fs": "0.0.1-security",
+    "fs-extra": "^9.0.1",
     "git-clone": "^0.1.0",
     "require": "^2.4.20",
     "simple-git": "^2.20.1"
