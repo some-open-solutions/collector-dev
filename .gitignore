@@ -1,5 +1,5 @@
 Collector.exe
-github_token.txt
+
 /build
 /dist
 /_pycache_
@@ -11,5 +11,7 @@ github_token.txt
 /Updater/dist
 /Updater/UpdateCollector.spec
 /web/dist
+/web/repositories
 /web/User/Data
+/web/User/Private
 /venv

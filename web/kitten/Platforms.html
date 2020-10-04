@@ -70,7 +70,7 @@ switch(Collector.detect_context()){
 
 
 function highlight_account(element_id){
-  $("#"+element_id).animate(
+  $("#" + element_id).animate(
     {
       fontSize:"20px"
     },
@@ -110,10 +110,12 @@ $("#collector_logo").on("click", function(){
 
 $("#github_logo").on("click",function(){
 	if(typeof(master_json.github) == "undefined"){
-		master_json.github = {
-
-		}
+    master_json.github = {}
 	}
+  if(typeof(master_json.github.organisation) == "undefined"){
+    master_json.github.organisation = "";
+  }
+
   var dialog = bootbox.dialog({
     title: 'Synch with github repository',
     message: '<div class="jumbotron">' +
@@ -133,9 +135,6 @@ $("#github_logo").on("click",function(){
                 '</div>' +
               '</div>' +
               '<script>' +
-                'if(typeof(master_json.github.organisation) == "undefined"){' +
-                  'master_json.github.organisation = ""' +
-                '}' +
                 '$("#github_organisation").val(master_json.github.organisation);' +
                 '$("#github_repository").val(master_json.github.repository);' +
 
@@ -355,29 +354,91 @@ $("#github_logo").on("click",function(){
           var organisation = $("#github_organisation").val();
           var repository   = $("#github_repository").val();
 
-          bootbox.prompt({
-            title: "What is your password? (this will never be saved, but is needed to upload your changes to github)",
-            inputType: "password",
-            callback: function(password){
-              if(password){
-                bootbox.prompt("How would you describe this update?",function(update_message){
-                  if(update_message){
-                    eel.push_collector(username,
-                                       password,
-                                       organisation,
-                                       repository,
-                                       update_message);
-                  } else {
-                    eel.push_collector(username,
-                                       password,
-                                       organisation,
-                                       repository,
-                                       "No message");
-                  }
+          bootbox.alert(
+            "Pushing to your repository<br><br>" +
+          "<table style='margin:10px'>" +
+
+          /*
+          * updating the User folder in the repository
+          */
+
+          "<tr>" +
+          "<td>" +
+            '<input class="form-check-input" type="checkbox" value="" id="update_local_repo_input">' +
+          "</td>" +
+          "<td>" +
+            "<div id='update_local_repo_div'>Updating your local version of the repository</div>" +
+          "</td>" +
+          "<td>" +
+            '<span class="spinner-border text-primary" role="status" id="update_local_repo_spinner">' +
+              '<span class="sr-only">Loading...</span>' +
+            '</span>' +
+          "</td>" +
+          "</tr>" +
+
+
+          /*
+          * upload to the online repo
+          */
+          "<tr>" +
+          "<td>" +
+            '<input class="form-check-input" type="checkbox" value="" id="push_repo_online_input">' +
+          "</td>" +
+          "<td>" +
+            "<div id='push_repo_online_div'>Push your changes to your online repository</div>" +
+          "</td>" +
+          "<td>" +
+            '<span class="spinner-border text-primary" role="status" id="push_repo_online_spinner">' +
+              '<span class="sr-only">Loading...</span>' +
+            '</span>' +
+          "</td>" +
+          "</tr>" +
+
+          "</table>"
+          );
+
+          bootbox.prompt(
+            "Please describe this commit:",
+            function(message){
+              setTimeout(function(){
+                // copy changes
+                Collector.electron.git.add_changes({
+                  "organisation" : organisation,
+                  "repository"   : repository
                 });
-              }
-            }
+                $("#update_local_repo_input").attr(
+                  "checked",
+                  true
+                );
+                $("#update_local_repo_div").addClass(
+                  "text-primary"
+                );
+                $("#update_local_repo_spinner").hide();
+
+                setTimeout(function(){
+                  /*
+                  * commit and push changes
+                  */
+                  Collector.electron.git.push({
+                    "organisation" : organisation,
+                    "repository"   : repository,
+                    "message"      : message
+                  });
+                  $("#push_repo_online_input").attr(
+                    "checked",
+                    true
+                  );
+                  $("#push_repo_online_div").addClass(
+                    "text-primary"
+                  );
+                  $("#push_repo_online_spinner").hide();
+                },500);
+              },500);
+
           });
+
+          // lazy way for bootbox alert appear at the start
+
         }
       },
       view: {

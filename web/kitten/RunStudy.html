@@ -140,6 +140,7 @@ online_data_obj = {
   }
 }
 
+
 Study = {
 
   /*
@@ -315,6 +316,8 @@ Study = {
 				});
         break
       case "preview":
+
+
         //do nothing - you are not meant to be saving;
         break;
     }
@@ -405,6 +408,35 @@ Study = {
  				return element == exp_json.post_no;
 			})[0];
 			this_post_iframe.style["visibility"] = "visible";
+
+      /*
+      * apply zoom
+      */
+      var these_iframes = document
+                          .getElementById("trial" + exp_json.trial_no)
+                          .contentWindow
+                          .document
+                          .getElementsByClassName("post_iframe");
+      console.dir("these_iframes");
+      console.dir(these_iframes);
+      for(var i = 0; i < these_iframes.length; i++){
+        var this_iframe = these_iframes[i];
+        this_iframe_style = this_iframe
+          .contentWindow
+          .document
+          .body
+          .style;
+        this_iframe_style.zoom = parent.parent.current_zoom;
+        this_iframe_style.MozTransform = "scale(" +
+          parent.parent.current_zoom +
+        ")";
+      }
+
+
+
+
+
+
 
 			$("#trial"+exp_json.trial_no).css("display","inline-block");
 			$("#trial"+exp_json.trial_no).css("width", "100%");
@@ -584,8 +616,6 @@ function final_trial(){
 							$("#raw_click").on("click",function(){
 								precrypted_data(exp_json,"What do you want to save this file as?");
 							});
-
-
 							online_data_obj.finished_and_stored = true;
 						}
 					});
@@ -713,7 +743,8 @@ function get_gets() {
     exp_condition = "";
   }
   if(Study.get_vars.platform == "preview"){
-    //bootbox.alert("You are in <b>Preview</b> mode. This means that you will <b>NOT</b> be saving any data. If this is not what you want, go back to the study editor, click <em>run</em> again, and click on 'local' or 'online' instead of 'preview'");
+
+    online_data_obj.finished_and_stored = true;
   }
   Study.activate_pipe();
 }
@@ -1079,7 +1110,12 @@ function process_welcome(){
   if(document.getElementById("loading_exp_json") !== null) {
     // skip participant id? (and thus start_message)
 		////////////////////////////////////////////////
-		pp_id_setting = exp_json.this_condition.participant_id;
+
+    if(Study.get_vars.platform == "preview"){
+      var pp_id_setting = "random";
+    } else {
+      var pp_id_setting = exp_json.this_condition.participant_id;
+    }
 
 		if(pp_id_setting == "off"){																// put in a participant ID that is clearly not unique (e.g. "notUnique").
 			$("#participant_code").val("notUnique");
@@ -1158,6 +1194,7 @@ function removeItemAll(arr, value) {
 }
 
 function shuffle_start_exp(){
+
 
 	//perhaps also have "shuffle" works as shuffle 1
 	//perhaps also have "block shuffle 1" as shuffle 2, etc.
@@ -1281,7 +1318,8 @@ function shuffle_start_exp(){
 }
 
 function start_restart(){
-  if(window.localStorage.getItem("exp_json") !== null){
+  if(window.localStorage.getItem("exp_json") !== null &
+     Study.get_vars.platform !== "preview"){
 
     bootbox.dialog({
   		title:"Resume or Restart?",
@@ -1503,7 +1541,6 @@ window.onbeforeunload = function() {
     bootbox.confirm("Would you like to leave the experiment early? If you didn't just download your data there's a risk of you losing your progress.",function(result){
       if(result){
         online_data_obj.finished_and_stored = true; //even though it's not
-        window.close();
       }
     });
     precrypted_data(exp_json,"It looks like you're trying to leave the experiment before you're finished (or at least before the data has been e-mailed to the researcher. Please choose a filename to save your data as and e-mail it to the researcher. It should appear in your downloads folder.");

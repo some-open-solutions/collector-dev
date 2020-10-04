@@ -9,6 +9,12 @@ window.onload=function(){
           /*
           * not in alphaetical order, but order of pipeline
           */
+          add_changes: function(repo_info){
+            auth_response = ipc.sendSync(
+              'git_add_changes',
+              repo_info
+            );
+          },
 
           add_token: function(auth_token){
             auth_response = ipc.sendSync('git_add_token',{

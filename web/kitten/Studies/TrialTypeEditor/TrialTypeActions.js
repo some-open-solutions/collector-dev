@@ -58,7 +58,7 @@ function initiate_actions(){
     var dialog = bootbox.dialog({
       show: false,
       title: 'What would you like to name the new Trialtype?',
-      message:  "<p><input class='form-control' id='new_trialtype_name' autofocus='autofocus'>.</p>",
+      message:  "<p><input class='form-control' id='new_trialtype_name' autofocus='autofocus'></p>",
       buttons: {
         cancel: {
           label: "Cancel",

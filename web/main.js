@@ -8,9 +8,9 @@ const {app,
        dialog,
        remote} = require('electron')
 
-const ipc = require('electron').ipcMain;
 
-const fs   = require('fs')
+const fs   = require('fs-extra')
+const ipc = require('electron').ipcMain;
 const path = require('path')
 
 /*
@@ -333,17 +333,18 @@ ipc.on('write_file', (event,args) => {
 * Github management
 */
 
-const { Octokit }       = require("@octokit/rest");
-const git_clone         = require('git-clone');
-const download_git_repo = require('download-git-repo');
-const simpleGit         = require('simple-git');
-const git               = simpleGit();
+const { Octokit }        = require("@octokit/rest");
+const git_clone          = require('git-clone');
+const download_git_repo  = require('download-git-repo');
+const simpleGit          = require('simple-git');
+const git                = simpleGit();
 
+const git_token_location = "User/Private/github_token.txt";
 
 ipc.on('git_add_token', (event,args) => {
   try{
     fs.writeFileSync(
-      "../github_token.txt",
+      git_token_location,
       args["auth_token"],
       'utf8'
     );
@@ -358,13 +359,13 @@ ipc.on('git_init', (event,args) => {
   //progress updates
 
   if(!fs.existsSync(
-      "../github_token.txt"
+      git_token_location
     )
   ){
     event.returnValue = "auth token missing";
   } else {
     var auth_token = fs.readFileSync(
-      "../github_token.txt" ,
+      git_token_location ,
       'utf8'
     );
     try{
@@ -419,15 +420,45 @@ ipc.on('git_download_collector', (event,args) =>{
   );
 });
 
+ipc.on('git_add_changes', (event,arg) => {
+  //copy folder from User folder into repository
+
+  fs.copySync(
+    "User",
+    "repositories"        + "/" +
+      arg["organisation"] + "/" +
+      arg["repository"]   + "/" +
+      "web"               + "/" +
+      "User"
+  )
+
+  fs.rmdirSync(
+    "repositories"        + "/" +
+      arg["organisation"] + "/" +
+      arg["repository"]   + "/" +
+      "web"               + "/" +
+      "User"              + "/" +
+      "Private",
+     {
+       recursive: true
+     }
+  )
+
+});
+
 ipc.on('git_push', (event,arg) => {
   /*
   * check that auth token exists and deal with eventuality if it doesn't
   */
 
   var auth_token = fs.readFileSync(
-    "../github_token.txt" ,
+    git_token_location,
     'utf8'
   );
+
+  if(typeof(arg["message"]) == "undefined"){
+    arg["message"] = "automatic commit"
+  }
 
   var remote =  "https://" +
                   arg["organisation"] + ":" +
@@ -441,7 +472,7 @@ ipc.on('git_push', (event,arg) => {
     arg["repository"]
   ).
     add("./*").
-    commit("first commit!").
+    commit(arg["message"]).  
     push(remote, 'master').
     then(function(new_err){
       console.log(new_err)
@@ -454,7 +485,7 @@ ipc.on('git_pages', (event,arg) => {
   * confirm authentication file exists
   */
   var auth_token = fs.readFileSync(
-    "../github_token.txt" ,
+    git_token_location,
     'utf8'
   );
   try{

@@ -54,11 +54,10 @@
 </style>
 
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <div class="modal" tabindex="-1" role="dialog" id="login_modal">
 	<div id="login_register_span"  style="height:90%">
 		<div class="card text-primary bg-white align-middle login_register_card" style="max-width: 36rem; position: relative; top: 50%; transform: translateY(-50%); ">
-			<div class="card-header bg-primary text-white">				
+			<div class="card-header bg-primary text-white">
 				<button type="button" class="close" id="dismiss_login_btn">&times;</button>
 				<h4 class="modal-title">Register  </h4>
 			</div>
@@ -68,9 +67,6 @@
 				</div>
 				<div class="row">
 						<input id="password_input" name="user_password" type="password" class="form-control" placeholder="password">
-				</div>
-				<div class="row">
-					<div class="g-recaptcha" data-sitekey="6LelCO4UAAAAAFEh_KGJlAQ5lthFI-kDY4_kv33_"></div>
 				</div>
         <button class="btn btn-primary" id="sos_server_query">Update SOS servers info</button>
         <div id="server_table_div"></div>
@@ -88,7 +84,7 @@ $("#add_server").on("click",function(){
   //resume here
   var this_server_info = {
     storage_url      : '',
-    registration_url : '',    
+    registration_url : '',
     name:''
   }
   bootbox.prompt("What is the url of the script that will save your data (and/or email it)?",function(script_url){
@@ -131,7 +127,7 @@ $("#sos_server_query").on("click",function(){
       var server_names         = updated_server_info.server_names.split(",");
       var registration_scripts = updated_server_info.registration_scripts.split(",");
       var storage_scripts      = updated_server_info.storage_scripts.split(",");
-      
+
       server_names.forEach(function(server_name,this_index){
         master_json.data.servers[server_name] = {
           server           : server_name,
@@ -139,10 +135,10 @@ $("#sos_server_query").on("click",function(){
           storage_url      : storage_scripts[this_index]
         }
       });
-      
-      
+
+
       list_servers();
-      
+
       bootbox.alert("That is a valid e-mail address! We're adding the latest server information to your profile now. <br><br>Please note, if you've used an e-mail address that isn't your own, this will mean you just get rejected later as you wont have the password. Please delete the servers to avoid confusion in the future.");
     } else {
       bootbox.alert(updated_server_info); //i.e. error message
@@ -154,10 +150,10 @@ var  server_info;
 
 function bind_create_account_btns(){
 	$(".create_account_btn").unbind();         										  			// to avoid multiple triggers
-	
+
 	$(".create_account_btn").on("click",function(){												// when creating a new account
 		if($("#email_input").val().length == 0) {												    // check if e-mail present
-			bootbox.alert("You need to put in an e-mail address"); 			
+			bootbox.alert("You need to put in an e-mail address");
 		} else if( $("#password_input").val().length < 8){           			  // check if password is at least 8 characters
 			bootbox.alert("Your password should be at least 8 characters");	  // warn the user if not
 		} else if($("#password_input").val().length > 8){										// if everything is okay
@@ -165,10 +161,8 @@ function bind_create_account_btns(){
       $.post(register_url,{																							// register the user
 				action: 					      "register",
 				email: 					        $("#email_input").val(),
-				password: 				      $("#password_input").val(),
-				"g-recaptcha-response": $("#g-recaptcha-response").val()        // to try to prevent bots
+				password: 				      $("#password_input").val()
 			},function(server_response){
-				grecaptcha.reset();																							// reset bot check
 				bootbox.alert(server_response);																	// let user know the server response
 			});
 		}
@@ -177,30 +171,30 @@ function bind_create_account_btns(){
 
 function bind_delete_account_btns(){
 	$(".delete_account_btn").unbind();                                    // to avoid multiple triggers
-	
+
 	$(".delete_account_btn").on("click",function(){
 		if($("#email_input").val().length == 0){													  // if missing email
-			bootbox.alert("Input your email address to delete the account."); 
+			bootbox.alert("Input your email address to delete the account.");
 		} else if( $("#password_input").val().length == 0){                 // if missing password
-			bootbox.alert("You need your password to delete the account." +   
-										"If you've forgotten your password, click on the" + 
+			bootbox.alert("You need your password to delete the account." +
+										"If you've forgotten your password, click on the" +
 										"'forgot password' button.");
 		} else {																														// if all good:
-			var register_url = $(this).find("span")[0].innerHTML;							
-			bootbox.confirm("Are you sure you want to delete your account" +	
+			var register_url = $(this).find("span")[0].innerHTML;
+			bootbox.confirm("Are you sure you want to delete your account" +
 											"on this server? This will remove your" +
 											"contribution to all experiments, and all" +
-											"experiments in which you are the only" + 
+											"experiments in which you are the only" +
 											"researcher!",function(result){
-				if(result){																											// if they confirm
+				if(result){
+          // if they confirm
 					$.post(register_url,{																					// delete the account
-						action: 					      "unregister",
-						email: 					        $("#email_input").val(),
-						password: 				      $("#password_input").val(),
-						"g-recaptcha-response": $("#g-recaptcha-response").val()    // bot check
+						action: 	"unregister",
+						email: 		$("#email_input").val(),
+						password: $("#password_input").val()
 					},function(server_response){
 						bootbox.alert(server_response);															// tell them how the server responded
-					}); 
+					});
 				}
 			});
 		}
@@ -210,8 +204,8 @@ function bind_delete_account_btns(){
 function bind_delete_server_btns(){
   $(".delete_server_btn").unbind();
   $(".delete_server_btn").on("click",function(){
-    
-    //find span 
+
+    //find span
     var server_name = $(this).find("span")[0].innerHTML;
     delete(master_json.data.servers[server_name]);
     list_servers();
@@ -220,7 +214,7 @@ function bind_delete_server_btns(){
 
 function bind_forgot_password_btn(){
 	$(".forgot_password_btn").unbind();																		// to avoid multiple triggers
-	$(".forgot_password_btn").on("click",function(){                       
+	$(".forgot_password_btn").on("click",function(){
 		if($("#email_input").val().length == 0){													// if missing email
 			bootbox.alert("You are missing your email address");
 		} else {
@@ -232,11 +226,10 @@ function bind_forgot_password_btn(){
 					$.post(register_url,{
 						action: 					      "forgot_password",
 						email: 					        $("#email_input").val(),
-						"g-recaptcha-response": $("#g-recaptcha-response").val()    // bot check
 					},function(server_response){
-						grecaptcha.reset();																					// reset bot check
-						bootbox.alert(server_response);															// let user know the server response
-					}); 
+						bootbox.alert(server_response);
+            // let user know the server response
+					});
 				}
 			});
 		}
@@ -249,8 +242,8 @@ function bind_unpublish_btn(){
 		if($("#email_input").val().length == 0){													// if missing email
 			bootbox.alert("You are either missing your email address");
 		} else if($("#password_input").val().length == 0){									// if missing password
-			bootbox.alert("You need your password to delete the experiment." +   
-										"If you've forgotten your password, click on the" + 
+			bootbox.alert("You need your password to delete the experiment." +
+										"If you've forgotten your password, click on the" +
 										"'forgot password' button.");
 		} else {																														// if all good
 			var register_url = $(this).find("span")[0].innerHTML;
@@ -261,11 +254,9 @@ function bind_unpublish_btn(){
 				experiment:             experiment,
 				action:                 "unregister_experiment",
 				email:                  $("#email_input").val(),
-				password:               $("#password_input").val(),
-				"g-recaptcha-response": $("#g-recaptcha-response").val()				// bot check
+				password:               $("#password_input").val()
 			},function(server_response){
 				bootbox.alert(server_response);
-				grecaptcha.reset();																							// reset bot check
 			});
 		}
 	});
@@ -280,22 +271,20 @@ function publish_experiment(this_exp,                                   // objec
 				  experiment:             experiment,
 				  action:                 "update_experiment",
 				  email:                  $("#email_input").val(),
-					password:               $("#password_input").val(),
-					"g-recaptcha-response": $("#g-recaptcha-response").val()
+					password:               $("#password_input").val()
 				},function(returned_message){
 					bootbox.alert(returned_message);
-					grecaptcha.reset();
 					if(returned_message == "Your request to be a" +
 																 " collaborator has been sent." |
 						 returned_message == "success" |
 						 returned_message == "You are already registered " +
 																 "with this experiment." |
 						 returned_message == "Still awaiting confirmation that" +
-																 "you are a collaborator. Do contact" + 
+																 "you are a collaborator. Do contact" +
 																 " your colleague who originally " +
 																 "created this experiment"){
 						var server_name;
-						var storage_url; 
+						var storage_url;
             var server_info = master_json.data.servers;
             Object.keys(server_info).forEach(function(this_server_name){
               console.dir(this_server_name);
@@ -306,12 +295,12 @@ function publish_experiment(this_exp,                                   // objec
             });
 						var experiment = $("#experiment_list").val();
 						var this_exp   = master_json.exp_mgmt.experiments[experiment];
-            
+
             if(typeof(this_exp.storage_scripts) == "undefined"){
 							this_exp.storage_scripts = {};
 						}
 						this_exp.storage_scripts[server_name] = storage_url;
-            
+
 						$("#save_btn").click();
 					} else {
 						bootbox.alert("Something went wrong, " +
@@ -325,8 +314,8 @@ function publish_experiment(this_exp,                                   // objec
 
 
 function bind_publish_btn(){
-	$(".publish_btn").on("click",function(){
-		if($("#email_input").val().length == 0){													  // if missing email	
+  $(".publish_btn").on("click",function(){
+		if($("#email_input").val().length == 0){													  // if missing email
 			bootbox.alert("You are missing your email address");
 		} else if($("#password_input").val().length < 8) {								  // if missing password (or password too short)
 			bootbox.alert("You need a password that is" +
@@ -335,23 +324,26 @@ function bind_publish_btn(){
 			var register_url = $(this).find("span")[0].innerHTML;
 			var experiment = $("#experiment_list").val();
 			var this_exp   = master_json.exp_mgmt.experiments[experiment];
-			
+
 			/*
 				Identify the experiment location
 			*/
-			switch(Collector.detect_context()){                                           
+			switch(Collector.detect_context()){
 				case "github":                                                  // i.e. the experiment is on dropbox
 				case "gitpod":                                                  // i.e. the experiment is on dropbox
 				case "server":                                                  // i.e. the experiment is on dropbox
 					publish_experiment(this_exp,                                  // object with location
 														 experiment,																// experiment name
-														 register_url)															 
-					break;                                                        
-				case "localhost":																								// i.e. the experiment is on github
+														 register_url)
+					break;
+				case "localhost":
+
+          // i.e. the experiment is on github
 					if(typeof(master_json.github) == "undefined"){
 						master_json.github = {};
 					}
 					if(typeof(master_json.github.organisation) == "undefined"){
+            alert("ho");
 						master_json.github.organisation = '';
 					}
 					if(typeof(master_json.github.repository) == "undefined"){
@@ -376,17 +368,17 @@ function bind_publish_btn(){
 						"register this experiment. To do this, click on the " +
 						"github button in the top right of the page.");
 					} else {
-						
+
 						if(master_json.github.organisation !== ""){
 							var github_user_org = master_json.github.organisation;
 						}	else {
 							var github_user_org = master_json.github.username;
 						}
-					
-						this_exp.location = github_user_org + 
-																"/" + 
+
+						this_exp.location = github_user_org +
+																"/" +
 																master_json.github.repository;
-																
+
 						publish_experiment(this_exp,                                // object with location
 															 experiment,															// experiment name
 															 register_url);
@@ -402,7 +394,7 @@ function update_server_table(){
   if(typeof(master_json.data.servers) == "undefined"){
 		master_json.data.servers = {};
 	}
-  
+
   var server_table =  "<table class='table'>"+
                       "<thead>" +
                         "<tr>" +
@@ -411,33 +403,33 @@ function update_server_table(){
                           "<th scope='col'>Register Experiment</th>" +
                         "</tr>" +
                       "</thead>";
-                      
+
   Object.keys(master_json.data.servers).forEach(function(this_server){
     var server_row = master_json.data.servers[this_server];
-    
+
     if(server_row.registration_url == "" |
        server_row.registration_url == null){
       account_buttons = 'No need to register with this ' +
                         '<button class="btn btn-primary" data-toggle="popover" title="script url:" data-content="' + server_row.storage_url + '"> link</button>' +
                         '<button class="btn btn-info delete_server_btn">Delete<span style="display:none">' + this_server + '</span></button>';
-                          
-      
-      
+
+
+
       //<span href='" + server_row.url + "' target='_blank'>link</a>";
-      if($("#experiment_list").val() == undefined || 
+      if($("#experiment_list").val() == undefined ||
         $("#experiment_list").val() == null){
-        var publish_btn_html      = "no experiment selected";      
+        var publish_btn_html      = "no experiment selected";
       } else {
         var publish_btn_html = "code here to send the data to this script";
       }
     } else {
-      if($("#experiment_list").val() == undefined || 
+      if($("#experiment_list").val() == undefined ||
         $("#experiment_list").val() == null){
-        var publish_btn_html      = "no experiment selected";      
+        var publish_btn_html      = "no experiment selected";
       } else {
         var publish_btn_html = "<button class='btn btn-primary publish_btn'>Publish<span style='display:none'>" + server_row.registration_url + "</span></button><button class='btn btn-danger unpublish_btn'>Unpublish<span style='display:none'>" + server_row.registration_url + "</span></button>";
       }
-    
+
       var account_buttons = "<button class='create_account_btn btn btn-primary'>" +
                               "Create Account" +
                               "<span style='display:none'>" + server_row.registration_url + "</span>" +
@@ -448,36 +440,35 @@ function update_server_table(){
                             "</button>" +
                             "<button class='forgot_password_btn btn btn-info'>" +
                               "Forgot password" +
-                              "<span style='display:none'>" + 
-                                server_row.registration_url + 
+                              "<span style='display:none'>" +
+                                server_row.registration_url +
                               "</span>" +
-                            "</button>" + 
+                            "</button>" +
                             "<button class='delete_server_btn btn btn-info'>" +
                               "Delete Server" +
-                              "<span style='display:none'>" + 
-                                this_server + 
+                              "<span style='display:none'>" +
+                                this_server +
                               "</span>" +
                             "</button>";
     }
-    
-    
-    server_table += "<tr>"+ 
+
+
+    server_table += "<tr>"+
                       "<td>" + this_server      + "</td>" +
                       "<td>" + account_buttons  + "</td>" +
                       "<td>" + publish_btn_html + "</td>" +
                     "</tr>";
-    
-    
-  });		
-  
+
+
+  });
+
   server_table += "</table>";
-  $("#server_table_div").html(server_table);		
-  
-  
+  $("#server_table_div").html(server_table);
+
+
   $(function () {
     $('[data-toggle="popover"]').popover()
   });
-  
   bind_create_account_btns();
   bind_delete_account_btns();
   bind_delete_server_btns();
