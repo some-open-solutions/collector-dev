@@ -10,19 +10,14 @@ const {app,
 
 
 const fs   = require('fs-extra')
-const ipc = require('electron').ipcMain;
+const ipc  = require('electron').ipcMain;
 const path = require('path')
-
-/*
-* Get the version
-*/
-const version = process.env.npm_package_version;
 
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     // frame: false,
-    title: "Collector: Kitten " + version,
+    title: "Collector: Kitten " + app.getVersion(),
     icon: __dirname + "/logos/collector.ico.png",
     webPreferences: {
       //contextIsolation:           true, //has to be false with the way I've designed this
@@ -177,8 +172,33 @@ ipc.on('read_file', (event,args) => {
   } else if(args["this_file"].indexOf("../") !== -1){
     var content = "This request could be insecure, and was blocked";
   } else {
+    /*
+    * create User folder if it doesn't exist (and all the relevant subfolders)
+    */
+    if(!fs.existsSync("User")){
+      fs.mkdirSync("User");
+    }
+    if(!fs.existsSync("User/Data")){
+      fs.mkdirSync("User/Data");
+    }
+    if(!fs.existsSync("User/Experiments")){
+      fs.mkdirSync("User/Experiments");
+    }
+    if(!fs.existsSync("User/Private")){
+      fs.mkdirSync("User/Private");
+    }
+    if(!fs.existsSync("User/Stimuli")){
+      fs.mkdirSync("User/Stimuli");
+    }
+    if(!fs.existsSync("User/Surveys")){
+      fs.mkdirSync("User/Surveys");
+    }
+    if(!fs.existsSync("User/Trialtypes")){
+      fs.mkdirSync("User/Trialtypes");
+    }
+
     try{
-      var content = fs.readFileSync("User/" +
+      var content = fs.readFileSync("User"                + "/" +
                                       args["user_folder"] + "/" +
                                       args["this_file"],
                                     'utf8');
@@ -335,7 +355,6 @@ ipc.on('write_file', (event,args) => {
 
 const { Octokit }        = require("@octokit/rest");
 const git_clone          = require('git-clone');
-const download_git_repo  = require('download-git-repo');
 const simpleGit          = require('simple-git');
 const git                = simpleGit();
 
@@ -356,31 +375,59 @@ ipc.on('git_add_token', (event,args) => {
 
 ipc.on('git_init', (event,args) => {
 
-  //progress updates
-
-  if(!fs.existsSync(
-      git_token_location
-    )
-  ){
-    event.returnValue = "auth token missing";
-  } else {
-    var auth_token = fs.readFileSync(
-      git_token_location ,
-      'utf8'
+  //clone collector at location
+  git.clone(
+    "https://github.com/some-open-solutions/collector",
+    "repositories"         + "/" +
+      args["organisation"] + "/" +
+      args["repository"]
+  )
+  .then(function(error){
+    /*
+    * Remove git folder to make this a new repo
+    */
+    fs.rmdirSync(
+      "repositories"         + "/" +
+        args["organisation"] + "/" +
+        args["repository"]   + "/.git",
+      {
+         recursive: true
+      }
     );
-    try{
-      const octokit = new Octokit({
-        auth: auth_token,
-      })
-      .repos.createInOrg({
-        org:  args["organisation"],
-        name: args["repository"],
-      })
-      event.returnValue = "success";
-    } catch(error){
-      event.returnValue = "error: " + error;
+    if(!fs.existsSync(
+        git_token_location
+      )
+    ){
+      event.returnValue = "auth token missing";
+    } else {
+      var auth_token = fs.readFileSync(
+        git_token_location,
+        'utf8'
+      );
+      try{
+        const octokit = new Octokit({
+          auth: auth_token,
+        })
+        .repos.createInOrg({
+          org:  args["organisation"],
+          name: args["repository"],
+        })
+
+        /*
+        * initiate repository here
+        */
+        git.cwd(
+          "repositories"      + "/" +
+          args["organisation"] + "/" +
+          args["repository"]
+        ).init();
+
+        event.returnValue = "success";
+      } catch(error){
+        event.returnValue = "error: " + error;
+      }
     }
-  }
+  });
 });
 
 ipc.on('git_local_repo', (event,args) => {
@@ -399,6 +446,9 @@ ipc.on('git_local_repo', (event,args) => {
                 args["repository"])
        .then(function(error){
          event.returnValue = "success";
+       })
+       .catch(function(error){
+         event.returnValue = "error: " + error;
        });
   } catch(error){
     event.returnValue = "error: " + error;
@@ -406,6 +456,43 @@ ipc.on('git_local_repo', (event,args) => {
 });
 
 ipc.on('git_download_collector', (event,args) =>{
+
+  //cloning
+  git.clone(
+    "https://github.com/some-open-solutions/collector",
+    "temp"
+  )
+  .then(function(error){
+    /*
+    * Remove git folder to make this a new repo
+    */
+    fs.rmdirSync(
+      "temp/.git",
+       {
+         recursive: true
+       }
+    )
+
+    /*
+    * move from temp to main folder
+    */
+    fs.moveSync(
+      "temp",
+      "repositories"         + "/" +
+        args["organisation"]  + "/" +
+        args["repository"],
+      {
+        "overwrite" : true
+      }
+    )
+
+    event.returnValue = "success";
+  });
+
+
+
+
+  /*
   download_git_repo(
     "some-open-solutions/" +
       "collector",
@@ -415,38 +502,18 @@ ipc.on('git_download_collector', (event,args) =>{
     {
       "clone" : false
     },function(err){
-      event.returnValue = "error: " + err;
+      if(typeof(err) !== "undefined"){
+        event.returnValue = "error: " + err;
+      } else {
+        event.returnValue = "success";
+      }
+
     }
   );
+  */
 });
 
-ipc.on('git_add_changes', (event,arg) => {
-  //copy folder from User folder into repository
-
-  fs.copySync(
-    "User",
-    "repositories"        + "/" +
-      arg["organisation"] + "/" +
-      arg["repository"]   + "/" +
-      "web"               + "/" +
-      "User"
-  )
-
-  fs.rmdirSync(
-    "repositories"        + "/" +
-      arg["organisation"] + "/" +
-      arg["repository"]   + "/" +
-      "web"               + "/" +
-      "User"              + "/" +
-      "Private",
-     {
-       recursive: true
-     }
-  )
-
-});
-
-ipc.on('git_push', (event,arg) => {
+ipc.on('git_push', (event,args) => {
   /*
   * check that auth token exists and deal with eventuality if it doesn't
   */
@@ -456,31 +523,35 @@ ipc.on('git_push', (event,arg) => {
     'utf8'
   );
 
-  if(typeof(arg["message"]) == "undefined"){
-    arg["message"] = "automatic commit"
+  if(typeof(args["message"]) == "undefined"){
+    args["message"] = "automatic commit"
   }
 
   var remote =  "https://" +
-                  arg["organisation"] + ":" +
+                  args["organisation"] + ":" +
                   auth_token +
                   "@github.com"       + "/" +
-                  arg["organisation"] + "/" +
-                  arg["repository"]   + ".git";
+                  args["organisation"] + "/" +
+                  args["repository"]   + ".git";
   git.cwd(
     "repositories"      + "/" +
-    arg["organisation"] + "/" +
-    arg["repository"]
+    args["organisation"] + "/" +
+    args["repository"]
   ).
     add("./*").
-    commit(arg["message"]).  
+    commit(args["message"]).
     push(remote, 'master').
     then(function(new_err){
       console.log(new_err)
       event.returnValue = "success";
+    })
+    .catch(function(error){
+      console.log(error)
+      event.returnValue = "error when pushing:" + error;
     });
 });
 
-ipc.on('git_pages', (event,arg) => {
+ipc.on('git_pages', (event,args) => {
   /*
   * confirm authentication file exists
   */
@@ -492,17 +563,123 @@ ipc.on('git_pages', (event,arg) => {
     const octokit = new Octokit({
       auth: auth_token,
     }).repos.createPagesSite({
-      "owner":          arg["organisation"],
-      "repo":           arg["repository"]
+      "owner":          args["organisation"],
+      "repo":           args["repository"]
     })
     event.returnValue = "success";
   } catch(error){
+    console.log("HERE BE THE ERROR");
     event.returnValue = "error: " + error;
   }
 });
 
+ipc.on('git_add_changes', (event,args) => {
+  //copy folder from User folder into repository
+
+  fs.copySync(
+    "User",
+    "repositories"        + "/" +
+      args["organisation"] + "/" +
+      args["repository"]   + "/" +
+      "web"               + "/" +
+      "User"
+  )
+
+  fs.rmdirSync(
+    "repositories"        + "/" +
+      args["organisation"] + "/" +
+      args["repository"]   + "/" +
+      "web"               + "/" +
+      "User"              + "/" +
+      "Private",
+     {
+       recursive: true
+     }
+  )
+
+});
 
 
+
+ipc.on('git_pull', (event,args) => {
+  if(!fs.existsSync("repositories")){
+    fs.mkdirSync("repositories");
+  }
+
+  if(!fs.existsSync("repositories" + "/" + args["organisation"])){
+    fs.mkdirSync(
+      "repositories"      + "/" +
+      args["organisation"]
+    )
+  }
+
+
+  /*
+  * check if repo exists to confirm whether cloning or pulling
+  */
+  if(
+    !fs.existsSync(
+      "repositories"      + "/" +
+      args["organisation"] + "/" +
+      args["repository"]
+    )
+  ){
+    console.log("Repository doesn't exist locally, so cloning");
+    //cloning
+    git.clone(
+      "https://github.com"   + "/" +
+        args["organisation"] + "/" +
+        args["repository"],
+      "repositories"         + "/" +
+        args["organisation"] + "/" +
+        args["repository"]
+    )
+    .then(function(error){
+      //copy and replace the "User" folder
+      fs.copySync(
+        "repositories"         + "/" +
+          args["organisation"] + "/" +
+          args["repository"]   + "/" +
+          "web"                + "/" +
+          "User",
+        "User"
+      );
+      event.returnValue = "success";
+    });
+  } else {
+    console.log("Repository exists locally, so pulling in changes");
+
+    git.cwd(
+      "repositories"      + "/" +
+      args["organisation"] + "/" +
+      args["repository"]
+    ).pull(
+      'origin',
+      'master'
+    )
+    .then(function(error){
+      //copy and replace the "User" folder
+      fs.copySync(
+        "repositories"         + "/" +
+          args["organisation"] + "/" +
+          args["repository"]   + "/" +
+          "web"                + "/" +
+          "User",
+        "User"
+      );
+
+      event.returnValue = "success";
+    });
+  }
+});
+
+ipc.on('git_token_exists', (event,args) => {
+  event.returnValue = fs.existsSync(
+    "User/Private/github_token.txt"
+  )
+});
+
+/****************************************************/
 
 
 /*

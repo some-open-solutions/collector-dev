@@ -21,6 +21,13 @@ window.onload=function(){
               "auth_token": auth_token
             });
           },
+          download_collector: function(repo_info){
+            var download_repo_response = ipc.sendSync(
+              'git_download_collector',
+              repo_info
+            );
+            return download_repo_response;
+          },
           init: function(repo_info){
             var clone_response = ipc.sendSync(
               'git_init',
@@ -35,12 +42,12 @@ window.onload=function(){
             );
             return local_repo_response;
           },
-          download_collector: function(repo_info){
-            var download_repo_response = ipc.sendSync(
-              'git_download_collector',
+          pull: function(repo_info){
+            var pull_response = ipc.sendSync(
+              'git_pull',
               repo_info
             );
-            return download_repo_response;
+            return pull_response;
           },
           push: function(repo_info){
             var push_response = ipc.sendSync(
@@ -55,6 +62,12 @@ window.onload=function(){
               repo_info
             );
             return pages_response;
+          },
+          token_exists: function(){
+            return ipc.sendSync(
+              'git_token_exists',
+              {}
+            )
           }
 
         },

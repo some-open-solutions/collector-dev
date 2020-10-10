@@ -140,7 +140,6 @@ online_data_obj = {
   }
 }
 
-
 Study = {
 
   /*
@@ -148,7 +147,8 @@ Study = {
 	*/
   get_vars        : {},
   resume          : false,
-  pipeline        : ["get_gets",
+  pipeline        : ["detect_exe",
+                     "get_gets",
                      "start_restart",
                      "start_study",
                      "select_condition",
@@ -163,7 +163,8 @@ Study = {
                      "buffer_trials",
                      "process_welcome"],
   // start functions are the functions required when NOT resuming
-  start_functions : ["create_exp_json_variables",
+  start_functions : [ "detect_exe",
+                      "create_exp_json_variables",
                       "parse_sheets",
                       "parse_current_proc",
                       "clean_trialtypes",
@@ -375,7 +376,13 @@ Study = {
 			}
 			this_trialtype = this_trialtype.replaceAll("{{" + variable + "}}", variable_val);
 		});
-    this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox"); // in case the user forgets
+    // in case the user forgets
+    this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox");
+
+    if(Study.is_exe){
+      this_trialtype = this_trialtype.replaceAll("User/","../../User/");
+
+    }
 
 		return this_trialtype;
 	},
@@ -572,6 +579,16 @@ function create_exp_json_variables(){
 		}
 	}
 	Study.activate_pipe();
+}
+
+function detect_exe(){
+  $.get("../User/master.json",function(result){
+    Study.is_exe = false;
+    Study.activate_pipe();
+  }).catch(function(error){
+    Study.is_exe = true;
+    Study.activate_pipe();
+  });
 }
 
 function final_trial(){
@@ -1189,6 +1206,25 @@ function shuffleArray(array) {
 	}
 }
 
+/* Some code that suggests the above shuffleArray function is NOT biased
+freq_object = {
+  1:[0,0,0,0],
+  2:[0,0,0,0],
+  3:[0,0,0,0],
+  4:[0,0,0,0]
+}
+for(var i = 0; i < 100000; i++){
+  a = [1,2,3,4]
+  shuffleArray(a)
+  freq_object[a[0]][0]++;
+  freq_object[a[1]][1]++;
+  freq_object[a[2]][2]++;
+  freq_object[a[3]][3]++;
+}
+console.dir(freq_object)
+*/
+
+
 //solution by Tom Wadley at https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array
 function removeItemAll(arr, value) {
 	var i = 0;
@@ -1289,10 +1325,6 @@ function shuffle_start_exp(){
 		}
 	});
 
-	// start at highest shuffle number, and then shuffle on my way down to 2
-	//  RESUME HERE
-
-
 	shuffle_array = {};
 	exp_json.parsed_proc.forEach(function(row,index){
 			var this_shuffle = row["shuffle 1"];
@@ -1385,6 +1417,7 @@ function start_study(){
 	if(Object.keys(exp_json) == 0){
 		switch(Study.get_vars.platform){
 			case "localhost":
+      case "preview":
         electron_wait = setInterval(function(){
           if(typeof(Collector.electron.read_file) !== "undefined"){
             clearInterval(electron_wait);
@@ -1404,8 +1437,6 @@ function start_study(){
 				break;
 
 			case "github":
-			case "preview":
-
 				if(typeof(Study.get_vars.dropbox) !== "undefined" && Study.get_vars.dropbox){
 					$.get(Study.get_vars.dropbox.replace("www.","dl."),function(result){
 						exp_json = JSON.parse(result);
@@ -1468,12 +1499,10 @@ function write_trial_iframe(index){
   }
 	doc.close();
 
-	//CODE HERE TO DEAL WITH POST TRIAL TYPES
-  for(var i = 0; i < trial_events.length; i++){
+	for(var i = 0; i < trial_events.length; i++){
 
 		var trial_content = Study.generate_trial(index,i); //exp_json.trial_no
-
-    trial_content += "<button style='opacity:0; filter: alpha(opacity=0)' id='zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'></button>";
+        trial_content += "<button style='opacity:0; filter: alpha(opacity=0)' id='zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'></button>";
 
 		doc = document.getElementById('trial'+index).contentWindow.document.getElementById('post'+i).contentWindow;
 		doc.document.open();
