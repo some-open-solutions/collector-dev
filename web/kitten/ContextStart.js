@@ -1,13 +1,4 @@
 /*
-* Eel functions
-*/
-python_dialog = bootbox.dialog({
-  show:false,
-  title:"Please wait",
-  message:"<div id='python_message'></div>"
-});
-
-/*
 * this is a hack to deal with asynchronous order of parts of the page loading
 */
 function wait_till_exists(this_function){
@@ -27,6 +18,19 @@ $_GET = window.location.href.substr(1).split("&").reduce((o,i)=>(u=decodeURIComp
 
 Collector.tests.run();                        // display the test dialog before anything else (assuming tests are being run)
 
+Collector.start = function(){
+  wait_till_exists("list_studies");
+  wait_till_exists("list_graphics");
+  list_mods();
+  wait_till_exists("list_trialtypes");
+  wait_till_exists("initiate_actions");
+  autoload_mods();
+  wait_till_exists("list_keys");
+  wait_till_exists("list_data_servers");
+  wait_till_exists("list_servers");
+  wait_till_exists("list_surveys");
+}
+
 switch(Collector.detect_context()){
   case "gitpod":
   case "server":
@@ -41,19 +45,13 @@ switch(Collector.detect_context()){
       //alert("hi");
       if(typeof(Collector.electron) !== "undefined"){
         clearInterval(wait_for_electron);
-        master_json = JSON.parse(
-          Collector.electron.read_file("","master.json")
-        );
-        wait_till_exists("list_studies");
-        wait_till_exists("list_graphics");
-        list_mods();
-        wait_till_exists("list_trialtypes");
-        wait_till_exists("initiate_actions");
-        autoload_mods();
-        wait_till_exists("list_keys");
-        wait_till_exists("list_data_servers");
-        wait_till_exists("list_servers");
-        wait_till_exists("list_surveys");
+        master_json = Collector.electron.read_file("","master.json");
+        if(master_json !== ""){
+          master_json = JSON.parse(master_json);
+        } else {
+          master_json = default_master_json;
+        }
+        Collector.start();
       }
     },100);
     break;

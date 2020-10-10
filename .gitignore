@@ -6,6 +6,7 @@ Collector.exe
 /Installer/build
 /Installer/dist
 /Installer/installer.spec
+/web/temp
 /Updater/__pychache__
 /Updater/build
 /Updater/dist

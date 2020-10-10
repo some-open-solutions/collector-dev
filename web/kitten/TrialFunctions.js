@@ -18,13 +18,13 @@
 		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
 */
 if(typeof(Trial) !== "undefined"){
-  
+
 	Trial.add_response = function (response_obj){
 		response_obj.inserted_time_ms = (new Date()).getTime();
 		response_obj.inserted_time_date = new Date().toString('MM/dd/yy HH:mm:ss');
-		parent.parent.exp_json.responses.push(response_obj);	
+		parent.parent.exp_json.responses.push(response_obj);
 	}
-	
+
 	Trial.elapsed = function(){
 		if(Trial.post_no == ""){
 			Trial.post_no = 0;
@@ -42,6 +42,43 @@ if(typeof(Trial) !== "undefined"){
       parent.parent.exp_json.storage = {};
     }
     parent.parent.exp_json.storage[this_name] = this_content;
+  }
+
+  /*
+  * Make the Trial.setTimeout timer function here
+  * based on https://stackoverflow.com/questions/7798680/add-duration-to-js-settimeout-after-the-timer-is-running
+  */
+  Trial.timer = function(callback, time){
+    this.setTimeout(callback, time);
+  }
+
+  Trial.timer.prototype.setTimeout = function(callback, time) {
+    var self = this;
+    if(this.timer) {
+        clearTimeout(this.timer);
+    }
+    this.finished = false;
+    this.callback = callback;
+    this.time = time;
+    this.timer = setTimeout(function() {
+         self.finished = true;
+        callback();
+    }, time);
+    this.start = Date.now();
+  }
+
+  Trial.timer.prototype.add = function(time) {
+     if(!this.finished) {
+         // add time to time left
+         time = this.time - (Date.now() - this.start) + time;
+         this.setTimeout(this.callback, time);
+     }
+  }
+
+
+
+  Trial.setTimeout = function(this_function, duration){
+
   }
 	Trial.set_timer = function(this_function,duration){
 		parent.parent.exp_json.time_outs.push({
@@ -63,7 +100,7 @@ $(window).bind('keydown', function(event) {
 		switch (String.fromCharCode(event.which).toLowerCase()) {
 			case 's':
 				event.preventDefault();
-				parent.parent.precrypted_data(parent.parent.exp_json,"What do you want to save this file as?");			
+				parent.parent.precrypted_data(parent.parent.exp_json,"What do you want to save this file as?");
 			break;
 		}
 	}
