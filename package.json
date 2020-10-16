@@ -1,6 +1,6 @@
 {
   "name": "Collector",
-  "version": "3.10.1",
+  "version": "3.10.2",
   "description": "An Open-Source package for online research",
   "main": "main.js",
   "scripts": {
@@ -20,7 +20,7 @@
   "license": "GNU General Public License",
   "devDependencies": {
     "coffee-script": "~1.6.3",
-    "electron": "^10.1.1",
+    "electron": "^10.1.2",
     "electron-builder": "^22.8.0"
   },
   "build": {
@@ -55,7 +55,8 @@
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
-      "oneClick": false
+      "oneClick": false,
+      "perMachine" : true
     },
     "win": {
       "target": "nsis",
