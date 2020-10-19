@@ -140,7 +140,7 @@ function load_default_surveys(){
 var survey_HoT;
 
 function create_survey_HoT(this_survey){
-	var container = document.getElementById('survey_HoT');
+  var container = document.getElementById('survey_HoT');
 	$("#survey_HoT").html("");
   survey_HoT = new Handsontable(container, {
 		data: this_survey,
@@ -330,13 +330,8 @@ function list_surveys(){
     master_json.surveys.default_surveys = Collector.clean_obj_keys(master_json.surveys.default_surveys);
 
     var def_survey_list  = Object.keys(master_json.surveys.default_surveys).sort();
-    console.dir("def_survey_list");
-    console.dir(def_survey_list);
-
     var user_survey_list = Object.keys(master_json.surveys.user_surveys).sort();
 
-    console.dir("user_survey_list");
-    console.dir(user_survey_list);
     load_default_surveys();
     user_survey_list.forEach(function(user_survey){
       $("#survey_select").append($("<option>",{
@@ -385,24 +380,45 @@ function preview_survey(this_survey){
 		$("#survey_preview").css("width",window.innerWidth);
 	}
 
-  survey_template = $.get(collector_map["survey.html"], function(survey_template){
-    survey_template = survey_template.replace('"{{survey}}"',
-                                              JSON.stringify(this_survey));
+  switch(Collector.detect_context()){
+    case "localhost":
+      survey_template = Collector.electron.read_default(
+        "Trialtypes",
+        "survey.html"
+      );
+      survey_template = survey_template.replace('"{{survey}}"',
+                                                JSON.stringify(this_survey));
 
-		doc = document.getElementById('survey_preview').contentWindow.document;
-		doc.open();
-		doc.write('<scr' + 'ipt src="libraries/jquery-3.3.1.min.js"></scr' + 'ipt>' +
-							'<scr' + 'ipt src= "libraries/bootstrap.4.0.min.js"></scr' + 'ipt>' +
-							'<scr' + 'ipt src= "libraries/bootbox.5.4.min.js"></scr' + 'ipt>' +
-							'<scr' + 'ipt src= "libraries/popper.min.js"></scr' + 'ipt>' +
-							'<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootstrapCollector.css">' +
-							'<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootbox.fix.css">' +
-							'<scr' + 'ipt src= "libraries/papaparse.4.3.6.min.js"></scr' + 'ipt>' +
-							survey_template);
-		doc.close();
+      doc = document.getElementById('survey_preview').contentWindow.document;
+  		doc.open();
+  		doc.write('<scr' + 'ipt src="libraries/jquery-3.3.1.min.js"></scr' + 'ipt>' +
+    						'<scr' + 'ipt src= "libraries/bootstrap.4.0.min.js"></scr' + 'ipt>' +
+    						'<scr' + 'ipt src= "libraries/bootbox.5.4.min.js"></scr' + 'ipt>' +
+    						'<scr' + 'ipt src= "libraries/popper.min.js"></scr' + 'ipt>' +
+    						'<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootstrapCollector.css">' +
+    						'<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootbox.fix.css">' +
+    						'<scr' + 'ipt src= "libraries/papaparse.4.3.6.min.js"></scr' + 'ipt>' +
+  							survey_template);
+      break;
+    default:
+      survey_template = $.get("../Default/Trialtypes/survey.html", function(survey_template){
+        survey_template = survey_template.replace('"{{survey}}"',
+                                                  JSON.stringify(this_survey));
 
-
-  });
+        doc = document.getElementById('survey_preview').contentWindow.document;
+        doc.open();
+        doc.write('<scr' + 'ipt src="libraries/jquery-3.3.1.min.js"></scr' + 'ipt>' +
+                  '<scr' + 'ipt src= "libraries/bootstrap.4.0.min.js"></scr' + 'ipt>' +
+                  '<scr' + 'ipt src= "libraries/bootbox.5.4.min.js"></scr' + 'ipt>' +
+                  '<scr' + 'ipt src= "libraries/popper.min.js"></scr' + 'ipt>' +
+                  '<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootstrapCollector.css">' +
+                  '<lin' + 'k rel="stylesheet" type="text/css" href="libraries/bootbox.fix.css">' +
+                  '<scr' + 'ipt src= "libraries/papaparse.4.3.6.min.js"></scr' + 'ipt>' +
+                  survey_template);
+        doc.close();
+      });
+      break;
+  }
 }
 
 function synch_surveys(){
@@ -497,8 +513,6 @@ $("#new_survey_button").on("click",function(){
 	}
 });
 
-
-
 $("#pills-preview-tab").on("click",function(){
   var this_survey =  survey_HoT.getData();
   preview_survey(this_survey);
@@ -549,8 +563,6 @@ $("#rename_survey_btn").on("click",function(){
   }
 });
 
-
-
 $("#save_survey_btn").on("click",function(){
 	if($("#survey_select").val() !== null & typeof(survey_HoT) !== "undefined"){
 		var survey_name     = $("#survey_select").val().split("|")[1]
@@ -567,14 +579,14 @@ $("#survey_select").on("change",function(){
 	*/
 	var old_survey = ($(this).attr('previousValue'));
 
-	if(old_survey !== "" & 																								 				  // not the first selected
-		 Object.keys(master_json.surveys.default_surveys).indexOf(old_survey) == -1){ // not a default trialtype
-
+	if(old_survey == ""){ // not the first selected
+    // do nothing
+  } else if (Object.keys(master_json.surveys.default_surveys).indexOf(old_survey) == -1){ // not a default trialtype
 		old_survey = old_survey.split("|")[1]
 													 .replace(".csv","") + ".csv";
 
 		var survey_content  = Papa.unparse(survey_HoT.getData());
-		survey_obj.save(old_survey,
+    survey_obj.save(old_survey,
 										survey_content);
 	}
 

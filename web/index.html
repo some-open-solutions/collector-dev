@@ -15,9 +15,9 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
- 		
-		Kitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)		
-*/  
+
+		Kitten release (2019) author: Dr. Anthony Haffey (a.haffey@reading.ac.uk)
+*/
 -->
 <head>
 
@@ -29,7 +29,7 @@ body, html {
 
 
 <head>
-	<link rel="shortcut icon" type="image/x-icon" href="logos/collector.ico.png" />	
+	<link rel="shortcut icon" type="image/x-icon" href="logos/collector.ico" />	
 </head>
 
 <body>
@@ -82,7 +82,7 @@ body, html {
 	</div>
 	<div class="tab-pane fade" id="navs-contributors" role="tabpanel" aria-labelledby="pills-profile-tab">
     If you'd like to contribute, please clone the repository <a class="btn btn-primary" href='https://github.com/open-collector/open-collector' target="_blank">here</a> and make pull requests with improvements! <br><br>
-  
+
 
   <div id="contributors_div"></div>
   <script>
@@ -90,7 +90,7 @@ body, html {
   </script>
 
 	</div>
-	
+
 	<div class="tab-pane fade" id="navs-map" role="tabpanel" aria-labelledby="pills-contact-tab">
 		<div id="mapdiv" style="width: 100%; height:400px;"></div>
     <div id="listdiv"></div>
@@ -103,7 +103,7 @@ body, html {
     <div id="security_div"></div>
     <script>
       $("#security_div").load("security.html");
-    </script>	
+    </script>
   </div>
 </div>
 
@@ -165,7 +165,7 @@ $("#participant_map_tab").on("click",function(){
 
       areas_array  = [];
       images_array = [];
-      
+
       var table_content = "<table class='table'>" +
                             "<thead>" +
                               "<tr>" +
@@ -174,14 +174,14 @@ $("#participant_map_tab").on("click",function(){
                               "</tr>" +
                             "</thead>" +
                             "<tbody>";
-      
-      
+
+
       var row_order = Object.keys(data);
 
       row_order.sort(function(a,b) {
         return data[a].frequency - data[b].frequency;
       });
-      
+
       data_sorted = [];
       for(var i = 0; i < data.length; i++){
         data_sorted[i] = data[row_order[i]];
@@ -196,37 +196,37 @@ $("#participant_map_tab").on("click",function(){
           max_frequency = row.frequency;
         }
       });
-      
+
       data_sorted.forEach(function(row){
-        
+
         table_content +=  "<tr>"+
                             "<td>" + row.country + "</td>" +
                             "<td>" + row.frequency + "</td>" +
-                          "</tr>" 
-        
+                          "</tr>"
+
         var this_opacity = row.frequency/max_frequency < .1 ? .1 : row.frequency/max_frequency;
-        
+
         if(row.institute !== ""){
           areas_array.push({
             id:row.code,
             color:"rgb(0, 0, 255, " + this_opacity + ")",
             fillAlphas:row.frequency
           });
-          
+
         }
       });
-      
+
       table_content += "</tbody>"  + "</table>";
-      
+
       $("#pplistdiv").html(table_content);
       AmCharts.makeChart( "ppmapdiv", {
         /**
          * this tells amCharts it's a map
          */
         "type": "map",
-      
-      
-     
+
+
+
         /**
          * create data provider object
          * map property is usually the same as the name of the map file.
@@ -242,7 +242,7 @@ $("#participant_map_tab").on("click",function(){
         },
       "projection": "winkel3",
 
-        /** 
+        /**
          * create areas settings
          * autoZoom set to true means that the map will zoom-in when clicked on the area
          * selectedColor indicates color of the clicked area.
@@ -256,9 +256,9 @@ $("#participant_map_tab").on("click",function(){
          * let's say we want a small map to be displayed, so let's create it
          */
         "smallMap": {}
-      });	
-    });    
-  }  
+      });
+    });
+  }
 });
 
 $("#researchers_map_tab").on("click",function(){
@@ -266,10 +266,10 @@ $("#researchers_map_tab").on("click",function(){
     maps_initiated.researcher = true;
 
     ParseGSX.parseGSX("1bD82OXXfna-KTtLk46glo2oUGoGy2JORTJLp47uKOh0",function(data){
-    
+
     /*
     $.post("AjaxInstitutions.php",{},function(returned_data){
-      data = Papa.parse(Papa.unparse(JSON.parse(returned_data)),{       
+      data = Papa.parse(Papa.unparse(JSON.parse(returned_data)),{
         delimiter: "",	// auto-detect
         newline: "",	// auto-detect
         quoteChar: '"',
@@ -295,31 +295,31 @@ $("#researchers_map_tab").on("click",function(){
       */
       areas_array  = [];
       images_array = [];
-      
+
       var table_content = "<table class='table'>" +
                             "<thead>" +
                               "<tr>" +
                                 "<th scope='col'>Institute</th>" +
-                                "<th scope='col'>Country</th>" +                                
+                                "<th scope='col'>Country</th>" +
                               "</tr>" +
                             "</thead>" +
                             "<tbody>";
-      
-      
+
+
       data.forEach(function(row){
-        
+
         table_content +=  "<tr>"+
                             "<td>" + row.institute + "</td>" +
                             "<td>" + row.country + "</td>" +
-                          "</tr>" 
-        
+                          "</tr>"
+
         if(row.institute !== ""){
           areas_array.push({
             id:row.code,
             color:"#6495ED"
           });
           images_array.push({
-            
+
             "latitude": row.latitude,
             "longitude": row.longitude,
             "svgPath": icon,
@@ -327,23 +327,23 @@ $("#researchers_map_tab").on("click",function(){
             "scale": 0.5,
             "label": row.institute,
             "labelShiftY": 2
-            
+
           });
         }
       });
-      
+
       table_content += "</tbody>"  + "</table>";
-      
+
       $("#listdiv").html(table_content);
-      
+
       AmCharts.makeChart( "mapdiv", {
         /**
          * this tells amCharts it's a map
          */
         "type": "map",
-      
-      
-     
+
+
+
         /**
          * create data provider object
          * map property is usually the same as the name of the map file.
@@ -359,7 +359,7 @@ $("#researchers_map_tab").on("click",function(){
         },
       "projection": "winkel3",
 
-        /** 
+        /**
          * create areas settings
          * autoZoom set to true means that the map will zoom-in when clicked on the area
          * selectedColor indicates color of the clicked area.
@@ -373,7 +373,7 @@ $("#researchers_map_tab").on("click",function(){
          * let's say we want a small map to be displayed, so let's create it
          */
         "smallMap": {}
-      });		 
+      });
     });
   }
 });

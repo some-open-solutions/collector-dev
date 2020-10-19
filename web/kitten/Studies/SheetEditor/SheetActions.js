@@ -367,7 +367,7 @@ $("#run_btn").on("click",function(){
 				message: "Which condition would you like to run? <br><br>" + select_html + "<br><br> Online link copy the following into a browser:<br>(make sure you've pushed the latest changes and waited 5+ minutes) <input class='form-control' value='" + github_url + "' onfocus='this.select();'>",
 				buttons: {
 					local:{
-						label: "Localhost",
+						label: "Run (will save data)",
 						className: 'btn-primary',
 						callback: function(){
               window.open("RunStudy.html?platform=localhost&" +

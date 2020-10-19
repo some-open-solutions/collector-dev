@@ -11,7 +11,7 @@ window.Papa          || document.write('<script src="libraries/papaparse.4.3.6.m
 
 // Collector specific
 window.Handsontable || document.write('<link rel="stylesheet" href="Handsontables/handsontables.full.css">' +
-'<script type="text/javascript" charset="utf-8" src="Handsontables/handsontables.full.js">' + 
+'<script type="text/javascript" charset="utf-8" src="Handsontables/handsontables.full.js">' +
 '<\/script><script type="text/javascript" charset="utf-8" src="Handsontables/HandsontablesFunctions.js"><\/script>');
 
 
@@ -19,23 +19,24 @@ window.Collector || document.write('<script src="Code/Collector.js"><\/script>')
 
 
 var isolation_map = {
-  Default:{
-    DefaultSurveys:{
-      'autism_quotient.csv'     : 'file',
-      'demographics.csv'        : 'file',
-      'empathy_quotient_40.csv' : 'file',
-			"info_sheet.csv"					: 'file'
+  "..": {
+    "Default":{
+      DefaultSurveys:{
+        'autism_quotient.csv'     : 'file',
+        'demographics.csv'        : 'file',
+        'empathy_quotient_40.csv' : 'file',
+  			"info_sheet.csv"					: 'file'
+      },
+      DefaultTrialtypes:{
+        "instruct.html" : "file",
+  			"instruct_keyboard.html": "file",
+        "survey.html"   : "file",
+  			"text.html"     : "file"
+      },
+      "default_experiment.json" : "file",
+        //stuff here
     },
-    DefaultTrialtypes:{
-      "instruct.html" : "file",
-			"instruct_keyboard.html": "file",
-      "survey.html"   : "file", 
-			"text.html"     : "file"
-    },
-    "default_experiment.json" : "file",
-      //stuff here
-  },  
-
+  },
   Help:{
     "CondHelp.json" : "file",
     "GrapHelp.json" : "file",
@@ -44,7 +45,7 @@ var isolation_map = {
     "SurvHelp.json" : "file",
   },
   Studies:{
-    SheetEditor:{        
+    SheetEditor:{
       "SheetEditor.html" : "file"
     },
     TrialTypeEditor:{
@@ -90,7 +91,7 @@ function this_map(this_item){
       return item.indexOf(".") == -1;
     });
 
-    current_level_files.forEach(function(this_file){      
+    current_level_files.forEach(function(this_file){
       complete_map[this_file] = current_directory + this_file;
     });
     current_level_folders.forEach(function(this_folder){
@@ -104,7 +105,7 @@ function this_map(this_item){
   } else {
     var dots_before = "../".repeat(item_level);
   }
-  
+
   Object.keys(complete_map).forEach(function(item){
     complete_map[item] = dots_before + complete_map[item];
   });

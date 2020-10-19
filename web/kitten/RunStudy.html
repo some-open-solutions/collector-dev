@@ -19,13 +19,12 @@
 		Kitten release (2019-20) author: Dr. Anthony Haffey (team@someopen.solutions)
 -->
 <head>
-  <link rel="shortcut icon" type="image/x-icon" href="../logos/collector.ico.png" />
-	<meta charset="utf-8">
+  <meta charset="utf-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link rel="shortcut icon" type="image/x-icon" href="../logos/collector.ico.png" />
+	<link rel="shortcut icon" type="image/x-icon" href="../logos/collector.ico" />
 </head>
 
 
@@ -426,8 +425,6 @@ Study = {
                           .getElementsByClassName("post_iframe");
 
       try{
-        console.dir("these_iframes");
-        console.dir(these_iframes);
         for(var i = 0; i < these_iframes.length; i++){
           var this_iframe = these_iframes[i];
           console.dir("this_iframe.contentWindow.document.body");
@@ -877,6 +874,7 @@ function parse_sheets(){
 
   switch(Study.get_vars.platform){
     case "localhost":
+    case "preview":
       var folder = "Experiments/"+ Study.get_vars.location;
 
       var proc_sheet_content = Collector.electron.read_file(
@@ -894,7 +892,6 @@ function parse_sheets(){
       Study.activate_pipe();
 
       break;
-    case "preview":
     case "github":
       if(typeof(Study.get_vars.dropbox) !== "undefined" && Study.get_vars.dropbox){
         exp_json.parsed_proc = Collector.PapaParsed(exp_json.all_procs[proc_sheet_name]);
