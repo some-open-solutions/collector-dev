@@ -37,6 +37,23 @@ body {
 
 <script>
 
+
+parent.parent.current_zoom = 1;
+
+function zoom_in(){
+  parent.parent.current_zoom += .1;
+  document.body.style.zoom = parent.parent.current_zoom;
+  document.body.style.MozTransform = "scale(" + parent.parent.current_zoom + ")";
+}
+function zoom_out(){
+  parent.parent.current_zoom -= .1;
+  document.body.style.zoom = parent.parent.current_zoom;
+  document.body.style.MozTransform = "scale(" + parent.parent.current_zoom + ")";
+}
+
+document.getElementById("zoom_in_btn").onclick = zoom_in;
+document.getElementById("zoom_out_btn").onclick = zoom_out;
+
 /*
 var current_zoom = 1;
 
@@ -51,8 +68,8 @@ function zoom_out(){
 
 document.getElementById("zoom_in_btn").onclick = zoom_in;
 document.getElementById("zoom_out_btn").onclick = zoom_out;
-*/
 
+/*
 parent.parent.current_zoom = 1;
 
 function zoom_in(){
@@ -70,4 +87,5 @@ function zoom_out(){
 
 document.getElementById("zoom_in_btn").onclick = zoom_in;
 document.getElementById("zoom_out_btn").onclick = zoom_out;
+*/
 </script>
