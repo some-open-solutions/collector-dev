@@ -1,4 +1,8 @@
 <style>
+html,body {
+  height: 100%;
+  width: 100%;
+}
 #calibration_card{
   position: absolute;
   top:0;
@@ -30,22 +34,36 @@ body {
 
 <input type="hidden" id="calibration_zoom" name="calibration_zoom"/>
 
+
 <script>
 
+/*
+var current_zoom = 1;
+
+function zoom_in(){
+  current_zoom += .1;
+  document.body.style.transform = "scale(" + current_zoom + ")";
+}
+function zoom_out(){
+  current_zoom -= .1;
+  document.body.style.transform = "scale(" + current_zoom + ")";
+}
+
+document.getElementById("zoom_in_btn").onclick = zoom_in;
+document.getElementById("zoom_out_btn").onclick = zoom_out;
+*/
 
 parent.parent.current_zoom = 1;
 
 function zoom_in(){
   parent.parent.current_zoom += .1;
-  document.body.style.zoom = parent.parent.current_zoom;
-  document.body.style.MozTransform = "scale(" +
+  document.body.style.transform = "scale(" +
     parent.parent.current_zoom +
   ")";
 }
 function zoom_out(){
   parent.parent.current_zoom -= .1;
-  document.body.style.zoom = parent.parent.current_zoom;
-  document.body.style.MozTransform = "scale(" +
+  document.body.style.transform = "scale(" +
     parent.parent.current_zoom +
   ")";
 }

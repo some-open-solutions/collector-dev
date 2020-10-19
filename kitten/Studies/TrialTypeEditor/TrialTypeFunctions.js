@@ -245,16 +245,32 @@ function list_trialtypes(to_do_after){
     function get_default_trialtypes(list){
       if(list.length > 0){
         var item = list.pop();
-        $.get(collector_map[item],function(trial_content){
-          default_trialtypes[item.toLowerCase()
-                                 .replace(".html","")] = trial_content;
-          get_default_trialtypes(list);
-        });
+
+        switch(Collector.detect_context()){
+          case "localhost":
+            console.dir(item);
+            var trial_content = Collector.electron.read_default(
+              "Trialtypes",
+              item
+            );
+            default_trialtypes[item.toLowerCase()
+                                   .replace(".html","")] = trial_content;
+            get_default_trialtypes(list);
+            break;
+          default:
+              $.get(collector_map[item],function(trial_content){
+                default_trialtypes[item.toLowerCase()
+                                       .replace(".html","")] = trial_content;
+                get_default_trialtypes(list);
+              });
+            break;
+          }
+
       } else {
         process_returned(JSON.stringify(default_trialtypes));
       }
     }
-    var default_list = Object.keys(isolation_map["Default"]["DefaultTrialtypes"]);
+    var default_list = Object.keys(isolation_map[".."]["Default"]["DefaultTrialtypes"]);
 
     default_trialtypes = {};
     get_default_trialtypes(default_list);

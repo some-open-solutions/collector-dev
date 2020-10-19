@@ -49,7 +49,36 @@ switch(Collector.detect_context()){
         if(master_json !== ""){
           master_json = JSON.parse(master_json);
         } else {
-          master_json = default_master_json;
+          master_json = {
+            "data": {
+              "servers": {}
+            },
+            "exp_mgmt":  {
+              "any_loaded": 	 		false,
+              "authenticated":   	false,
+              "current_manager": 	"",
+              "experiment":      	"",
+              "experiments":     	{},
+              "incomp_process":  	false,
+              "pipe_position": 	 	0,
+              "pipe_direction":  	"",
+              "versions" :		 		[]
+            },
+            "github": {
+              "organisation"  : "",
+              "repository"    : "",
+              "organisations" : {}
+            },
+            "mods":    {},
+            "surveys" : {},
+            "trialtypes":  {
+              "default_trialtypes"	: {},
+              "trialtype" 			    : "",
+              "filetype"  			    : "",
+              "version"   			    : 0,
+              "user_trialtypes"		  : {}
+            }
+          }
         }
         Collector.start();
       }

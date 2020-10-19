@@ -15,13 +15,13 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
- 		
-		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)	
+
+		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
 -->
 
 <head>
-	<link rel="shortcut icon" type="image/x-icon" href="../../../logos/collector.ico.png" />
-	<meta charset="utf-8">	
+	<link rel="shortcut icon" type="image/x-icon" href="../../../logos/collector.ico" />
+	<meta charset="utf-8">
 </head>
 
 <style>
@@ -31,7 +31,7 @@
 	margin: 1px;
 }
 .preview_url:hover{
-	cursor:pointer;	
+	cursor:pointer;
 }
 #preview_text{
 	width: 380px;
@@ -50,7 +50,7 @@
 #dbx_buttons{
 	top: 10px;
 	right: 10px;
-	position: absolute;	
+	position: absolute;
 }
 #dbx_buttons td{
 	padding:1px;
@@ -64,7 +64,7 @@
 }
 #stim_list_span{
 	position:absolute;
-	top:40px;	
+	top:40px;
 	height:700px;
 	width:380px;
 	max-height:700px;
@@ -115,8 +115,8 @@
 			<option selected class='folder_option'>/stimuli</option>
 		</select>
     </div>
-    <div class="col-4">         
-		<select class="custom-select" size="20" id="stimuli_select"></select>                     
+    <div class="col-4">
+		<select class="custom-select" size="20" id="stimuli_select"></select>
     </div>
     <div class="col-4" id="preview_div"></div>
 </div>
@@ -125,10 +125,10 @@
 <div id="pre-auth-section" style="display:none">
 	<a href="" id="authlink" class="button">Authenticate Dropbox</a>
 </div>
-<div id="authed-section" style="display:none">	
+<div id="authed-section" style="display:none">
 	<span id="progress_bar_span"></span>
-	
-	
+
+
 	<span>
 		<span id="stim_list_dropdown"></span>
 		<span id="stim_list_span"></span>
@@ -137,7 +137,7 @@
 </div>
 
 <script> // dropbox startup
- 
+
 (function(window){
 	window.utils = {
 		parseQueryString: function(str) {
@@ -192,23 +192,23 @@ function isAuthenticated() {
 function showPageSection(elementId) {
 	document.getElementById(elementId).style.display = 'block';
 }
-if (isAuthenticated()) {	
+if (isAuthenticated()) {
   showPageSection('authed-section');
   // Create an instance of Dropbox with the access token and use it to
   // fetch and render the files in the users root directory.
-  var dbx = new Dropbox({ accessToken: getAccessTokenFromUrl() });  
+  var dbx = new Dropbox({ accessToken: getAccessTokenFromUrl() });
 } else {
-  showPageSection('pre-auth-section');  
+  showPageSection('pre-auth-section');
   // Set the login anchors href using dbx.getAuthenticationUrl()
-  
+
   var dbx = new Dropbox({ clientId: CLIENT_ID });
   var authUrl = dbx.getAuthenticationUrl(document.URL);
   document.getElementById('authlink').href = authUrl;
   $("#authlink")[0].click();
 }
- 
 
-</script>	
+
+</script>
 
 <script>
 
@@ -217,21 +217,21 @@ file_structure = {
 	folder	: [],
 	total_files : 0,
 };
- 
+
 $("#apply_filter_btn").on("click",function(){
 	var filter_value = $("#filter_input").val();
 	filter_value = filter_value.split("*");
-	
+
 	if($("#filter_input").val() == ""){
 		$(".file_option").show();
 		file_structure.filtered_files = file_structure.files;
 	} else {
 		file_structure.filtered_files = file_structure.files.filter(file => file.name.indexOf(filter_value) !== -1);
-		
-		$(".file_option").hide();		 
+
+		$(".file_option").hide();
 		file_structure.filtered_files.forEach(function(file){
 			$('#stimuli_select option').filter(function () { return $(this).html() == file.name }).show();
-		});		
+		});
 	}
 });
 
@@ -242,30 +242,30 @@ $("#spreadsheet_btn").on("click",function(){
 	bootbox.prompt("You will be downloading a list of the items based on your filter. If you want to download ALL the items, then please clear the filter",function(filename){
 		if(filename){
 			filename = filename.replace(".csv","");
-			filename = filename + ".csv";		
+			filename = filename + ".csv";
 			console.dir(file_structure.filtered_files);
-			var data = Papa.unparse(file_structure.filtered_files);		
+			var data = Papa.unparse(file_structure.filtered_files);
 			var blob = new Blob([data], {type: 'text/csv'});
 			if(window.navigator.msSaveOrOpenBlob) {
 				window.navigator.msSaveBlob(blob, filename);
 			}	else {
 				var elem = window.document.createElement('a');
 				elem.href = window.URL.createObjectURL(blob);
-				elem.download = filename;        
+				elem.download = filename;
 				document.body.appendChild(elem);
-				elem.click();        
+				elem.click();
 				document.body.removeChild(elem);
 			}
 		}
 	});
 });
 
-function recursive_folder_browsing(folder_path){	
+function recursive_folder_browsing(folder_path){
 	dbx.filesListFolder({path:folder_path, recursive:false})
 		.then(function(returned_data){
-			if(returned_data.has_more == true){                           
+			if(returned_data.has_more == true){
 					bootbox.alert("The folder "+folder_path+" has more than 2000 items in it. Please reduce the number of items in this folder. One way to do this is subfolders for the items in this folder.");
-			} else {	
+			} else {
 				new_files   = returned_data.entries.filter(entry => entry[".tag"] == "file");
 				new_folders = returned_data.entries.filter(entry => entry[".tag"] == "folder");
 				file_structure.total_files += new_files.length;
@@ -277,7 +277,7 @@ function recursive_folder_browsing(folder_path){
 								file_structure.files.push(new_file);
 								$("#progress_span").html(file_structure.files.length + " out of "+ file_structure.total_files);
 								if(file_structure.files.length == file_structure.total_files){
-									
+
 									update_super_spreadsheet();
 								}
 							})
@@ -285,21 +285,21 @@ function recursive_folder_browsing(folder_path){
 								console.dir("error");
 								console.dir(error);
 							});
-					} else {						
+					} else {
 						$("#progress_span").html(file_structure.files.length + " out of "+ file_structure.total_files);
 					}
 				});
 				//file_structure.files    = file_structure.files.concat(new_files);
                 file_structure.folder   = file_structure.folder.concat(new_folders);
-				
-                new_files.forEach(function(file){					
-                    $("#stimuli_select").append("<option class='file_option' value='"+file.path_lower+"' onclick='preview_stim(this)'>"+file.name+"</option>");					
+
+                new_files.forEach(function(file){
+                    $("#stimuli_select").append("<option class='file_option' value='"+file.path_lower+"' onclick='preview_stim(this)'>"+file.name+"</option>");
                 });
 				new_folders.forEach(function(folder){
 					$("#folders_select").append("<option class='folder_option' value='"+folder.path_lower+"'>"+folder.path_lower+"</option>");
 					recursive_folder_browsing(folder.path_lower);
 				});
-            }            
+            }
         });
 }
 
@@ -310,7 +310,7 @@ function update_super_spreadsheet(){
 		mode : "overwrite",
 		contents: stim_csv
 	});
-	
+
 }
 
 dbx.sharingCreateSharedLink({path:"/stimuli/stimuli_locations.csv"})
@@ -319,12 +319,12 @@ dbx.sharingCreateSharedLink({path:"/stimuli/stimuli_locations.csv"})
 		$.get(returned_data.url.replace("www.","dl."),function(this_data){
 			console.dir("this_data");
 			file_structure.files = Papa.parse(this_data,{header:true}).data;
-			recursive_folder_browsing("/stimuli");					
+			recursive_folder_browsing("/stimuli");
 		});
 	})
 	.catch(function(error){
 		console.dir(error);
-		recursive_folder_browsing("/stimuli");		
+		recursive_folder_browsing("/stimuli");
 	});
 
 
@@ -336,7 +336,7 @@ $("#select_none_btn").on("click",function(){
 });
 
 filetype_arrays={
-	picture:['.png','.jpg','.bmp'],	
+	picture:['.png','.jpg','.bmp'],
 	text:['.txt'],
 }
 
@@ -349,14 +349,14 @@ function preview_stim(this_stim){
 			console.dir(returned_data);
 			var this_filetype = returned_data.path.substring(returned_data.path.indexOf("."));
 			if(filetype_arrays.picture.indexOf(this_filetype) !== -1){
-				$("#preview_div").html("<img id='preview_img' src = '"+returned_data.url.replace("www.","dl.")+"'>");	
+				$("#preview_div").html("<img id='preview_img' src = '"+returned_data.url.replace("www.","dl.")+"'>");
 			}
 		})
 		.catch(function(error){
 			console.dir("error");
 			console.dir(error);
 		});
-		
+
 };
 
 </script>

@@ -35,13 +35,13 @@ if(typeof(Trial) !== "undefined"){
     parent.parent.Study.go_to(new_trial_no);
   }
   Trial.get = function(this_name){
-    return  parent.parent.exp_json.storage[this_name];
+    return  parent.parent.exp_json.study_vars[this_name];
   }
   Trial.set = function(this_name,this_content){
-    if(typeof(parent.parent.exp_json.storage) == "undefined"){
-      parent.parent.exp_json.storage = {};
+    if(typeof(parent.parent.exp_json.study_vars) == "undefined"){
+      parent.parent.exp_json.study_vars = {};
     }
-    parent.parent.exp_json.storage[this_name] = this_content;
+    parent.parent.exp_json.study_vars[this_name] = this_content;
   }
 
   /*

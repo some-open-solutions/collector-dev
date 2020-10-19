@@ -1,4 +1,4 @@
-<link rel="shortcut icon" type="image/x-icon" href="logos/collector.ico.png" />
+<link rel="shortcut icon" type="image/x-icon" href="logos/collector.ico" />
 <script>
 	window.jQuery || document.write('<script src="libraries/jquery-3.3.1.min.js"><\/script>');
 </script>
@@ -16,7 +16,7 @@ If you think there are security issues that need to be addressed, please raise a
 <script>
 $.get("attackVectors.csv",function(result){
   table_data = (Papa.parse(result).data);
-  this_table = '<table class="table">' + 
+  this_table = '<table class="table">' +
                   '<thead>' +
                   '  <tr>' +
                   '    <th scope="col">Description</th>' +
@@ -24,7 +24,7 @@ $.get("attackVectors.csv",function(result){
                   '    <th scope="col">Impact</th>' +
                   '    <th scope="col">Response</th>' +
                   '    <th scope="col">How to prevent</th>' +
-                  '    <th scope="col">Implemented?</th>' + 
+                  '    <th scope="col">Implemented?</th>' +
                   '  </tr>' +
                   '</thead>'+
                   '<tbody>';
@@ -36,5 +36,5 @@ $.get("attackVectors.csv",function(result){
     this_table += '</tr>';
   }
   $("#attack_vectors_table").html(this_table);
-});  
+});
 </script>
