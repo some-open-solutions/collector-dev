@@ -24,7 +24,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link rel="shortcut icon" type="image/x-icon" href="../logos/collector.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="../logos/kitten.png"/>
 </head>
 
 
@@ -429,13 +429,12 @@ Study = {
                           .getElementsByClassName("post_iframe");
 
 
-      /*
       $("#trial" + exp_json.trial_no)
         .contents()
         .find(".post_iframe")
         .contents()
-        .find("body").css("zoom",parent.parent.current_zoom);
-      */
+        .find("body").css("transform-origin","top");
+
 
 
       try{
@@ -450,14 +449,23 @@ Study = {
           this_iframe_style.MozTransform = "scale(" +
             parent.parent.current_zoom +
           ")";
-          this_iframe_style.width  = "100%";
-          this_iframe_style.height = "100%";
+
+          if(isFirefox){
+            this_iframe_style.width  = window.innerWidth / parent.parent.current_zoom
+            this_iframe_style.height = window.innerHeight / parent.parent.current_zoom
+            this_iframe_style.transformOrigin = "left top"
+          } else {
+            this_iframe_style.width  = "100%";
+            this_iframe_style.height = "100%";            
+          }
+
+
         }
 
       } catch(error){
         //lazy fix for now
       }
-      
+
 			$("#trial"+exp_json.trial_no).css("display","inline-block");
 			$("#trial"+exp_json.trial_no).css("width", "100%");
 			$("#trial"+exp_json.trial_no).css("height", "100%");
