@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
- 
+
 		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
 */
 
@@ -24,7 +24,7 @@ var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.user
 // Firefox 1.0+
 var isFirefox = typeof InstallTrigger !== 'undefined';
 
-// Safari 3.0+ "[object HTMLElementConstructor]" 
+// Safari 3.0+ "[object HTMLElementConstructor]"
 var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
 
 // Internet Explorer 6-11
@@ -42,10 +42,14 @@ var isBlink = (isChrome || isOpera) && !!window.CSS;
 
 if(isIE){
   alert("This website does not work reliably on Internet Explorer - Please use another browser, preferably Google Chrome.");
-} 
+}
 
-participant_browser = isOpera   ? "opera" 
-                    : isFirefox ? "firefox" 
+if(isFirefox){
+  //alert("The zooming works m")
+}
+
+participant_browser = isOpera   ? "opera"
+                    : isFirefox ? "firefox"
                     : isSafari  ? "safari"
                     : isIE      ? "internet_explorer"
                     : isEdge    ? "edge"

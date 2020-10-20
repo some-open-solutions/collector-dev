@@ -28,7 +28,7 @@ Collector = {
 		}
 		return this_csv;
 	},
-	custom_alert(msg,duration) {
+	custom_alert: function(msg,duration) {
 		function create_alerts_container() {
 			if (typeof(alerts_ready) !== "undefined" && alerts_ready) return;
 
