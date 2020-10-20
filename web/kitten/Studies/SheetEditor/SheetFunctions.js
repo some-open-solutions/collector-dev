@@ -180,7 +180,7 @@ function new_experiment(experiment){
 	} else {
 
     //create it first in dropbox, THEN update table with location
-		master_json.exp_mgmt.experiments[experiment] = new_experiment_data;
+		master_json.exp_mgmt.experiments[experiment] = default_experiment;
 
 		var this_path = "/Experiments/" + experiment + ".json";
 
@@ -194,7 +194,7 @@ function new_experiment(experiment){
 			$("#save_btn").click();
     }
 		if(dropbox_check()){
-      dbx_obj.new_upload({path:this_path,contents:JSON.stringify(new_experiment_data)},function(result){
+      dbx_obj.new_upload({path:this_path,contents:JSON.stringify(default_experiment)},function(result){
         dbx.sharingCreateSharedLink({path:this_path})
           .then(function(returned_link){
             switch(Collector.detect_context()){

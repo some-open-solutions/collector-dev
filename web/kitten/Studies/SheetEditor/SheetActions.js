@@ -101,7 +101,7 @@ $("#new_experiment_button").on("click",function(){
 });
 
 $("#new_proc_button").on("click",function(){
-  var proc_template = new_experiment_data.all_procs["procedure_1.csv"];
+  var proc_template = default_experiment.all_procs["procedure_1.csv"];
 	bootbox.prompt("What would you like the name of the new procedure sheet to be?",function(new_proc_name){
 		var experiment = $("#experiment_list").val();
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
@@ -122,7 +122,7 @@ $("#new_proc_button").on("click",function(){
 });
 
 $("#new_stim_button").on("click",function(){
-	var stim_template = new_experiment_data.all_stims["stimuli_1.csv"];
+	var stim_template = default_experiment.all_stims["stimuli_1.csv"];
 	bootbox.prompt("What would you like the name of the new <b>Stimuli</b> sheet to be?",function(new_sheet_name){
 		var experiment = $("#experiment_list").val();
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
