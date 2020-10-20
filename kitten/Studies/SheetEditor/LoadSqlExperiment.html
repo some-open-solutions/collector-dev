@@ -17,19 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
-*/
 -->
 
-<script>
-
-// Load template default experiment
-///////////////////////////////////
-var new_experiment_data;
-$.get(collector_map["default_experiment.json"],function(new_experiment_json){
- new_experiment_data = new_experiment_json;
-});
-
-</script>
+<script src="Studies/SheetEditor/DefaultExperiment.js"></script>
 
 <div class="modal" tabindex="-1" role="dialog" id="upload_experiment_modal">
 
@@ -118,9 +108,9 @@ $(document).keydown(function (e) {
 $(window).bind('keydown', function(event) {
 	if(event.originalEvent.code == "Escape"){
 		if($("#cell_editor_div").is(":visible")){
-			this_sheet.setDataAtCell(this_selection.start.row, 
+			this_sheet.setDataAtCell(this_selection.start.row,
 															 this_selection.start.col,
-															 cell_editor.getValue());		
+															 cell_editor.getValue());
 		}
 		$("#cell_editor_div").fadeOut();
 	}
@@ -129,7 +119,7 @@ $(window).bind('keydown', function(event) {
       case 's':
         event.preventDefault();
           $("#save_btn").click();
-        break;			
+        break;
     }
   }
 });

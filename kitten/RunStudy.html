@@ -86,7 +86,7 @@ $("#welcome_html").load("Welcome.html");
 		<div id="stim_listing" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
 	</div>
 	<div id="beginning_checks" style="display:none">
-		External keyboards generally do not work. Please do not try to use an external keyboard.<br><br>
+    External keyboards generally do not work. Please do not try to use an external keyboard.<br><br>
 		Sometimes it may take a page a while to load. Please wait, and <b>DO NOT REFRESH THE PAGE</b>.<br><br>
 		Please click "Understood" to show that you have understood these instructions. <br><br>
 		<input type="button" value="Understood" id="proc_button">
@@ -146,30 +146,34 @@ Study = {
 	*/
   get_vars        : {},
   resume          : false,
-  pipeline        : ["detect_exe",
-                     "get_gets",
-                     "start_restart",
-                     "start_study",
-                     "select_condition",
-                     "full_screen",
-                     "create_exp_json_variables",
-                     "parse_sheets",
-                     "parse_current_proc",
-                     "clean_trialtypes",
-                     "insert_start",
-                     "insert_end_checks",
-                     "shuffle_start_exp",
-                     "buffer_trials",
-                     "process_welcome"],
+  pipeline        : [
+   "detect_exe",
+   "get_gets",
+   "start_restart",
+   "start_study",
+   "select_condition",
+   "full_screen",
+   "create_exp_json_variables",
+   "parse_sheets",
+   "parse_current_proc",
+   "clean_trialtypes",
+   "insert_start",
+   "insert_end_checks",
+   "shuffle_start_exp",
+   "buffer_trials",
+   "process_welcome"
+  ],
   // start functions are the functions required when NOT resuming
-  start_functions : [ "detect_exe",
-                      "create_exp_json_variables",
-                      "parse_sheets",
-                      "parse_current_proc",
-                      "clean_trialtypes",
-                      "insert_start",
-                      "insert_end_checks",
-                      "shuffle_start_exp"],
+  start_functions : [
+    "detect_exe",
+    "create_exp_json_variables",
+    "parse_sheets",
+    "parse_current_proc",
+    "clean_trialtypes",
+    "insert_start",
+    "insert_end_checks",
+    "shuffle_start_exp"
+  ],
   activate_pipe   : function(){
     var this_function = Study.pipeline.shift();
     if(Study.resume == false | Study.start_functions.indexOf(this_function) == -1){
@@ -435,13 +439,8 @@ Study = {
 
 
       try{
-        console.dir("these_iframes");
-        console.dir(these_iframes);
         for(var i = 0; i < these_iframes.length; i++){
           var this_iframe = these_iframes[i];
-          console.dir("this_iframe.contentWindow.document.body");
-          console.dir(this_iframe.contentWindow.document);
-          console.dir(this_iframe.contentWindow.document.body);
           this_iframe_style = this_iframe
             .contentWindow
             .document
@@ -458,13 +457,7 @@ Study = {
       } catch(error){
         //lazy fix for now
       }
-
-
-
-
-
-
-
+      
 			$("#trial"+exp_json.trial_no).css("display","inline-block");
 			$("#trial"+exp_json.trial_no).css("width", "100%");
 			$("#trial"+exp_json.trial_no).css("height", "100%");
