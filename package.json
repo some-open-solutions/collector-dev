@@ -1,6 +1,6 @@
 {
   "name": "Collector",
-  "version": "3.10.3",
+  "version": "3.10.6",
   "description": "An Open-Source package for online research",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/some-open-solutions/collector",
   "keywords": [
     "Online Research",
     "quick",
@@ -61,7 +61,7 @@
       "allowToChangeInstallationDirectory": true,
       "oneClick": false,
       "perMachine": false,
-      "include": "build/installer.nsh"
+      "allowElevation": false
     },
     "win": {
       "target": "nsis",
@@ -72,6 +72,7 @@
     "@octokit/auth": "^2.0.0",
     "@octokit/auth-token": "^2.4.2",
     "@octokit/rest": "^17.11.2",
+    "command-exists": "^1.2.9",
     "download-git-repo": "^3.0.2",
     "electron-context-menu": "^2.3.0",
     "fs": "0.0.1-security",

@@ -1,0 +1,180 @@
+<nav class="navbar navbar-primary bg-white fixed-top fixed-top-2">
+  <table style = "max-width:80%">
+    <tr>
+      <td>
+        <button class='btn btn-primary' type='button' id="new_series_button" title="This will create a new series of tasks/studies">New Series</button>
+      </td>
+      <td>
+        <select id='series_select' class="form-control" previousValue="">
+          <option disabled selected>Please select a series</option>
+        </select>
+      </td>
+      <td>
+        <button id='save_series_btn'   class='btn btn-primary'>Save</button>
+        <button id='rename_series_btn' class='btn btn-primary'>Rename</button>
+        <button id='delete_series_btn' class='btn btn-primary'>Delete</button>
+        <button id='run_series_btn'    class='btn btn-primary'>Run</button>
+      </td>
+    </tr>
+  </table>
+</nav>
+
+
+<div style="top:100px; position: absolute; left:20px">
+  <div id="series_div"></div>
+  <table>
+    <tr>
+      <td>
+        <div id="add_study_series_select_div"></div>
+      </td>
+      <td>
+        <button class="btn btn-primary" id="add_study_series_btn">Add Item</button>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<script>
+function list_series_studies(){
+  var series_div_html = "";
+  var studies_list = master_json.series_mgmt.series[master_json.series_mgmt.current].order;
+  studies_list.forEach(function(study_item){
+    series_div_html += "<h3 class='text-primary'>" +
+      study_item +
+      " <button class='btn btn-primary remove_btn' value='" + study_item + "'>Remove</button>" +
+    "</h3>";
+  });
+  $("#series_div").html(series_div_html);
+
+  $(".remove_btn").on("click",function(){
+    var remove_value = this.value;
+    var new_order = [];
+    master_json
+      .series_mgmt
+      .series[master_json.series_mgmt.current].order.forEach(function(order_item){
+        if(order_item !== remove_value){
+          new_order.push(order_item);
+        }
+      });
+      master_json
+        .series_mgmt
+        .series[master_json.series_mgmt.current].order = new_order;
+    delete(
+      master_json
+       .series_mgmt
+       .series[master_json.series_mgmt.current]
+       .items[this.value]
+     );
+     list_series_studies();
+  });
+}
+
+
+
+$("#add_study_series_btn").on("click", function(){
+  master_json.series_mgmt.series[master_json.series_mgmt.current].order.push(
+    $("#add_study_series_select").val()
+  );
+  var conditions_array = [];
+  var conditions_list = master_json.exp_mgmt.experiments[$("#add_study_series_select").val()].conditions.map(row => row.name);
+  conditions_list.forEach(function(item){
+    conditions_array.push({
+      text: item,
+      value: item
+    });
+  });
+  bootbox.prompt({
+    title: "What condition do you want to use?",
+    inputType: "select",
+    inputOptions: conditions_array,
+    callback: function(this_condition){
+      master_json
+        .series_mgmt
+        .series[master_json.series_mgmt.current]
+        .items[$("#add_study_series_select").val()] = {
+          "name" : this_condition
+        }
+      list_series_studies();
+    }
+  });
+});
+
+$("#new_series_button").on("click",function(){
+  bootbox.prompt("What would you like to call this new series?", function(new_series){
+    if(new_series){
+      if(typeof(master_json.series) == "undefined"){
+        master_json.series_mgmt = {
+          current : "",
+          series  : {}
+        };
+      }
+      if(typeof(master_json.series_mgmt[new_series]) !== "undefined"){
+        bootbox.alert("The series <b>" + new_series + "</b> already exists. Please choose a different name");
+      } else {
+        master_json.series_mgmt.series[new_series] = {
+          "order" : [],
+          "items" : {}
+        };
+        $("#series_select").append($('<option>', {
+            text: new_series
+        }));
+        $("#series_select").val(new_series);
+        master_json.series_mgmt.current = new_series;
+      }
+    }
+  });
+});
+
+$("#run_series_btn").on("click", function(){
+  var series = $("#series_select").val();
+
+  var series_url =  "https://" +
+                      github_json.organization +
+                      ".github.io/"                   +
+                      github_json.repository   + "/" +
+                      "kitten/Series.html"            + "?" +
+                      "series="                       +
+                      master_json.series_mgmt.current + "&" +
+                      "platform=online";
+
+  bootbox.dialog({
+    "title" : "How would you like run this series?",
+    "message": "Copy the below link for your participants (remember to push the changes to your repository and give it 5 minutes for the changes to come through)<input class='form-control' id='series_url' value='" + series_url + "'>",
+    "buttons": {
+      "run": {
+        callback:function(){
+          var this_url = window.location.href.split("/" + Collector.version)[0] +
+                                                    "/" + Collector.version + "/";
+          window.open(
+            this_url  	+ "Series.html?" +
+              "series="   + master_json.series_mgmt.current + "&" +
+              "platform=localhost",
+            "_blank"
+          );
+        }
+      },
+      "cancel": {
+
+      }
+    }
+  });
+});
+
+$("#save_series_btn").on("click", function(){
+  switch(Collector.detect_context()){
+    case "localhost":
+      Collector.electron.fs.write_file(
+        "Series",
+        $("#series_select").val()
+                           .toLowerCase()
+                           .replace(".json","") + ".json",
+        JSON.stringify(
+          master_json.series_mgmt.series[
+            master_json.series_mgmt.current
+          ]
+        )
+      )
+      break;
+  };
+});
+</script>

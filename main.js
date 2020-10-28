@@ -53,8 +53,8 @@ app.on('activate', function () {
 /*
 * Load Modules
 */
-require("./ElectronModules/FileManagement.js")
-require("./ElectronModules/Github.js")
+require("./ElectronModules/fs.js")
+require("./ElectronModules/git.js")
 
 
 /*

@@ -6,7 +6,7 @@ const ipc  = require('electron').ipcMain;
 */
 
 
-ipc.on('delete_experiment', (event,args) => {
+ipc.on('fs_delete_experiment', (event,args) => {
 
   /*
   * Security checks - should probably have more
@@ -36,7 +36,7 @@ ipc.on('delete_experiment', (event,args) => {
   }
 });
 
-ipc.on('delete_survey', (event,args) => {
+ipc.on('fs_delete_survey', (event,args) => {
 
   /*
   * Security checks - should probably have more
@@ -58,7 +58,7 @@ ipc.on('delete_survey', (event,args) => {
   }
 });
 
-ipc.on('delete_trialtype', (event,args) => {
+ipc.on('fs_delete_trialtype', (event,args) => {
 
   /*
   * Security checks - should probably have more
@@ -80,7 +80,7 @@ ipc.on('delete_trialtype', (event,args) => {
   }
 });
 
-ipc.on('list_trialtypes', (event,args) => {
+ipc.on('fs_list_trialtypes', (event,args) => {
   /*
   * list all files in "Trialtypes" folder
   */
@@ -89,7 +89,7 @@ ipc.on('list_trialtypes', (event,args) => {
   );
 });
 
-ipc.on('read_default', (event,args) => {
+ipc.on('fs_read_default', (event,args) => {
   /*
   * Security checks - should probably have more
   */
@@ -112,8 +112,7 @@ ipc.on('read_default', (event,args) => {
   }
 });
 
-
-ipc.on('read_file', (event,args) => {
+ipc.on('fs_read_file', (event,args) => {
   /*
   * Security checks - should probably have more
   */
@@ -161,7 +160,48 @@ ipc.on('read_file', (event,args) => {
   }
 });
 
-ipc.on('write_experiment', (event,args) => {
+ipc.on('fs_write_data', (event,args) => {
+
+  /*
+  * Security checks - should probably have more
+  */
+
+  if(args["experiment_folder"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else if(args["this_file"].indexOf("../") !== -1){
+    var content = "This request could be insecure, and was blocked";
+  } else {
+    try{
+
+      /*
+      * create experiment folder if it doesn't exist yet
+      */
+
+      if(!fs.existsSync(
+          "User/Data/" + args["experiment_folder"]
+        )
+      ){
+        fs.mkdirSync(
+          "User/Data/" + args["experiment_folder"]
+        )
+      }
+      var content = fs.writeFileSync(
+        "User/Data/" + args["experiment_folder"] + "/" +
+        args["this_file"]   ,
+        args["file_content"],
+        'utf8'
+      );
+      event.returnValue = "success";
+    } catch(error){
+      //to trigger an attempt to load a trialtype from the master_json
+      event.returnValue = error;
+    }
+
+  }
+
+});
+
+ipc.on('fs_write_experiment', (event,args) => {
 
   /*
   * Security checks - probably need more
@@ -231,49 +271,7 @@ ipc.on('write_experiment', (event,args) => {
   }
 });
 
-
-ipc.on('write_data', (event,args) => {
-
-  /*
-  * Security checks - should probably have more
-  */
-
-  if(args["experiment_folder"].indexOf("../") !== -1){
-    var content = "This request could be insecure, and was blocked";
-  } else if(args["this_file"].indexOf("../") !== -1){
-    var content = "This request could be insecure, and was blocked";
-  } else {
-    try{
-
-      /*
-      * create experiment folder if it doesn't exist yet
-      */
-
-      if(!fs.existsSync(
-          "User/Data/" + args["experiment_folder"]
-        )
-      ){
-        fs.mkdirSync(
-          "User/Data/" + args["experiment_folder"]
-        )
-      }
-      var content = fs.writeFileSync(
-        "User/Data/" + args["experiment_folder"] + "/" +
-        args["this_file"]   ,
-        args["file_content"],
-        'utf8'
-      );
-      event.returnValue = "success";
-    } catch(error){
-      //to trigger an attempt to load a trialtype from the master_json
-      event.returnValue = error;
-    }
-
-  }
-
-});
-
-ipc.on('write_file', (event,args) => {
+ipc.on('fs_write_file', (event,args) => {
 
   /*
   * Security checks - should probably have more

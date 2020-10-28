@@ -112,14 +112,20 @@ function list_studies(){
   try{
     name_list = Object.keys(master_json.exp_mgmt.experiments);
     function update_exp_list(){
+      var series_select_html = "<select id='add_study_series_select'  class='custom-select'><option hidden disabled selected>Select a study</option>";
       var select_html = "<select id='experiment_list'  class='custom-select'><option hidden disabled selected>Select a study</option>";
       name_list.sort(function(a,b){
         return a.toLowerCase().localeCompare(b.toLowerCase());
       });
       name_list.forEach(function(item_name){
+        series_select_html += "<option>" + item_name + "</option>";
         select_html += "<option>" + item_name + "</option>";
       });
+      series_select_html += "</select>";
       select_html += "</select>";
+
+      $("#add_study_series_select_div").html(series_select_html);
+
       $("#experiments").html(select_html);
       $("#experiment_list").on("change",function(){
         if(typeof(first_load) == "undefined" ||
@@ -333,7 +339,7 @@ function update_handsontables(){
 
   switch(Collector.detect_context()){
       case "localhost":
-				var conditions_sheet = Collector.electron.read_file(
+				var conditions_sheet = Collector.electron.fs.read_file(
           "Experiments/"  + $("#experiment_list").val(),
 				  "conditions.csv"
         )
@@ -353,7 +359,7 @@ function update_handsontables(){
 											 "cond_array",
 										   conditions_sheet);
 
-	    var stim_sheet = Collector.electron.read_file(
+	    var stim_sheet = Collector.electron.fs.read_file(
         "Experiments/" + $("#experiment_list").val(),
 				stim_file
       );
@@ -374,7 +380,7 @@ function update_handsontables(){
 				 stim_sheet
        );
 
-       var proc_sheet = Collector.electron.read_file(
+       var proc_sheet = Collector.electron.fs.read_file(
          "Experiments/"  + $("#experiment_list").val(),
        	 proc_file
        );

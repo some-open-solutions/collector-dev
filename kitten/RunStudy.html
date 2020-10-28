@@ -288,7 +288,7 @@ Study = {
 
     switch(Study.get_vars.platform){
       case "localhost":
-        var data_response = Collector.electron.write_data(
+        var data_response = Collector.electron.fs.write_data(
           Study.get_vars.location,
             $("#participant_code").val() + "_" +
             $("#completion_code").val()  + ".csv",
@@ -456,7 +456,7 @@ Study = {
             this_iframe_style.transformOrigin = "left top"
           } else {
             this_iframe_style.width  = "100%";
-            this_iframe_style.height = "100%";            
+            this_iframe_style.height = "100%";
           }
 
 
@@ -892,12 +892,12 @@ function parse_sheets(){
     case "preview":
       var folder = "Experiments/"+ Study.get_vars.location;
 
-      var proc_sheet_content = Collector.electron.read_file(
+      var proc_sheet_content = Collector.electron.fs.read_file(
         folder,
         proc_sheet_name
       );
 
-      var stim_sheet_content = Collector.electron.read_file(
+      var stim_sheet_content = Collector.electron.fs.read_file(
         folder,
         stim_sheet_name
       );
@@ -1431,7 +1431,7 @@ function start_study(){
 			case "localhost":
       case "preview":
         electron_wait = setInterval(function(){
-          if(typeof(Collector.electron.read_file) !== "undefined"){
+          if(typeof(Collector.electron.fs.read_file) !== "undefined"){
             clearInterval(electron_wait);
             exp_json = JSON.parse(
               Collector
@@ -1455,10 +1455,27 @@ function start_study(){
 						Study.activate_pipe();
 					});
 				} else {
-					$.get("../User/Experiments/" + Study.get_vars.location + ".json",function(result){
-						exp_json = result;
-						Study.activate_pipe();
-					});
+          /*
+          * wrap into function that will automatically keep trying until you have succesfully loaded the experiment!
+          */
+          function recursive_load_experiment(random_code){
+            if(typeof(random_code) == "undefined"){
+              random_code = "";
+            }
+            $.get("../User/Experiments/" + Study.get_vars.location + ".json?randomcode=" + random_code,function(result){
+              exp_json = result;
+              Study.activate_pipe();
+            })
+            .catch(function(error){
+              bootbox.confirm("It looks like the experiment you're trying to load isn't there (yet) - click OK if you'd like to try to load the experiment again (clicking OK can be quicker than constantly refreshing the page)?", function(result){
+                if(result){
+                  recursive_load_experiment(Collector.makeid(5));
+                }
+              });
+              console.dir(error);
+            });
+          }
+          recursive_load_experiment();
 				}
 				break;
 			default:

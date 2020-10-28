@@ -90,7 +90,7 @@ trialtypes_obj = {
         cleaned_trialtype = trialtype.toLowerCase()
                                      .replace(".html","") +
                                      ".html";
-				trialtype_content = Collector.electron.read_file(
+				trialtype_content = Collector.electron.fs.read_file(
           "Trialtypes",
 					cleaned_trialtype
         )
@@ -149,7 +149,7 @@ trialtypes_obj = {
 		},
 		"filesUpload");
 		if(typeof(Collector.electron) !== "undefined"){
-			var write_response = Collector.electron.write_file(
+			var write_response = Collector.electron.fs.write_file(
         "Trialtypes",
 				name
 					.toLowerCase()
@@ -185,7 +185,7 @@ trialtypes_obj = {
 function list_trialtypes(to_do_after){
 	try{
 		if(typeof(Collector.electron) !== "undefined"){
-      var trialtypes = Collector.electron.list_trialtypes();
+      var trialtypes = Collector.electron.fs.list_trialtypes();
           trialtypes = JSON.parse(trialtypes);
           trialtypes = trialtypes.map(item => item.replaceAll(".html",""));
           trialtypes.forEach(function(trialtype){
@@ -249,7 +249,7 @@ function list_trialtypes(to_do_after){
         switch(Collector.detect_context()){
           case "localhost":
             console.dir(item);
-            var trial_content = Collector.electron.read_default(
+            var trial_content = Collector.electron.fs.read_default(
               "Trialtypes",
               item
             );
