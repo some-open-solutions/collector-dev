@@ -69,7 +69,7 @@ function load_default_surveys(){
   switch(Collector.detect_context()){
     case "localhost":
       default_survey_files.forEach(function(default_survey){
-        survey_content = Collector.electron.read_default(
+        survey_content = Collector.electron.fs.read_default(
           "Surveys",
           default_survey
         );
@@ -190,11 +190,11 @@ function create_survey_HoT(this_survey){
 				"---------": {
 					name: '---------'
 				},
-				"row_below": {
-					name: 'Insert row below'
-				},
 				"row_above": {
 					name: 'Insert row above'
+				},
+        "row_below": {
+					name: 'Insert row below'
 				},
 				"col_left": {
 					name: 'Insert column left'
@@ -382,7 +382,7 @@ function preview_survey(this_survey){
 
   switch(Collector.detect_context()){
     case "localhost":
-      survey_template = Collector.electron.read_default(
+      survey_template = Collector.electron.fs.read_default(
         "Trialtypes",
         "survey.html"
       );
@@ -538,14 +538,14 @@ $("#rename_survey_btn").on("click",function(){
         } else {
           switch(Collector.detect_context()){
       			case "localhost":
-              var write_response = Collector.electron.write_file(
+              var write_response = Collector.electron.fs.write_file(
                 "Surveys",
                 new_survey_name,
                 master_json.surveys.user_surveys[old_survey_name]
               )
               if(write_response == "success"){
                 master_json.surveys.user_surveys[new_survey_name] = master_json.surveys.user_surveys[old_survey_name];
-                var delete_response = Collector.electron.delete_survey(old_survey_name);
+                var delete_response = Collector.electron.fs.delete_survey(old_survey_name);
                 if(delete_response !== "success"){
                   bootbox.alert(delete_response);
                 }
@@ -623,7 +623,7 @@ survey_obj = {
 		if(typeof(master_json.surveys.default_surveys[survey_name]) == "undefined"){
       switch(Collector.detect_context()){
 				case "localhost":
-          var write_response = Collector.electron.write_file(
+          var write_response = Collector.electron.fs.write_file(
               "Surveys",
               survey_name.toLowerCase()
                          .replace(".csv","") + ".csv",

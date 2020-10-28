@@ -339,28 +339,28 @@ function bind_publish_btn(){
 				case "localhost":
 
           // i.e. the experiment is on github
-					if(typeof(master_json.github) == "undefined"){
-						master_json.github = {};
+					if(typeof(github_json) == "undefined"){
+						github_json = {};
 					}
-					if(typeof(master_json.github.organisation) == "undefined"){
+					if(typeof(github_json.organization) == "undefined"){
             alert("ho");
-						master_json.github.organisation = '';
+						github_json.organization = '';
 					}
-					if(typeof(master_json.github.repository) == "undefined"){
-						master_json.github.repository = '';
+					if(typeof(github_json.repository) == "undefined"){
+						github_json.repository = '';
 					}
-					if(typeof(master_json.github.username) == "undefined"){
-						master_json.github.username = '';
+					if(typeof(github_json.username) == "undefined"){
+						github_json.username = '';
 					}
-					if(master_json.github.repository == ""){
+					if(github_json.repository == ""){
 						bootbox.alert("You appear to be using an installed " +
 						"version of Collector rather than an online version. " +
 						"You will need to identify which github repository " +
 						"you want to push your experiments to before you can " +
 						"register this experiment. To do this, click on the " +
 						"github button in the top right of the page.");
-					} else if(master_json.github.organisation == "" &&
-										master_json.github.username == ""){
+					} else if(github_json.organization == "" &&
+										github_json.username == ""){
 						bootbox.alert("You appear to be using an installed " +
 						"version of Collector rather than an online version. " +
 						"You will need to identify which github user " +
@@ -369,15 +369,15 @@ function bind_publish_btn(){
 						"github button in the top right of the page.");
 					} else {
 
-						if(master_json.github.organisation !== ""){
-							var github_user_org = master_json.github.organisation;
+						if(github_json.organization !== ""){
+							var github_user_org = github_json.organization;
 						}	else {
-							var github_user_org = master_json.github.username;
+							var github_user_org = github_json.username;
 						}
 
 						this_exp.location = github_user_org +
 																"/" +
-																master_json.github.repository;
+																github_json.repository;
 
 						publish_experiment(this_exp,                                // object with location
 															 experiment,															// experiment name

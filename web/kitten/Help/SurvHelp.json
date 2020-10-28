@@ -43,6 +43,10 @@
 		"subtitle":"text on either end of a likert scale",
 		"text": "What does each extreme of the likert scale mean? For example, a scale of 1 to 5 might range from 'strongly disagree' to 'strongly agree'. In this case, you would write 'strongly disagree|strongly agree'"
 	},
+  "side_width":{
+    "subtitle": "Useful for likerts with overflowing text",
+    "text": "For likerts in which you want text on the side to explain what the minimum and maximum scores mean, it can be helpful to control the width of the text to help them look tidier."
+  },
 	"text":{
 		"subtitle":"Question text",
 		"text":"This will be presented on the left side of the survey. This is useful if you have a question with responses for this item. If you want to have no text for this row of the survey, create a column <b>no_text</b> in your sheet, and turn it on. If you want the text to take up the whole row, then under the <b>type</b> header, choose 'instruct'"

@@ -176,7 +176,7 @@ function initiate_actions(){
               });
 
             case "localhost":
-              var response = Collector.electron.write_file(
+              var response = Collector.electron.fs.write_file(
                 "Trialtypes",
                 new_name.replace(".html","") + ".html",
                 master_json
@@ -184,7 +184,7 @@ function initiate_actions(){
                   .user_trialtypes
                   [new_name])
               if(write_response == "success"){
-                Collector.electron.delete_trialtype(
+                Collector.electron.fs.delete_trialtype(
                     original_name,
                     function(response){
                       if(response == "success"){

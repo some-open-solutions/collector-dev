@@ -58,7 +58,7 @@ td{
 	min-width:        	900px;
 	max-width:        	9000px;
 	border-radius:    	20px;
-  border-color:     	#069; 
+  border-color:     	#069;
   border-style:     	solid;
   border-width:     	5px;
 	padding:            10px;
@@ -99,7 +99,7 @@ td{
 .table_break{
 	width:    100%;
 	height:   300px;
-	overflow: auto;	
+	overflow: auto;
 }
 
 
@@ -115,7 +115,7 @@ td{
   border: 4px solid rgba(0, 0, 0, 0);
   background-clip: padding-box;
 	-webkit-border-radius: 7px;
-  background-color: rgba(0, 102, 153, 0.5); 
+  background-color: rgba(0, 102, 153, 0.5);
   -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
 }
 ::-webkit-scrollbar-button {
@@ -278,7 +278,7 @@ $("#proceed_button").on("click",function(){
     if(typeof(sql_surveys) == "undefined"){
       //$(".table_break");
       var next_table_no = parseFloat($(".table_break:visible")[0].id.replace("table","")) + 1;
-      
+
       if($(".table_break#table"+next_table_no).length == 0){
         if(typeof(Trial) !== "undefined"){
           Trial.submit();
@@ -320,12 +320,12 @@ function clean_item(this_item){
      this_item.indexOf('"') !== -1){
     bootbox.alert("Please avoid apostraphe's or quote marks in the responses the participant can give. These cause problems with smooth running of surveys. This occurs when you wrote:<br><br>" + this_item);
   }
-  
+
   /*
   this_item = this_item.replaceAll("'","")
                        .replaceAll('"','');
   */
-  
+
   return(this_item);
 }
 
@@ -339,12 +339,12 @@ function load_survey(survey){
   } else {                                                                      // No
     survey = survey.toLowerCase().replace(".csv","") + ".csv";
 
-    if(typeof(parent.parent.exp_json.surveys) !== "undefined" && 
+    if(typeof(parent.parent.exp_json.surveys) !== "undefined" &&
        typeof(parent.parent.exp_json.surveys[survey]) !== "undefined"){
       survey_content = parent.parent.exp_json.surveys[survey];
       survey_obj.mods = parent.parent.exp_json.mods;                     //take mods from exp_json
 
-    } else if(typeof(parent.parent.exp_json.surveys) !== "undefined" && 
+    } else if(typeof(parent.parent.exp_json.surveys) !== "undefined" &&
 							typeof(parent.parent.exp_json.surveys[survey.replace(".csv","")])){
 			survey_content = parent.parent.exp_json.surveys[survey.replace(".csv","")];
       survey_obj.mods = parent.parent.exp_json.mods;                     //take mods from exp_json
@@ -386,7 +386,7 @@ function likert_update(this_element,this_response,this_value){
   $("#survey_"+item_name+"_response").val(this_response);
   response_check(this_element);
 }
-	
+
 
 function process_item_score(survey_obj,row_no,values_col,this_response,item,values_reverse){
   item_values       = survey_obj.data[row_no][values_col].split("|");
@@ -449,9 +449,9 @@ function process_survey_question(this_row,row_no){
     this_row.values = this_row.answers;
   }
 
-  if(typeof(this_row["text"]) !== "undefined" && 
-		 typeof(this_row["type"]) !== "undefined" && 
-		 this_row['text'].toLowerCase() == "page_break" | 
+  if(typeof(this_row["text"]) !== "undefined" &&
+		 typeof(this_row["type"]) !== "undefined" &&
+		 this_row['text'].toLowerCase() == "page_break" |
 		 this_row['type'].toLowerCase() == "page_break"){
         page_break_management.breaks_remaining++;
         question_td = "</tr></table><table id='table" + page_break_management.breaks_remaining + "' style='display:none' class='table_break'></tr>";
@@ -485,7 +485,7 @@ function process_survey_question(this_row,row_no){
 
     // Survey settings
     ////////////////////
-		
+
     [row_ques_perc,row_resp_perc] = quest_resp_perc(this_row["question_width"]);
 
     if(typeof(settings.feedback_before_response) == "undefined"){
@@ -504,11 +504,11 @@ function process_survey_question(this_row,row_no){
     // Item types
     ///////////////
 
-    if(typeof(survey_obj.mods) !== "undefined" && 
+    if(typeof(survey_obj.mods) !== "undefined" &&
 			 typeof(survey_obj.mods[this_row.type]) !== "undefined"){
 
       var mod_html = survey_obj.mods[this_row.type].contents;
-      
+
       //for each row variable, insert it into the mod if possible?
       Object.keys(this_row).forEach(function(attribute){
         mod_html = mod_html.replaceAll("{{"+attribute+"}}",this_row[attribute]);
@@ -620,10 +620,10 @@ function process_survey_question(this_row,row_no){
               var options = this_row["answers"].split("|");
               question_td += response_html +
 								'<select ' +
-									'class="custom-select ' + 
+									'class="custom-select ' +
 													'text-primary ' +
-													this_row["item_name"] + 
-													'_item row_' + row_no + 
+													this_row["item_name"] +
+													'_item row_' + row_no +
 													'collector_button "' +
 										'onchange="response_check(this)" ' +
 										'name="survey_' + this_row["item_name"].toLowerCase() + '">' +
@@ -649,57 +649,65 @@ function process_survey_question(this_row,row_no){
           case "likert":
               feedback_string = generate_feedback_string(feedback_array,0,feedback_color,row_no,this_row);
               var options  = this_row["answers"].split("|");
-              
+
 							if(typeof(this_row["values"]) == "undefined"){
                 this_row["values"] = this_row["answers"];
               }
-              
+
 							if(typeof(this_row["btn_width"]) !== "undefined" && this_row["btn-width"]  !== ""){
 								var btn_style = "width:" + this_row["btn_width"];
 							} else {
 								var btn_style = "";
 							}
-							
-							var values   = this_row["values"].split("|");
+
+              if(typeof(this_row["side_width"]) !== "undefined"){
+                var side_width = "max-width:" + this_row["side_width"] + ";" +
+                                 "min-width:" + this_row["side_width"] + ";";
+              } else {
+                var side_width = "";
+              }
+
+              var values   = this_row["values"].split("|");
               question_td += 	"<table class='likert_table'>" +
 																"<tr>" +
-																	"<td>";
+																	"<td style='" + side_width + "'>";
 							/*
 							* Add side_text if it exists
 							*/
+
 							if(typeof(this_row["side_text"]) !== "undefined" &&
 								this_row["side_text"] !== ""){
 								side_text = this_row["side_text"].split("|");
 								side_text = side_text.map(function(this_side){
-									return "<span style='padding:20px;' class='text-primary'><b>" + this_side + "</b></span>";
+									return "<span style='" + side_width + " padding:20px;' class='text-primary'><b>" + this_side + "</b></span></td><td>";
 								});
 							} else {
 								side_text = ["",""];
-							}							
+							}
 							question_td += side_text[0];
 
 							question_td +=  response_html +
                               '<div class="btn-group btn-group-toggle" data-toggle="buttons">'; //to help detect blank likert's
-              
-							
+
+
 							for(var i=0; i<options.length;i++){
                 var this_option = clean_item(options[i]);
                 question_td +=  '<button type="button" '+
 																	'class="btn '+
 																				 'survey_btn ' +
-																				 'btn-outline-primary ' + 
+																				 'btn-outline-primary ' +
 																				 this_row["item_name"] + '_item row_' + row_no +
 																				 '"autocomplete="off"' +
 																	'id = "likert_' + row_no + '_' + i + '" ' +
 																	'style = "' + btn_style + '" ' +
-																	'onclick="likert_update(this,\''+this_option+'\',\''+values[i]+'\')">'+ 
+																	'onclick="likert_update(this,\''+this_option+'\',\''+values[i]+'\')">'+
 																		this_option +
 																'</button>';
 
               }
-							question_td +=  "</div>" +
+							question_td +=  "</div></td><td  style='" + side_width + "'>" +
 															side_text[1] +
-                              "<input type='hidden' class='"+this_class+"' id='survey_"+this_row["item_name"].toLowerCase()+"_score' name='survey_"+this_row["item_name"].toLowerCase()+"_score'>"+
+                              "<input type='hidden' class='"+this_class+"' id='survey_"+this_row["item_name"].toLowerCase()+"_score' name='survey_"+this_row["item_name"].toLowerCase()+"_score'></td>"+
                           "</td>"+
                       "</tr>"+
                   "</table>"+feedback_string;
@@ -771,32 +779,32 @@ function process_survey_question(this_row,row_no){
       return '';
   } else {
     if(this_row["type"].toLowerCase() == "instruct"){
-      var this_row_html = "<td colspan='2'>" + 
+      var this_row_html = "<td colspan='2'>" +
 														this_row["text"] +
 													"</td>";
 		} else if(this_row["type"].toLowerCase() == "likert"){
-			
+
 			if(typeof(this_row["side_by_side"]) !== "undefined" &&
 				 this_row["side_by_side"].toLowerCase() == "yes"){
-				
-				var this_row_html="<td class='text-primary' id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";				
-				 
+
+				var this_row_html="<td class='text-primary' id='survey_"+this_row["item_name"].toLowerCase().replace(" ","_")+"_question' style='width:"+row_ques_perc+"; text-align:right'>"+this_row["text"]+"</td><td>"+question_td+"</label></td>";
+
 			} else {
-				
+
 				var this_row_html = "<tr>" +
-														"<td colspan='2'>" + 
+														"<td colspan='2'>" +
 															this_row["text"] +
-														"</td>" + 
+														"</td>" +
 													"</tr>" +
 													"<tr>" +
-														"<td colspan='2' align='center'>" + 
-															question_td + 
+														"<td colspan='2' align='center'>" +
+															question_td +
 														"</td>"
 													"</tr>";
-				
-			}			
-			
-			
+
+			}
+
+
     } else if(this_row["type"].toLowerCase()=="google_slide") {
       var this_row_html="<td colspan='2'>"+this_row["text"]+"</label></td>";
     } else if(typeof(this_row["no_text"]) !== "undefined" && this_row["no_text"] == "on"){
@@ -1050,7 +1058,7 @@ function write_survey(this_survey,this_id){
 	this_survey_html += "</table>";
 
 	$("#" + this_id).html(this_survey_html);
-	
+
 	$("#" + this_id).show(1000,function(){
 		// Set all buttons to the max width
 		/*
@@ -1061,12 +1069,12 @@ function write_survey(this_survey,this_id){
 				maxWidth = curWidth;
 			}
 		});
-		
+
 		$('.survey_btn').each(function(i) {
 			$(this).delay(200).animate({
 				"width" : maxWidth
 			});
-		});		
+		});
 		*/
 	});
 
