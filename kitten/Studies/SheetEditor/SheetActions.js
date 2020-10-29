@@ -402,6 +402,9 @@ $("#run_btn").on("click",function(){
 $("#save_btn").attr("previousValue","");
 
 $("#save_btn").on("click", function(){
+
+  //Collector.electron.git.save_master()
+
   function process_parsed_procs(this_exp){
     Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
       this_proc = this_exp.parsed_procs[proc_name];
@@ -627,6 +630,7 @@ $("#save_btn").on("click", function(){
     } else {
       switch(Collector.detect_context()){
         case "localhost":
+          var git_json_response = Collector.electron.git.save_master();
           var write_response = Collector.electron.fs.write_file(
             "",
             "master.json",
@@ -638,7 +642,7 @@ $("#save_btn").on("click", function(){
               "Succesfully saved master_json"
             )
           }
-          break;
+          var git_json_response = Collector.electron.git.save_master();
       };
     }
 
