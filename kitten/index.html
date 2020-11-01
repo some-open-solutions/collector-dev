@@ -122,6 +122,7 @@
       <button class="btn btn-primary">Documentation</button>
     </a>
     <button class="btn btn-outline-primary bg-white" id="help_btn" style="margin:2px; font-weight:bold">Help</button>
+    <div id="github_div"></div>
     <div id="platforms_div"></div>
   </nav>
   <table id="content_table" style="width:100%">
@@ -174,8 +175,10 @@
     $(this).addClass("bg-white");
     $(this).addClass("text-primary");
   });
+
   $("#help_area").load("Help/Help.html");
   $("#logo_div").load("../logos/logo.html");
+  $("#github_div").load("Github.html");
   $("#platforms_div").load("Platforms.html");
   $("#register_div").load("Register.html");
 

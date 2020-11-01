@@ -6,9 +6,6 @@ window.onload=function(){
       clearInterval(wait_for_collector);
       Collector.electron = {
         git:{
-          /*
-          * not in alphaetical order, but order of pipeline
-          */
           add_changes: function(repo_info){
             return ipc.sendSync(
               'git_add_changes',
@@ -27,6 +24,13 @@ window.onload=function(){
               "auth_token": auth_token
             });
           },
+          delete_org: function(org_info){
+            return ipc.sendSync(
+              'git_delete_org',
+              org_info
+            )
+            return this_response;
+          },
           delete_repo: function(repo_info){
             return ipc.sendSync(
               'git_delete_repo',
@@ -34,31 +38,13 @@ window.onload=function(){
             )
             return this_response;
           },
-          download_collector: function(repo_info){
-            return ipc.sendSync(
-              'git_download_collector',
-              repo_info
-            );
-          },
           exists: function(){
             return this_response = ipc.sendSync(
               'git_exists'
             );
           },
-          init: function(repo_info){
-            return ipc.sendSync(
-              'git_init',
-              repo_info
-            );
-          },
           load_master: function(){
             return ipc.sendSync('git_load_master')
-          },
-          local_repo: function(repo_info){
-            return ipc.sendSync(
-              'git_local_repo',
-              repo_info
-            );
           },
           pages: function(repo_info){
             return ipc.sendSync(
@@ -98,24 +84,36 @@ window.onload=function(){
               'git_token_exists',
               {}
             )
+          },
+          valid_org: function(repo_info){
+            return ipc.sendSync(
+              'git_valid_org',
+              repo_info
+            )
           }
         },
         fs: {
-          delete_experiment: function(exp_name,
-                                      file_action){
+          delete_experiment: function(
+            exp_name,
+            file_action
+          ){
             delete_response = ipc.sendSync('fs_delete_experiment',{
               "exp_name" : exp_name
             });
             file_action(delete_response);
           },
-          delete_survey: function(survey_name,
-                                  file_action){
+          delete_survey: function(
+            survey_name,
+            file_action
+          ){
             delete_response = ipc.sendSync('fs_delete_survey',{
               "survey_name" : survey_name
             });
           },
-          delete_trialtype: function(exp_name,
-                                     file_action){
+          delete_trialtype: function(
+            exp_name,
+            file_action
+          ){
             delete_response = ipc.sendSync('fs_delete_trialtype',{
               "trialtype_name" : exp_name
             });
@@ -124,16 +122,20 @@ window.onload=function(){
           list_trialtypes: function(){
             return ipc.sendSync('fs_list_trialtypes');
           },
-          read_default: function(user_folder,
-                                 this_file){
+          read_default: function(
+            user_folder,
+            this_file
+          ){
             file_content = ipc.sendSync('fs_read_default',{
               "user_folder" : user_folder,
               "this_file"   : this_file
             });
             return file_content;
           },
-          read_file: function(user_folder,
-                              this_file){
+          read_file: function(
+            user_folder,
+            this_file
+          ){
             file_content = ipc.sendSync('fs_read_file',{
               "user_folder" : user_folder,
               "this_file"   : this_file
@@ -152,9 +154,11 @@ window.onload=function(){
             });
             return write_response;
           },
-          write_experiment: function(this_experiment,
-                                     file_content,
-                                     file_action){
+          write_experiment: function(
+            this_experiment,
+            file_content,
+            file_action
+          ){
             write_response = ipc.sendSync('fs_write_experiment',{
               "this_experiment" : this_experiment,
               "file_content"    : file_content

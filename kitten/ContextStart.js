@@ -50,6 +50,13 @@ switch(Collector.detect_context()){
           master_json = JSON.parse(master_json);
         } else {
           master_json = default_master_json;
+          var write_response = Collector.electron.fs.write_file(
+            "",
+            "master.json",
+            JSON.stringify(master_json, null, 2));
+          if(write_response !== "success"){
+            bootbox.alert(response);
+          }
         }
         var git_exists = Collector.electron.git.exists();
         if(git_exists !== "success"){

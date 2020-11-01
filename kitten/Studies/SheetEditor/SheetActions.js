@@ -161,6 +161,7 @@ $("#rename_exp_btn").on("click",function(){
         case "localhost":
 					Collector
 						.electron
+            .fs
 						.write_experiment(
 							new_name,
   						JSON.stringify(
@@ -403,8 +404,6 @@ $("#save_btn").attr("previousValue","");
 
 $("#save_btn").on("click", function(){
 
-  //Collector.electron.git.save_master()
-
   function process_parsed_procs(this_exp){
     Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
       this_proc = this_exp.parsed_procs[proc_name];
@@ -576,6 +575,7 @@ $("#save_btn").on("click", function(){
   					this_exp = JSON.stringify(this_exp, null, 2);
   					Collector
   						.electron
+              .fs
   						.write_experiment(
   							experiment,
   							this_exp,
@@ -648,12 +648,12 @@ $("#save_btn").on("click", function(){
 
     Collector.tests.pass("studies",
                          "save_at_start");
+
   }  catch (error){
     Collector.tests.fail("studies",
                          "save_at_start",
                          error);
   }
-
 });
 
 $("#stim_select").on("change",function(){
