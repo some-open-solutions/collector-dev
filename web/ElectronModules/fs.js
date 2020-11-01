@@ -133,9 +133,6 @@ ipc.on('fs_read_file', (event,args) => {
     if(!fs.existsSync("User/Experiments")){
       fs.mkdirSync("User/Experiments");
     }
-    if(!fs.existsSync("User/Private")){
-      fs.mkdirSync("User/Private");
-    }
     if(!fs.existsSync("User/Stimuli")){
       fs.mkdirSync("User/Stimuli");
     }

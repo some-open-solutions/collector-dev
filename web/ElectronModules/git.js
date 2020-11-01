@@ -19,141 +19,103 @@ const git_token_location = "repositories/Private/github_token.txt";
 ipc.on('git_add_changes', (event, args) => {
   //copy folder from User folder into repository
 
+  var baseline_time = (new Date()).getTime();
+  console.log("baseline_time = " + baseline_time);
+
   fs.copySync(
     "User",
     "repositories"        + "/" +
       args["organization"] + "/" +
       args["repository"]   + "/" +
       "web"               + "/" +
-      "User"
+    "User",
+    {
+      recursive:true
+    }
   )
-
-  fs.rmdirSync(
-    "repositories"        + "/" +
-      args["organization"] + "/" +
-      args["repository"]   + "/" +
-      "web"               + "/" +
-      "User"              + "/" +
-      "Private",
-     {
-       recursive: true
-     }
-  )
-
+  console.log("copy time = " + parseFloat((new Date()).getTime() - baseline_time));
+  event.returnValue = "success";
 });
 
 ipc.on('git_add_repo', (event,args) => {
-  /*
-  * Make sure the relevant folders are ready
-  */
-  if(!fs.existsSync("repositories")){
-    fs.mkdirSync("repositories");
-  }
 
-  if(!fs.existsSync("repositories" + "/" + args["organization"])){
-    fs.mkdirSync(
-      "repositories"       + "/" +
-      args["organization"]
-    )
-  }
+  var auth_token = fs.readFileSync(
+    git_token_location,
+    'utf8'
+  );
 
   /*
-  * Check if the repository exists locally
+  * Check if the repository exists online
   */
-  if(
-    fs.existsSync(
+  const octokit = new Octokit({
+    auth: auth_token,
+  });
+
+  octokit.repos.get({
+    owner: args["organization"],
+    repo:  args["repository"]
+  }).then(function(result){
+    console.log("result of whether repository exists online:");
+    console.log(result);
+    /*
+    * Then clone the repository
+    */
+    git.clone(
+      "https://github.com" + "/" +
+        args["organization"] + "/" +
+        args["repository"],
       "repositories"         + "/" +
         args["organization"] + "/" +
         args["repository"]
-    )
-  ){
-    event.returnValue = "Error: You already have a copy of this repository";
-  } else {
+    ).then(function(result){
+      event.returnValue = "success"
+    }).catch(function(error){
+      event.returnValue = "failed to clone your existing repository onto your computer"
+    });
+  }).catch(function(error){
+    console.log("result of repository not existing online:");
+    console.log(error);
     /*
-    * Check if the repository exists online
+    * Create repository online
     */
-    if(!fs.existsSync(
-        git_token_location
-      )
-    ){
-      event.returnValue = "auth token missing";
-    } else {
-      var auth_token = fs.readFileSync(
-        git_token_location,
-        'utf8'
-      );
-
-      const octokit = new Octokit({
-        auth: auth_token,
-      });
-
-      octokit.orgs.get({
-        org: args["organization"]
-      }).then(function(result){
+    octokit.repos.createInOrg({
+      org:  args["organization"],
+      name: args["repository"],
+    }).then(function(result){
+      console.log("now cloning Collector into the folder - right?")
+      /*
+      * Create repository locally
+      */
+      git.clone(
+        "https://github.com/some-open-solutions/collector",
+        "repositories"         + "/" +
+          args["organization"] + "/" +
+          args["repository"]
+      ).then(function(result){
+        console.log("cloning worked");
         /*
-        * Then check if repository exists
+        * Remove the local .git folder to prevent synching with some-open-solutions version
         */
-        octokit.repos.get({
-          owner: args["organization"],
-          repo:  args["repository"]
-        }).then(function(result){
-          /*
-          * Then clone the repository
-          */
-          git.clone(
-            "https://github.com" + "/" +
-              args["organization"] + "/" +
-              args["repository"],
-            "repositories"         + "/" +
-              args["organization"] + "/" +
-              args["repository"]
-          ).then(function(result){
-            event.returnValue = "success"
-          }).catch(function(error){
-            event.returnValue = "failed to clone your existing repository onto your computer"
-          });
-        }).catch(function(error){
-          /*
-          * Create repository online
-          */
-          octokit.repos.createInOrg({
-            org:  args["organization"],
-            name: args["repository"],
-          }).then(function(result){
-            /*
-            * Create repository locally
-            */
-            git.clone(
-              "https://github.com/some-open-solutions/collector",
-              "repositories"         + "/" +
-                args["organization"] + "/" +
-                args["repository"]
-            ).then(function(result){
-              /*
-              * Remove the local .git folder to prevent synching with some-open-solutions version
-              */
-              fs.rmdirSync(
-                "repositories"        + "/" +
-                  args["organization"] + "/" +
-                  args["repository"]   + "/" +
-                  ".git",
-                 {
-                   recursive: true
-                 }
-              );
-              event.returnValue = "success"
-            }).catch(function(error){
-              event.returnValue = "failed to clone Collector onto your computer: " + error;
-            });
-          }).catch(function(error){
-            event.return = "error - failed to create online repo:" + error;
-          })
-        });
+        fs.rmdirSync(
+          "repositories"        + "/" +
+            args["organization"] + "/" +
+            args["repository"]   + "/" +
+            ".git",
+           {
+             recursive: true
+           }
+        );
+        event.returnValue = "success"
       }).catch(function(error){
-        event.returnValue = "This organization doesn't exist."
+        console.log("cloning failed");
+        event.returnValue = "failed to clone Collector onto your computer: " + error;
       });
-    }
-  }
+    }).catch(function(error){
+      console.log("failed to clone Collector into repository, right?");
+      event.return = "error - failed to create online repo:" + error;
+    })
+  });
+
 });
 
 ipc.on('git_add_token', (event,args) => {
@@ -179,6 +141,21 @@ ipc.on('git_add_token', (event,args) => {
   }
 });
 
+ipc.on('git_delete_org', (event,args) => {
+  try{
+    fs.rmdirSync(
+      "repositories"         + "/" +
+        args["organization"],
+      {
+         recursive: true
+      }
+    );
+    event.returnValue = "success";
+  } catch(error) {
+    event.returnValue = "failed to delete: " + error
+  }
+});
+
 ipc.on('git_delete_repo', (event,args) => {
   console.log("JSON.stringify(args)");
   console.log(JSON.stringify(args));
@@ -196,40 +173,6 @@ ipc.on('git_delete_repo', (event,args) => {
   } catch(error) {
     event.returnValue = "failed to delete:" + error
   }
-})
-
-ipc.on('git_download_collector', (event,args) =>{
-
-  //cloning
-  git.clone(
-    "https://github.com/some-open-solutions/collector",
-    "temp"
-  )
-  .then(function(error){
-    /*
-    * Remove git folder to make this a new repo
-    */
-    fs.rmdirSync(
-      "temp/.git",
-       {
-         recursive: true
-       }
-    );
-
-    /*
-    * move from temp to main folder
-    */
-    fs.moveSync(
-      "temp",
-      "repositories"         + "/" +
-        args["organization"]  + "/" +
-        args["repository"],
-      {
-        "overwrite" : true
-      }
-    );
-    event.returnValue = "success";
-  });
 });
 
 ipc.on('git_exists', (event,args) => {
@@ -240,122 +183,22 @@ ipc.on('git_exists', (event,args) => {
   }
 });
 
-ipc.on('git_init', (event,args) => {
-
-  if(!fs.existsSync(
-      git_token_location
-    )
-  ){
-    event.returnValue = "auth token missing";
-  } else {
-    var auth_token = fs.readFileSync(
-      git_token_location,
-      'utf8'
-    );
-    const octokit = new Octokit({
-      auth: auth_token,
-    }).repos.createInOrg({
-      org:  args["organization"],
-      name: args["repository"],
-    }).then(function(response){
-      if(
-        !fs.existsSync(
-          "repositories/" +args["organization"]
-        )
-      ){
-        fs.mkdirSync(
-          "repositories/" +args["organization"]
-        )
-      }
-
-      var remote =  "https://" +
-                    args["organization"] + ":" +
-                    auth_token +
-                    "@github.com"       + "/" +
-                    args["organization"] + "/" +
-                    args["repository"]   + ".git";
-
-      git.clone(
-        "https://github.com/some-open-solutions/collector",
-        "repositories"         + "/" +
-          args["organization"] + "/" +
-          args["repository"]
-      ).then(function(result){
-        // Remove git folder to make this a new repo
-        fs.rmdirSync(
-          "repositories"         + "/" +
-            args["organization"] + "/" +
-            args["repository"]   + "/.git",
-          {
-             recursive: true
-          }
-        );
-        git.cwd(
-          "repositories"      + "/" +
-          args["organization"] + "/" +
-          args["repository"]
-        ).init()
-         .add("./*").
-          commit(args["message"]).
-          push(remote, 'master').
-          then(function(new_err){
-            console.log(new_err)
-            event.returnValue = "success";
-          })
-          .catch(function(error){
-            console.log(error)
-            event.returnValue = "error when pushing:" + error;
-          });
-
-        event.returnValue = "success";
-      }).catch(function(error){
-        event.returnValue = error;
-      });
-    }).catch(function(error){
-      event.returnValue = error;
-    });
-  }
-});
-
 ipc.on('git_load_master', (event,args) => {
-  try{
-    var content = fs.readFileSync(
-      "repositories/github.json",
-      'utf8'
-    );
-    event.returnValue = content;
-  } catch(error){
+  if(!fs.existsSync("repositories")){
+    fs.mkdirSync("repositories")
+  }
+  if(!fs.existsSync("repositories/github.json")){
     fs.writeFileSync(
       "repositories/github.json",
       "{}",
       'utf8'
     );
-    event.returnValue = "{}";
-  };
-});
-
-ipc.on('git_local_repo', (event,args) => {
-  try{
-    if(!fs.existsSync("repositories")){
-      fs.mkdirSync("repositories")
-    }
-    if(!fs.existsSync("repositories/"+args["organization"])){
-      fs.mkdirSync("repositories/" + args["organization"])
-    }
-    git.clone("https://github.com"   + "/" +
-                args["organization"] + "/" +
-                args["repository"],
-              "repositories"         + "/" +
-                args["organization"] + "/" +
-                args["repository"]).then(function(result){
-         event.returnValue = "success";
-       })
-       .catch(function(error){
-         event.returnValue = "error: " + error;
-       });
-  } catch(error){
-    event.returnValue = "error: " + error;
   }
+  var content = fs.readFileSync(
+    "repositories/github.json",
+    'utf8'
+  );
+  event.returnValue = content;
 });
 
 ipc.on('git_pages', (event,args) => {
@@ -486,17 +329,21 @@ ipc.on('git_push', (event,args) => {
   * check that auth token exists and deal with eventuality if it doesn't
   */
 
+  var baseline_time = (new Date()).getTime();
+  console.log("baseline_time = " + baseline_time);
+
+
   var auth_token = fs.readFileSync(
     git_token_location,
     'utf8'
   );
 
+  console.log("auth token time = " + parseFloat((new Date()).getTime() - baseline_time));
+
   if(typeof(args["message"]) == "undefined"){
     args["message"] = "automatic commit"
   }
 
-  console.log("args");
-  console.log(args);
 
   var remote =  "https://" +
                   args["organization"] + ":" +
@@ -538,17 +385,6 @@ ipc.on('git_switch_repo', (event, args) => {
     /*
     * backup the old repo
     */
-    if(typeof(args["old_repo"]) !== "undefined"){
-      fs.copySync(
-        "User",
-        "repositories"    + "/" +
-          args["old_org"] + "/" +
-          args["old_rep"] + "/" +
-          "web"           + "/" +
-          "User"
-      );
-    }
-
     if(
       !fs.existsSync(
         "repositories"         + "/" +
@@ -565,6 +401,16 @@ ipc.on('git_switch_repo', (event, args) => {
           "web"                + "/" +
           "User"
       )
+    }
+    if(typeof(args["old_repo"]) !== "undefined"){
+      fs.copySync(
+        "User",
+        "repositories"    + "/" +
+          args["old_org"] + "/" +
+          args["old_rep"] + "/" +
+          "web"           + "/" +
+          "User"
+      );
     }
 
     /*
@@ -592,7 +438,44 @@ ipc.on('git_switch_repo', (event, args) => {
 });
 
 ipc.on('git_token_exists', (event,args) => {
-  event.returnValue = fs.existsSync(
-    "repositories/Private/github_token.txt"
-  )
+  if (
+    fs.existsSync(
+      "repositories/Private/github_token.txt"
+    )
+  ) {
+    event.returnValue =  "success";
+  } else {
+    event.returnValue = "Did not find the token";
+  }
+});
+
+ipc.on('git_valid_org', (event, args) => {
+  /*
+  * Make sure the relevant folders are ready
+  */
+  if(!fs.existsSync("repositories")){
+    fs.mkdirSync("repositories");
+  }
+
+  if(!fs.existsSync("repositories" + "/" + args["organization"])){
+    fs.mkdirSync(
+      "repositories"       + "/" +
+      args["organization"]
+    )
+  }
+  var auth_token = fs.readFileSync(
+    git_token_location,
+    'utf8'
+  );
+  const octokit = new Octokit({
+    auth: auth_token,
+  });
+
+  octokit.orgs.get({
+    org: args["organization"]
+  }).then(function(result){
+    event.returnValue = "success";
+  }).catch(function(error){
+    event.returnValue = "error: " + error;
+  });
 });

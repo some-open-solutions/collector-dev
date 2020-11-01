@@ -56,6 +56,7 @@ trialtypes_obj = {
 					case "localhost":
 						Collector
 							.electron
+              .fs
 							.delete_trialtype(deleted_trialtype,
 								function(response){
 									if(response !== "success"){
@@ -195,6 +196,7 @@ function list_trialtypes(to_do_after){
                 .user_trialtypes
                 [trialtype] = Collector
                                 .electron
+                                .fs
                                 .read_file("Trialtypes",
                                            trialtype + ".html");
             }
