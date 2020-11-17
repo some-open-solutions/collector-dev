@@ -36,6 +36,17 @@ ipc.on('fs_delete_experiment', (event,args) => {
   }
 });
 
+ipc.on('fs_delete_file', (event,args) => {
+  if(args["file_path"].indexOf("../") !== -1){
+    event.returnValue = "This attempt to delete a file looked dangerous, so hasn't been completed";
+  } else if(!fs.existsSync("User/" + args["file_path"])){
+    event.returnValue = "This file doesn't appear to exist, so could not be deleted on your computer (but also doesn't need to be deleted either.)";
+  } else {
+    fs.unlink("User/" + args["file_path"]);
+    event.returnValue = "success";
+  }
+});
+
 ipc.on('fs_delete_survey', (event,args) => {
 
   /*

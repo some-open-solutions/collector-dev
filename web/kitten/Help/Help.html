@@ -160,7 +160,12 @@ function helperActivate(help_title, cellValue,help_type){
   /////////////////////
 	if (help_type == "survey"){
 
-		if(help_title == "type"){
+    if(help_title == "type"){
+
+      /*
+      * RESUME HERE
+      */
+
 
 			$("#help_subtitle").html("What type of item?");
 			var item_type_html = 'You can choose from the following types of survey items: <br><br>';
@@ -179,8 +184,17 @@ function helperActivate(help_title, cellValue,help_type){
 				}
 				var mod_names = Object.keys(master_json.mods).filter(mod_name => mod_name !== "_help");
 				mod_names.forEach(function(mod_name){
-					if(typeof(master_json.mods._help[mod_name]) == "undefined"){
-						var mod_content = master_json.mods[mod_name];
+          console.dir("mod_name");
+          console.dir(mod_name);
+
+					if(
+            typeof(
+              master_json.mods._help[mod_name]
+            ) == "undefined"
+          ){
+            var mod_content = master_json.mods._help[mod_name];
+            console.dir("mod_content");
+            console.dir(mod_content);
 						if(mod_content.indexOf("/*-----help-----") == -1){
 							mod_help_text += 	"<h6>"+mod_name+"</h6>"+
 																	  "The author of this snippet hasn't (yet) given any advice how to use it. If you are the author, you can add help by writing <br> /*-----help----- <br> then your advice, and then <br>----help-----*/";

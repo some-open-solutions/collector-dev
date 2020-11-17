@@ -48,6 +48,10 @@ if(isFirefox){
   //alert("The zooming works m")
 }
 
+if(isSafari){
+  alert("This website does not work reliably on Safari - please use another browser, preferably Google Chrome.");
+}
+
 participant_browser = isOpera   ? "opera"
                     : isFirefox ? "firefox"
                     : isSafari  ? "safari"

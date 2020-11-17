@@ -169,8 +169,6 @@ $("#add_repository_btn").on("click",function(){
               .electron
               .git
               .token_exists()
-            console.dir("this_response");
-            console.dir(this_response);
             if(this_response !== "success"){
               bootbox.alert(this_response);
               return false;
@@ -224,7 +222,7 @@ $("#add_repository_btn").on("click",function(){
             if(this_response !== "success"){
               bootbox.alert(this_response);
               Collector.electron.git.save_master();
-              return true;
+              return false;
             } else {
               Collector.custom_alert("success");
               $("#save_btn").click();
@@ -354,13 +352,13 @@ $("#pull_repo_btn").on("click",function(){
           return false;
         } else {
 
-          $("#save_btn").click();
           //refresh the page
           bootbox.confirm("Do you want to restart Collector so that you can see the changes you've just pulled? (Strongly recommended)", function(response){
             if(response){
               location.reload();
             }
           });
+          return true;
         }
       }
     ]
@@ -375,9 +373,10 @@ $("#push_repo_btn").on("click",function(){
   if(Collector.electron.git.token_exists()){
     var organization = $("#select_organization").val();
     var repository   = $("#select_repository").val();
-    bootbox.prompt(
-      "Please describe this commit:",
-      function(message){
+    bootbox.prompt({
+      title: "Please describe this commit:",
+      inputType: "textarea",
+      callback: function(message){
         if(message){
           progress_bootbox({
             start_text: "Pushing to your repository<br><br>",
@@ -424,7 +423,7 @@ $("#push_repo_btn").on("click",function(){
           });
         }
       }
-    );
+    });
   } else {
     bootbox.alert("You have not yet set up a valid token to manage your github repository with. Please do this by clicking on the <b>Add token</b> button");
   }

@@ -230,11 +230,9 @@ function loadFileAsText(){
 function populate_data_div(data_div_id,
                            data_obj,
                            bootstrap_class){
-  server_data_html = '<div class="accordion" id="accordionExample">';
+  server_data_html = '<div class="accordion" id="accordion' + data_div_id + '">';
   Object.keys(data_obj).forEach(function(experiment_name,
                                          collapse_no){
-    console.dir("experiment_name");
-    console.dir(experiment_name);
     if(Object.keys(data_obj[experiment_name]).length > 0){
       server_data_html += '<div class="card" type="button" data-toggle="collapse" data-target="#' + data_div_id + '_' + collapse_no +'" aria-expanded="true" aria-controls="collapseOne">' +
         '<div class="card-header text-white bg-' + bootstrap_class +'">' +
@@ -242,7 +240,7 @@ function populate_data_div(data_div_id,
             experiment_name +
           '</h5>' +
         '</div>' +
-        '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">' +
+        '<div id="' + data_div_id + '_' + collapse_no +'" class="collapse" aria-labelledby="headingOne" data-parent="#accordion' + data_div_id + '">' +
           '<div class="card-body">';
 
       server_data_html += "<button style='width:100%'>Download All</button>"; //need to make this actually work
@@ -255,18 +253,16 @@ function populate_data_div(data_div_id,
         if(data_obj[experiment_name][this_participant].all_data){
           file_info = data_obj[experiment_name][this_participant].all_data;
         } else {
-          console.dir("data_obj[experiment_name][this_participant]");
-          console.dir(data_obj[experiment_name][this_participant]);
           file_info = Object.values(data_obj[experiment_name][this_participant].files).join("|");
         }
 
         server_data_html +=
           "<tr>"    +
             "<td>"  +
-              this_participant +
-              " - " +
+              "<b class='text-" + bootstrap_class + "'>" + this_participant + "</b>" +
+              "<br><em>" +
               data_obj[experiment_name][this_participant].size +
-              " bytes " +
+              " bytes </em>" +
             "</td>" +
             "<td>"  +
 
@@ -286,7 +282,14 @@ function populate_data_div(data_div_id,
                           '</div>';
     }
   });
+
   $("#" + data_div_id).html(server_data_html);
+  $("#" + data_div_id).find(".collapse").on("click", function(e){
+    e.preventDefault(); e.stopPropagation()
+  });
+  $("#" + data_div_id).find(".collapse").find("button").on("click", function(e){
+    e.preventDefault(); e.stopPropagation()
+  });
 }
 var data_stuff;
 function request_data_list(){
@@ -369,14 +372,27 @@ function request_data_list(){
       $(".delete_server_data_btn").unbind();
       $(".delete_server_data_btn").on("click",function(){
         var this_folder = $(this).find("span")[0].innerHTML;
+
+        /*
+        $(this).attr("disabled",true);
+        $(this).closest("tr").css("text-decoration","line-through");
+        $(this).closest("tr").find(".download_server_data_btn").css("disabled",true);
+        */
+
+        $(this).closest("tr").remove();
+
+
         $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
           email:       $("#data_user_email").val(),
           password:    $("#data_user_password").val(),
           action:      "delete_server_data",
           this_folder: this_folder
         },function(result){
-          bootbox.alert(result);
-          $("#list_data_btn").click();
+          Collector.custom_alert(result);
+
+
+
+          //$("#list_data_btn").click();
         });
       });
       $(".download_server_data_btn").unbind();
@@ -446,6 +462,7 @@ function request_data_list(){
       });
       $(".delete_storage_data_btn").unbind();
       $(".delete_storage_data_btn").on("click",function(){
+        $(this).closest("tr").remove();
         var this_folder = $(this).find("span")[0].innerHTML;
         $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
           email:       $("#data_user_email").val(),
@@ -453,8 +470,8 @@ function request_data_list(){
           action:      "delete_storage_data",
           this_folder: this_folder
         },function(result){
-          bootbox.alert(result);
-          $("#list_data_btn").click();
+          Collector.custom_alert(result);
+          //$("#list_data_btn").click();
         });
       });
     } catch(error){
@@ -579,6 +596,10 @@ encrypt_obj = {
                         if(usernames.length > 0){
                           var username = usernames.pop();
                           this_participant_message = this_decrypted_message.filter(row => row.username == username);
+
+                          console.dir("this_participant_message");
+                          console.dir(this_participant_message);
+
                           bootbox.prompt({
                             title: "What would you like to name this file?",
                             value: username,
@@ -595,14 +616,13 @@ encrypt_obj = {
                                   skipEmptyLines: true, //or 'greedy',
                                   columns: null //or array of strings
                                 }));
+                                recursive_username_decryption(usernames);
                               }
                             }
                           });
-                          recursive_username_decryption(usernames);
                         }
                       }
                       recursive_username_decryption(usernames);
-
                     } else {
                       //do all participants in one go
                       default_filename = "batch";

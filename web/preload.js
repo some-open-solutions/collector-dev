@@ -102,6 +102,15 @@ window.onload=function(){
             });
             file_action(delete_response);
           },
+          delete_file: function(
+            file_path
+          ){
+            return ipc.sendSync(
+              'fs_delete_file',{
+                "file_path": file_path
+              }
+            );
+          },
           delete_survey: function(
             survey_name,
             file_action

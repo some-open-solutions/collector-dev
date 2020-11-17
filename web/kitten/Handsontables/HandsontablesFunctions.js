@@ -134,7 +134,7 @@ function createHoT(container, data,sheet_name) {
 							this.alter("remove_col",k);                                                         // delete the column
 						}	else {                                                                              // otherwise we assume it's matching a previous header
 							this.setDataAtCell(0,k,this.getDataAtCell(0,k)+'*');                                // add a star to the title to avoid identical titles
-							bootbox.alert("You have identical headers for two columns '" + 											// let the user know the change has happened
+							Collector.custom_alert("You have identical headers for two columns '" + 											// let the user know the change has happened
 														this.getDataAtCell(0,k) + "', we have added a * to address this");
 						}
 					}

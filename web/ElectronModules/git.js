@@ -6,10 +6,16 @@ const ipc  = require('electron').ipcMain;
 
 const { Octokit }     = require("@octokit/rest");
 const simpleGit       = require('simple-git');
-const git             = simpleGit();
+/*
+* var git = simpleGit(); has to be called in individual functions to make sure it's fresh rather than has carrying over information from previous calls
+*/
+
 var commandExistsSync = require('command-exists').sync;
 
+
+
 const git_token_location = "repositories/Private/github_token.txt";
+
 
 
 /*
@@ -17,8 +23,27 @@ const git_token_location = "repositories/Private/github_token.txt";
 */
 
 ipc.on('git_add_changes', (event, args) => {
-  //copy folder from User folder into repository
 
+  /*
+  * Update the kitten folder using the local folder if in powershell/npm mode
+  */
+  if(fs.existsSync(
+    "kitten"
+  )){
+    fs.copySync(
+      "kitten",
+      "repositories"         + "/" +
+        args["organization"] + "/" +
+        args["repository"]   + "/" +
+        "web"                + "/" +
+        "kitten",
+      {
+        recursive: true
+      }
+    )
+  }
+
+  //copy folder from User folder into repository
   var baseline_time = (new Date()).getTime();
   console.log("baseline_time = " + baseline_time);
 
@@ -28,7 +53,7 @@ ipc.on('git_add_changes', (event, args) => {
       args["organization"] + "/" +
       args["repository"]   + "/" +
       "web"               + "/" +
-    "User",
+      "User",
     {
       recursive:true
     }
@@ -60,6 +85,7 @@ ipc.on('git_add_repo', (event,args) => {
     /*
     * Then clone the repository
     */
+    var git = simpleGit();
     git.clone(
       "https://github.com" + "/" +
         args["organization"] + "/" +
@@ -86,6 +112,11 @@ ipc.on('git_add_repo', (event,args) => {
       /*
       * Create repository locally
       */
+      console.log("args:");
+      console.log(args);
+      console.log("git:");
+      console.log(git);
+      var git = simpleGit();
       git.clone(
         "https://github.com/some-open-solutions/collector",
         "repositories"         + "/" +
@@ -93,6 +124,8 @@ ipc.on('git_add_repo', (event,args) => {
           args["repository"]
       ).then(function(result){
         console.log("cloning worked");
+        console.log("result:");
+        console.log(result);
         /*
         * Remove the local .git folder to prevent synching with some-open-solutions version
         */
@@ -202,6 +235,7 @@ ipc.on('git_load_master', (event,args) => {
 });
 
 ipc.on('git_pages', (event,args) => {
+
   /*
   * confirm authentication file exists
   */
@@ -209,18 +243,38 @@ ipc.on('git_pages', (event,args) => {
     git_token_location,
     'utf8'
   );
-  try{
-    const octokit = new Octokit({
-      auth: auth_token,
-    }).repos.createPagesSite({
-      "owner":          args["organization"],
-      "repo":           args["repository"]
-    })
+
+  /*
+  * Check if the repository already is a github page
+  */
+  const octokit = new Octokit({
+    auth: auth_token,
+  }).repos.getPages({
+    "owner":          args["organization"],
+    "repo":           args["repository"]
+  }).then(function(results){
     event.returnValue = "success";
-  } catch(error){
-    console.log("HERE BE THE ERROR");
-    event.returnValue = "error: " + error;
-  }
+  }).catch(function(error){
+    try{
+      const octokit = new Octokit({
+        auth: auth_token,
+      }).repos.createPagesSite({
+        "owner":          args["organization"],
+        "repo":           args["repository"],
+        "source": {
+          "branch" : "master",
+          "path"   : "/"
+        }
+      }).then(function(result){
+        event.returnValue = "success";
+      }).catch(function(error){
+        event.returnValue = "error: " + error;
+      });
+    } catch(error){
+      console.log("HERE BE THE ERROR");
+      event.returnValue = "error: " + error;
+    }
+  });
 });
 
 ipc.on('git_pull', (event,args) => {
@@ -246,6 +300,7 @@ ipc.on('git_pull', (event,args) => {
   ){
     console.log("Repository doesn't exist locally, so cloning");
     //cloning
+    var git = simpleGit();
     git.clone(
       "https://github.com"   + "/" +
         args["organization"] + "/" +
@@ -287,6 +342,7 @@ ipc.on('git_pull', (event,args) => {
     console.log("remote = " + remote);
 
     try{
+      var git = simpleGit();
       git.cwd(
         "repositories"      + "/" +
         args["organization"] + "/" +
@@ -299,6 +355,8 @@ ipc.on('git_pull', (event,args) => {
         console.log(result);
         //copy and replace the "User" folder
 
+        console.log(JSON.stringify(args));
+
         try{
           fs.copySync(
             "repositories"         + "/" +
@@ -306,10 +364,14 @@ ipc.on('git_pull', (event,args) => {
               args["repository"]   + "/" +
               "web"                + "/" +
               "User",
-            "User"
+            "User", {
+              recursive: true
+            }
           );
+          console.log("succesfully copied over the local user folder using the updated repository");
           event.returnValue = "success";
         } catch(error){
+          console.log("failed to copy over the local user folder using the updated repository");
           event.returnValue = "failed to switch to the new repository - are you sure this is a valid Collector repository (e.g. has a user folder)";
         }
 
@@ -351,6 +413,7 @@ ipc.on('git_push', (event,args) => {
                   "@github.com"        + "/" +
                   args["organization"] + "/" +
                   args["repository"]   + ".git";
+  var git = simpleGit();
   git.cwd(
     "repositories"       + "/" +
     args["organization"] + "/" +
@@ -403,14 +466,19 @@ ipc.on('git_switch_repo', (event, args) => {
       )
     }
     if(typeof(args["old_repo"]) !== "undefined"){
-      fs.copySync(
-        "User",
-        "repositories"    + "/" +
-          args["old_org"] + "/" +
-          args["old_rep"] + "/" +
-          "web"           + "/" +
-          "User"
-      );
+      try{
+        fs.copySync(
+          "User",
+          "repositories"    + "/" +
+            args["old_org"] + "/" +
+            args["old_rep"] + "/" +
+            "web"           + "/" +
+            "User"
+        );
+      } catch(error){
+        // hopefully can just skip this if an error occurs
+        console.log("error = " + error);
+      }
     }
 
     /*

@@ -58,6 +58,7 @@ $("#delete_exp_btn").on("click",function(){
 					if(Collector.detect_context() == "localhost"){
 						Collector
 							.electron
+              .fs
 							.delete_experiment(exp_name,
 								function(response){
 									if(response !== "success"){
@@ -70,6 +71,126 @@ $("#delete_exp_btn").on("click",function(){
 			}
 		});
 	}
+});
+
+
+$("#delete_proc_button").on("click",function(){
+  if($("#proc_select option").length <2 ){
+    bootbox.alert("This would mean you have no procedure sheets. Please just edit the current sheet rather than deleting it.");
+  } else {
+    bootbox.confirm("Are you sure you want to delete this procedure sheet?",function(result){
+      if(!result){
+        // do nothing
+      } else {
+        /*
+        * delete from master_json
+        */
+        var experiment = $("#experiment_list").val();
+        var proc_file  = $("#proc_select").val();
+        delete(
+          master_json
+            .exp_mgmt
+            .experiments
+            [experiment]
+            .all_procs[proc_file]
+        );
+        delete(
+          master_json
+            .exp_mgmt
+            .experiments
+            [experiment]
+            .parsed_procs[proc_file]
+        );
+
+        delete(
+          master_json
+            .exp_mgmt
+            .experiments
+            [experiment]
+            .procs_csv[proc_file]
+        );
+
+        // update the lists
+        update_handsontables();
+
+        /*
+        * Delete the file locally if in electron
+        */
+        var file_path = "Experiments" + "/" +
+                          experiment  + "/" +
+                          proc_file
+        if(Collector.detect_context() == "localhost"){
+          var this_response = Collector
+            .electron
+            .fs
+            .delete_file(
+              file_path
+            );
+          if(this_response !== "success"){
+            bootbox.alert(this_response);
+          } else {
+            Collector.custom_alert(this_response);
+          }
+        }
+      };
+    });
+  }
+});
+
+$("#delete_stim_button").on("click",function(){
+  if($("#stim_select option").length <2 ){
+    bootbox.alert("This would mean you have no stimuli sheets. Please just edit the current sheet rather than deleting it.");
+  } else {
+    bootbox.confirm("Are you sure you want to delete this stimuli sheet?",function(result){
+      if(!result){
+        // do nothing
+      } else {
+        /*
+        * delete from master_json
+        */
+        var experiment = $("#experiment_list").val();
+        var stim_file  = $("#stim_select").val();
+        delete(
+          master_json
+            .exp_mgmt
+            .experiments
+            [experiment]
+            .all_stims[stim_file]
+        );
+
+        delete(
+          master_json
+            .exp_mgmt
+            .experiments
+            [experiment]
+            .stims_csv[stim_file]
+        );
+
+        // update the lists
+        update_handsontables();
+
+        /*
+        * Delete the file locally if in electron
+        */
+        var file_path = "Experiments" + "/" +
+                          experiment  + "/" +
+                          stim_file
+        if(Collector.detect_context() == "localhost"){
+          var this_response = Collector
+            .electron
+            .fs
+            .delete_file(
+              file_path
+            );
+          if(this_response !== "success"){
+            bootbox.alert(this_response);
+          } else {
+            Collector.custom_alert(this_response);
+          }
+        }
+      };
+    });
+  }
 });
 
 $("#download_experiment_button").on("click",function(){
@@ -173,6 +294,7 @@ $("#rename_exp_btn").on("click",function(){
 								if(response == "success"){
 									Collector
 										.electron
+                    .fs
 										.delete_experiment(
 											original_name,
 											function(response){
@@ -341,31 +463,35 @@ $("#run_btn").on("click",function(){
 				//test here for whether there is a github repository linked
 				master_json.data.save_script == ""){
 
+        /* might reinstate this later if it becomes helpful
 				bootbox.prompt("You currently have no link that saves your data. Please follow the instructions in the tutorial (to be completed), and then copy the link to confirm where to save your data below:",function(this_url){
 					if(this_url){
 						master_json.data.save_script = this_url;
 						$("#save_btn").click();
 					}
 				});
+        */
 			}
       if(github_json.organization !== ""){
         var organization = github_json.organization;
       } else {
         var organization = github_json.username;
       }
-      var github_url =  "https://" +
-                        organization +
-                        ".github.io/" +
+      var github_url =  "https://"             +
+                        organization           +
+                        ".github.io"           + "/" +
                         github_json.repository + "/" +
-                        Collector.version +
-                        "/" +  "RunStudy.html?platform=github&" +
-      															"location=" + $("#experiment_list").val() + "&" +
-      															"name="     + master_json.exp_mgmt.exp_condition;
+                        "web"                  + "/" +
+                        Collector.version      + "/" +  "RunStudy.html?platform=github&"    +
+												"location="                         +
+                          $("#experiment_list").val() + "&" +
+												"name="                             +
+                          master_json.exp_mgmt.exp_condition;
 
 
 			bootbox.dialog({
 				title:"Select a Condition",
-				message: "Which condition would you like to run? <br><br>" + select_html + "<br><br> Online link copy the following into a browser:<br>(make sure you've pushed the latest changes and waited 5+ minutes) <input class='form-control' value='" + github_url + "' onfocus='this.select();'>",
+				message: "Which condition would you like to run? <br><br>" + select_html + "<br><br> Online link copy the following into a browser:<br>(make sure you've pushed the latest changes and waited 5+ minutes) <input class='form-control' value='" + github_url + "' onfocus='this.select();' id='experiment_url_input'>",
 				buttons: {
 					local:{
 						label: "Run (will save data)",
@@ -395,6 +521,20 @@ $("#run_btn").on("click",function(){
 					}
 				}
 			});
+      $("#select_condition").on("change",function(){
+        $("#experiment_url_input").val(
+          "https://"                            +
+            organization                        +
+            ".github.io"                        + "/" +
+            github_json.repository              + "/" +
+            "web"                               + "/" +
+            Collector.version                   + "/" +  "RunStudy.html?platform=github&"    +
+						"location="                         +
+              $("#experiment_list").val() + "&" +
+						"name="                             +
+            $("#select_condition").val()
+        );
+      });
 			break;
 	}
 

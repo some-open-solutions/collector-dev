@@ -3,6 +3,10 @@
 		"subtitle":"deprecated",
 		"text":"please change this column header to <b>name</b>."
 	},
+  "mobile":{
+    "subtitle":"Whether the user is allowed to use a mobile device",
+    "text":"By default the user is allowed to use mobile devices - but you can add this column and write <b>no</b> and this will prevent them completing the study on one."
+  },
 	"name":{
 		"subtitle":"Name of Condition",
 		"text":"Please don't put any spaces in this name. You can use underscores _ instead though."

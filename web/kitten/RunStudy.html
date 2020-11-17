@@ -44,6 +44,7 @@
 <script src="Code/OnlineTriggers.js"></script>
 <script src="Code/CollectorEncrypt.js"></script>
 <script src="Code/BrowserCheck.js"></script>
+<script src="Code/MobileCheck.js"></script>
 
 <div id="welcome_html"></div>
 <script>
@@ -1201,13 +1202,24 @@ function requestFullScreen(element) {
 }
 
 function select_condition(){
-	exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
+  exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
 
   exp_json.this_condition = exp_json.conditions.filter(function(row){
     return row.name == Study.get_vars.name;
   })[0];
 
-  Study.activate_pipe();
+  /*
+  * Check if use of mobile devices is off
+  */
+  if(
+    typeof(exp_json.this_condition.mobile) !== "undefined" &&
+    exp_json.this_condition.mobile.toLowerCase() == "no" &&
+    window.mobilecheck()
+  ){
+    alert("This experiment will not run on a mobile device. Please complete it on a laptop or desktop (using google chrome if possible).");
+  } else{
+    Study.activate_pipe();
+  }
 }
 
 //by Laurens Holst on https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
