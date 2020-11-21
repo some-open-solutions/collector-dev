@@ -1,6 +1,6 @@
 {
   "name": "Collector",
-  "version": "3.11.1",
+  "version": "3.11.2",
   "description": "An Open-Source package for online research",
   "main": "main.js",
   "scripts": {
@@ -75,6 +75,7 @@
     "command-exists": "^1.2.9",
     "download-git-repo": "^3.0.2",
     "electron-context-menu": "^2.3.0",
+    "eval": "^0.1.4",
     "fs": "0.0.1-security",
     "fs-extra": "^9.0.1",
     "git-clone": "^0.1.0",

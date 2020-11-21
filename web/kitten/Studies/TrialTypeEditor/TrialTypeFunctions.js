@@ -250,7 +250,6 @@ function list_trialtypes(to_do_after){
 
         switch(Collector.detect_context()){
           case "localhost":
-            console.dir(item);
             var trial_content = Collector.electron.fs.read_default(
               "Trialtypes",
               item

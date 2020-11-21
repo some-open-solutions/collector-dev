@@ -5,93 +5,6 @@ window.onload=function(){
     if(typeof(Collector) !== "undefined"){
       clearInterval(wait_for_collector);
       Collector.electron = {
-        git:{
-          add_changes: function(repo_info){
-            return ipc.sendSync(
-              'git_add_changes',
-              repo_info
-            );
-          },
-          add_repo: function(repo_info){
-            return ipc.sendSync(
-              'git_add_repo',
-              repo_info
-            );
-          },
-          add_token: function(auth_token){
-            return ipc.sendSync(
-              'git_add_token',{
-              "auth_token": auth_token
-            });
-          },
-          delete_org: function(org_info){
-            return ipc.sendSync(
-              'git_delete_org',
-              org_info
-            )
-            return this_response;
-          },
-          delete_repo: function(repo_info){
-            return ipc.sendSync(
-              'git_delete_repo',
-              repo_info
-            )
-            return this_response;
-          },
-          exists: function(){
-            return this_response = ipc.sendSync(
-              'git_exists'
-            );
-          },
-          load_master: function(){
-            return ipc.sendSync('git_load_master')
-          },
-          pages: function(repo_info){
-            return ipc.sendSync(
-              'git_pages',
-              repo_info
-            );
-          },
-          pull: function(repo_info){
-            return ipc.sendSync(
-              'git_pull',
-              repo_info
-            );
-          },
-          push: function(repo_info){
-            return ipc.sendSync(
-              'git_push',
-              repo_info
-            );
-          },
-          save_master: function(){
-            var git_master_json = JSON.stringify(github_json);
-            return ipc.sendSync(
-              'git_save_master',
-              {
-                "git_master_json": git_master_json
-              }
-            )
-          },
-          switch_repo: function(repo_info){
-            return ipc.sendSync(
-              'git_switch_repo',
-              repo_info
-            )
-          },
-          token_exists: function(){
-            return ipc.sendSync(
-              'git_token_exists',
-              {}
-            )
-          },
-          valid_org: function(repo_info){
-            return ipc.sendSync(
-              'git_valid_org',
-              repo_info
-            )
-          }
-        },
         fs: {
           delete_experiment: function(
             exp_name,
@@ -187,6 +100,101 @@ window.onload=function(){
             return write_response;
           }
         },
+        git:{
+          add_changes: function(repo_info){
+            return ipc.sendSync(
+              'git_add_changes',
+              repo_info
+            );
+          },
+          add_repo: function(repo_info){
+            return ipc.sendSync(
+              'git_add_repo',
+              repo_info
+            );
+          },
+          add_token: function(auth_token){
+            return ipc.sendSync(
+              'git_add_token',{
+              "auth_token": auth_token
+            });
+          },
+          delete_org: function(org_info){
+            return ipc.sendSync(
+              'git_delete_org',
+              org_info
+            )
+            return this_response;
+          },
+          delete_repo: function(repo_info){
+            return ipc.sendSync(
+              'git_delete_repo',
+              repo_info
+            )
+            return this_response;
+          },
+          exists: function(){
+            return this_response = ipc.sendSync(
+              'git_exists'
+            );
+          },
+          load_master: function(){
+            return ipc.sendSync('git_load_master')
+          },
+          pages: function(repo_info){
+            return ipc.sendSync(
+              'git_pages',
+              repo_info
+            );
+          },
+          pull: function(repo_info){
+            return ipc.sendSync(
+              'git_pull',
+              repo_info
+            );
+          },
+          push: function(repo_info){
+            return ipc.sendSync(
+              'git_push',
+              repo_info
+            );
+          },
+          save_master: function(){
+            var git_master_json = JSON.stringify(github_json);
+            return ipc.sendSync(
+              'git_save_master',
+              {
+                "git_master_json": git_master_json
+              }
+            )
+          },
+          switch_repo: function(repo_info){
+            return ipc.sendSync(
+              'git_switch_repo',
+              repo_info
+            )
+          },
+          token_exists: function(){
+            return ipc.sendSync(
+              'git_token_exists',
+              {}
+            )
+          },
+          valid_org: function(repo_info){
+            return ipc.sendSync(
+              'git_valid_org',
+              repo_info
+            )
+          }
+        },
+        open_folder: function(folder){
+          return ipc.sendSync(
+            'open_folder',
+            {
+              folder: folder
+            }
+          );
+        }
       }
     }
   },100);

@@ -65,8 +65,6 @@ switch(Collector.detect_context()){
           github_json = JSON.parse(
             Collector.electron.git.load_master()
           );
-          console.dir("github_json");
-          console.dir(github_json);
         }
         Collector.start();
       }

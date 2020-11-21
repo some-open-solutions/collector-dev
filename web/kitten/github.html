@@ -29,7 +29,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Synch with github repository</h5>
-        <button type="button" class="close" onclick='$("#github_dialog").fadeOut()'>
+        <button type="button" class="close" id="fadeout_github">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -328,6 +328,15 @@ $("#delete_repo_btn").on("click",function(){
   });
 });
 
+$("#fadeout_github").on("click", function(){
+  if($("#select_repository").val() == "select a repository"){
+    $("#select_repository").val(github_json.repository);
+  }
+  $("#github_dialog").fadeOut();
+});
+
+
+
 $("#pull_repo_btn").on("click",function(){
   var organization = $("#select_organization").val();
   var repository   = $("#select_repository").val();
@@ -447,6 +456,16 @@ $("#select_organization").on("change", function(){
         }));
       });
 
+      $('#select_repository').append($('<option>', {
+          value: "select a repository",
+          text:  "select a repository",
+          disabled: true
+      }));
+
+      $('#select_repository').val("select a repository");
+
+      /*
+      $("#select_repository").val($("#select_repository option")[0].value);
 
       // swap the master_json and refresh
       Collector
@@ -455,7 +474,7 @@ $("#select_organization").on("change", function(){
         .switch_repo({
           old_org:      github_json.organization,
           old_rep:      github_json.repository,
-          repository:   $("#select_repository").val(),
+          repository:   $("#select_repository option")[0].value,
           organization: $("#select_organization").val()
         });
 
@@ -464,7 +483,8 @@ $("#select_organization").on("change", function(){
         .github
         .repository = $("#select_repository").val();
       Collector.electron.git.save_master();
-      location.reload();
+      */
+      //location.reload();
     } else {
       $("#select_organization").val(github_json.organization)
     }

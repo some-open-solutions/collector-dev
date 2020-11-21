@@ -83,6 +83,10 @@ $("#js_decrypt_btn").on("click",function(){
   $("#fileToLoad").click();
 });
 
+$("#local_data_btn").on("click", function(){
+  Collector.electron.open_folder("User\\Data");
+});
+
 switch(Collector.detect_context()){
   case "localhost":
     $("#local_data_btn").show(500);
@@ -291,17 +295,36 @@ function populate_data_div(data_div_id,
     e.preventDefault(); e.stopPropagation()
   });
 }
-var data_stuff;
+
+// for debugging
+var data_json;
+
+
 function request_data_list(){
+
+  bootbox.alert(
+    "<h3 class='text-info' id='listing_data_h3'>" +
+      "Your data is being listed " +
+      '<span class="spinner-border text-primary" role="status" id="listing_data_spinner">' +
+        '<span class="sr-only">Loading...</span>' +
+      '</span>' +
+    "</h3>"
+  )
+
+
   $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
     email:    $("#data_user_email").val(),
     password: $("#data_user_password").val(),
     action:   "list_data"
   },function(result){
-    data_stuff = result;
+    data_json = result;
     try{
       var mega_data_obj = JSON.parse(result);
       var server_data_obj  = mega_data_obj.server_info.used_space;
+      $("#listing_data_h3").removeClass("text-info");
+      $("#listing_data_h3").addClass("text-primary");
+      $("#listing_data_h3").html("Process complete - you can now see your data");
+      $("#listing_data_spinner").fadeOut();
 
       var used_server_space_mb = 0;
       Object.keys(server_data_obj).forEach(function(this_experiment){
@@ -366,6 +389,59 @@ function request_data_list(){
         populate_data_div("storage_data",
                           storage_data_obj,
                           "success");
+      }
+
+
+      /*
+      * Process info about backup files
+      */
+      if(typeof(mega_data_obj.backup_info) !== "undefined"){
+
+        var backup_data_obj = mega_data_obj.backup_info.used_space;
+
+        /*
+        need to tidy this up to merge files where appropriate to make participants
+        */
+
+        Object.keys(backup_data_obj).forEach(function(this_experiment){
+          var participant_list = [];
+          Object.keys(backup_data_obj[this_experiment]).forEach(function(raw_participant){
+            var all_data_pp = raw_participant.split("_all_data.").length == 2 ? true : false;
+
+            this_participant = raw_participant.split("_trial_")[0]
+                                              .split("_all_data.")[0];
+            if(typeof(participant_list[this_participant]) == "undefined"){
+              participant_list[this_participant] = {
+                all_data: all_data_pp,
+                files:    [raw_participant],
+                size:     parseFloat(backup_data_obj[this_experiment][raw_participant].size)
+              };
+            } else if(all_data_pp) {
+              participant_list[this_participant].all_data = true;
+              participant_list[this_participant].size += parseFloat(backup_data_obj[this_experiment][raw_participant].size);
+            } else {
+              participant_list[this_participant].size += parseFloat(backup_data_obj[this_experiment][raw_participant].size);
+              participant_list[this_participant].files.push(raw_participant);
+            }
+          });
+          backup_data_obj[this_experiment] = participant_list;
+        });
+
+
+        var used_backup_space_gb = 0;
+        Object.keys(backup_data_obj).forEach(function(this_experiment){
+          Object.keys(backup_data_obj[this_experiment]).forEach(function(this_pp){
+            used_backup_space_gb += parseFloat(backup_data_obj[this_experiment][this_pp].size);
+          });
+        });
+        used_backup_space_gb = used_backup_space_gb/1000000000;
+
+        $("#used_backup_space").html(used_backup_space_gb + " GB");
+        $("#max_backup_space").html((mega_data_obj.backup_info.max_space) + " GB");
+
+        populate_data_div("backup_data",
+                          backup_data_obj,
+                          "info");
       }
 
 
@@ -474,6 +550,59 @@ function request_data_list(){
           //$("#list_data_btn").click();
         });
       });
+
+
+      /*
+      * Backup data buttons
+      */
+      $(".download_backup_data_btn").unbind();
+      $(".download_backup_data_btn").on("click",function(){
+        var this_folder = $(this).find("span")[0].innerHTML;
+        $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+          email:       $("#data_user_email").val(),
+          password:    $("#data_user_password").val(),
+          action:      "download_backup_data",
+          this_folder: this_folder
+        },function(result){
+          console.dir(result);
+          var encrypted_data = JSON.parse(result);
+          var listed_data = [];
+          Object.keys(encrypted_data).forEach(function(row_name){
+            Object.keys(encrypted_data[row_name]).forEach(function(trial_row){
+              listed_data.push(JSON.parse(encrypted_data[row_name][trial_row]));
+            });
+          });
+
+          encrypt_obj.current_batch = [];                                         // reset the current batch
+          for(var i = 0; i < listed_data.length; i++){
+            if(i == listed_data.length - 1){
+              encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                           this_folder.split("_____")[1],
+                                           "none");
+            } else {
+              encrypt_obj._decrypt_request(JSON.stringify(listed_data[i]),        //file_content
+                                           this_folder.split("_____")[1],
+                                           "add");
+            }
+          }
+        });
+      });
+      $(".delete_backup_data_btn").unbind();
+      $(".delete_backup_data_btn").on("click",function(){
+        $(this).closest("tr").remove();
+        var this_folder = $(this).find("span")[0].innerHTML;
+        $.post(master_json.data.servers[$("#select_data_server").val()].registration_url,{
+          email:       $("#data_user_email").val(),
+          password:    $("#data_user_password").val(),
+          action:      "delete_backup_data",
+          this_folder: this_folder
+        },function(result){
+          Collector.custom_alert(result);
+          //$("#list_data_btn").click();
+        });
+      });
+
+
     } catch(error){
       bootbox.alert("Failed to retrieve a list of your files - please double check your password and email address");
     }
