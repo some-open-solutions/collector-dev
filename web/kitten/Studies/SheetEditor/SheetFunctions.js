@@ -112,7 +112,7 @@ function list_studies(){
   try{
     name_list = Object.keys(master_json.exp_mgmt.experiments);
     function update_exp_list(){
-      var series_select_html = "<select id='add_study_series_select'  class='custom-select'><option hidden disabled selected>Select a study</option>";
+      var series_select_html = "<select id='add_study_pathway_select'  class='custom-select'><option hidden disabled selected>Select a study</option>";
       var select_html = "<select id='experiment_list'  class='custom-select'><option hidden disabled selected>Select a study</option>";
       name_list.sort(function(a,b){
         return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -124,7 +124,8 @@ function list_studies(){
       series_select_html += "</select>";
       select_html += "</select>";
 
-      $("#add_study_series_select_div").html(series_select_html);
+      //$("#add_study_pathway_select").val()
+      $("#add_study_pathway_select_div").html(series_select_html);
 
       $("#experiments").html(select_html);
       $("#experiment_list").on("change",function(){
