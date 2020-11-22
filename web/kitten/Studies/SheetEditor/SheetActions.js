@@ -661,6 +661,7 @@ $("#save_btn").on("click", function(){
     $("#save_trial_type_button").click();
     $("#save_survey_btn").click();
     $("#save_snip_btn").click();
+    $("#save_pathway_btn").click();
 
     if(typeof(master_json.keys) == "undefined" ||
        typeof(master_json.keys.public_key) == "undefined"){

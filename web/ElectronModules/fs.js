@@ -144,6 +144,9 @@ ipc.on('fs_read_file', (event,args) => {
     if(!fs.existsSync("User/Experiments")){
       fs.mkdirSync("User/Experiments");
     }
+    if(!fs.existsSync("User/Pathway")){
+      fs.mkdirSync("User/Pathway");
+    }
     if(!fs.existsSync("User/Stimuli")){
       fs.mkdirSync("User/Stimuli");
     }
@@ -169,6 +172,32 @@ ipc.on('fs_read_file', (event,args) => {
 });
 
 ipc.on('fs_write_data', (event,args) => {
+
+  /*
+  * Making sure the relevant folders exist
+  */
+  if(!fs.existsSync("User")){
+    fs.mkdirSync("User");
+  }
+  if(!fs.existsSync("User/Data")){
+    fs.mkdirSync("User/Data");
+  }
+  if(!fs.existsSync("User/Experiments")){
+    fs.mkdirSync("User/Experiments");
+  }
+  if(!fs.existsSync("User/Pathway")){
+    fs.mkdirSync("User/Pathway");
+  }
+  if(!fs.existsSync("User/Stimuli")){
+    fs.mkdirSync("User/Stimuli");
+  }
+  if(!fs.existsSync("User/Surveys")){
+    fs.mkdirSync("User/Surveys");
+  }
+  if(!fs.existsSync("User/Trialtypes")){
+    fs.mkdirSync("User/Trialtypes");
+  }
+
 
   /*
   * Security checks - should probably have more
