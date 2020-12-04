@@ -814,10 +814,11 @@ function insert_end_checks(){
 }
 function insert_start(){
 
+  var this_proc  = exp_json.parsed_proc;
+
+
 
   if(Study.get_vars.platform == "preview"){
-    var this_proc  = exp_json.parsed_proc;
-
     var this_proc_calibration = {
       item:0,
       max_time:"",
@@ -835,9 +836,9 @@ function insert_start(){
     });
   } else {
 
-    // update the procedure to have a general warning
-    var this_proc  = exp_json.parsed_proc;
-
+    /*
+    * Calibration slide
+    */
     var this_proc_calibration = {
       item:0,
       max_time:"",
@@ -848,8 +849,11 @@ function insert_start(){
     shuffle_levels.forEach(function(shuffle_level){
       this_proc_calibration[shuffle_level] = "off";
     });
-
     this_proc.unshift(this_proc_calibration);
+
+    /*
+    * Warning about asking for inappropriate details
+    */
     var this_proc_detail_warning = {
       item:0,
       max_time:"",
@@ -863,6 +867,29 @@ function insert_start(){
     });
     this_proc.unshift(this_proc_detail_warning);
 
+    if(typeof(exp_json.this_condition.age_check) !== "undefined" &&
+       exp_json.this_condition.age_check.toLowerCase() == "no"){
+
+      //skip this
+    } else {
+      /*
+      * Age check
+      */
+      var this_proc_age_warning = {
+        item:0,
+        max_time:"",
+        text:"",
+        "trial type":"age_check"
+      }
+
+      var shuffle_levels = Object.keys(exp_json.parsed_proc[0]).filter(item => item.indexOf("shuffle") !== -1);
+      shuffle_levels.forEach(function(shuffle_level){
+        this_proc_age_warning[shuffle_level] = "off";
+      });
+      this_proc.unshift(this_proc_age_warning);
+    }
+
+
     // update trialtypes to have a "start" trial
     ////////////////////////////////////////////
 
@@ -870,6 +897,9 @@ function insert_start(){
       exp_json.trialtypes.start_experiment = start_experiment_html;
       $.get("Quality/Calibration.html",function(calibration_zoom_html){
         exp_json.trialtypes.calibration_zoom = calibration_zoom_html;
+        $.get("Quality/AgeCheck.html", function(age_check_html){
+          exp_json.trialtypes.age_check = age_check_html;
+        });
         Study.activate_pipe();
       });
     });
@@ -1383,7 +1413,9 @@ function shuffle_start_exp(){
 }
 
 function start_restart(){
-  if(window.localStorage.getItem("exp_json") !== null &
+  if(isSafari){
+    bootbox.alert("This experiment will not run in safari. Please close and use another browser");
+  } else if(window.localStorage.getItem("exp_json") !== null &
      Study.get_vars.platform !== "preview"){
 
     bootbox.dialog({

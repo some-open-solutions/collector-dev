@@ -1,4 +1,8 @@
 {
+  "age_check":{
+    "subtitle": "Whether you want to restrict your study to participants aged 18 and above",
+    "text": "By default the experiment will tell participants to not participate if they are under 18. You can turn this off with the value “no”."
+  },
   "description":{
 		"subtitle":"deprecated",
 		"text":"please change this column header to <b>name</b>."

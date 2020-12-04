@@ -514,9 +514,11 @@ $("#select_repository").on("change", function(){
       Collector.electron.git.save_master();
       location.reload();
     } else {
-      $("#select_repository").val(master_json)
+      $("#select_repository").val(
+        master_json
         .github
-        .repository;
+        .repository
+      );
     }
   })
 
