@@ -56,7 +56,7 @@ switch(Collector.detect_context()){
             "master.json",
             JSON.stringify(master_json, null, 2));
           if(write_response !== "success"){
-            bootbox.alert(response);
+            bootbox.alert(write_response);
           }
         }
         var git_exists = Collector.electron.git.exists();

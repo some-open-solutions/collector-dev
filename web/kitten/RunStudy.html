@@ -47,6 +47,7 @@
 <script src="Code/MobileCheck.js"></script>
 
 <div id="welcome_html"></div>
+
 <script>
 $("#welcome_html").load("Welcome.html");
 </script>
@@ -61,13 +62,11 @@ $("#welcome_html").load("Welcome.html");
 	margin-left: auto;
 	margin-right: auto;
 }
-
 #experiment_div{
 	display: none;
 	width  : 100%;
 	margin : auto;
 }
-
 #download_json{
 	color:green;
 }
@@ -77,13 +76,17 @@ $("#welcome_html").load("Welcome.html");
 </style>
 
 
+
 <div id="post_welcome">
 	<div class="progress" style="height: 1px; position:fixed;">
 		<div id="experiment_progress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
 	</div>
 
+
 	<div id="loading_div">Preparing encryption of data</div>
+
 	<div id="stim_progress" class="progress">
+
 		<div id="stim_listing" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%"></div>
 	</div>
 	<div id="beginning_checks" style="display:none">
@@ -92,7 +95,7 @@ $("#welcome_html").load("Welcome.html");
 		Please click "Understood" to show that you have understood these instructions. <br><br>
 		<input type="button" value="Understood" id="proc_button">
 	</div>
-	<div id = "calibrate_div"></div>
+  <div id = "calibrate_div"></div>
 	<div id="experiment_div" scrolling="no"></div>
 </div>
 <div id="participant_country"></div>
@@ -1431,13 +1434,18 @@ function start_restart(){
             var participant_code = window.localStorage.getItem("username");
             var completion_code = window.localStorage.getItem("completion_code");
             var prehashed_code = window.localStorage.getItem("prehashed_code");
-            $("#participant_code").val(participant_code);
             $("#completion_code").val(completion_code);
             $("#prehashed_code").val(prehashed_code);
-            //post_welcome(participant_code,false);
-            //process_welcome();
-						post_welcome_data("blank");
-						//Study.activate_pipe();
+            if(participant_code == ""){
+              bootbox.prompt("What ID did you use?", function(this_participant_code){
+                participant_code = this_participant_code;
+                $("#participant_code").val(participant_code);
+                post_welcome_data("blank");
+              });
+            } else {
+              $("#participant_code").val(participant_code);
+              post_welcome_data("blank");
+            }
   				}
         },
   			start: {

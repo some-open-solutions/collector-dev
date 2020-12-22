@@ -97,6 +97,12 @@ $("#add_study_to_pathway_btn").on("click", function(){
 
 
 function list_pathways(){
+  if(typeof(master_json.pathway_mgmt) == "undefined"){
+    master_json.pathway_mgmt = {};
+  }
+  if(typeof(master_json.pathway_mgmt.pathways) == "undefined"){
+    master_json.pathway_mgmt.pathways = [];
+  }
   var pathways = Object.keys(master_json.pathway_mgmt.pathways)
       pathways = pathways.sort();
       pathways.forEach(function(pathway){

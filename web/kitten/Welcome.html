@@ -74,13 +74,12 @@ $("#participant_code").on("input change",function(){
 	this_pp_code = this_pp_code.replaceAll(')',"_bracket_close_");
 	this_pp_code = this_pp_code.replaceAll('*',"__");
 	this_pp_code = this_pp_code.replaceAll('^',"__");
+  this_pp_code = this_pp_code.replaceAll(':',"__");
+	this_pp_code = this_pp_code.replaceAll(';',"__");
 	this_pp_code = this_pp_code.replaceAll('%',"__");
 	this_pp_code = this_pp_code.replaceAll('$',"__");
 	this_pp_code = this_pp_code.replaceAll('£',"__");
 	this_pp_code = this_pp_code.replaceAll('!',"__");
-	this_pp_code = this_pp_code.replaceAll('`',"__");
-	this_pp_code = this_pp_code.replaceAll('`',"__");
-	this_pp_code = this_pp_code.replaceAll('`',"__");
 	this_pp_code = this_pp_code.replaceAll('`',"__");
 	this_pp_code = this_pp_code.replaceAll('+',"__");
 	this_pp_code = this_pp_code.replaceAll('=',"__");
@@ -98,15 +97,9 @@ $("#participant_code").on("input change",function(){
 });
 
 $("#start_btn").on("click",function(){
-	var participant_code = $("#participant_code").val();
-	bootbox.prompt("Please confirm your ID in the text box below", function(confirmed_id){
-    if(confirmed_id){
-      if(confirmed_id == participant_code){
-  			post_welcome(participant_code,false);
-  		} else {
-  			bootbox.alert("The IDs you've typed in do not match. Please double check and try again");
-  		}
-    }
-	});
+  var participant_code = $("#participant_code").val();
+  if(participant_code !== ""){
+    post_welcome(participant_code,false);
+  }
 });
 </script>

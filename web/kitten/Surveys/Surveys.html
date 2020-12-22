@@ -490,23 +490,25 @@ $("#new_survey_button").on("click",function(){
 				bootbox.prompt({
 					title: "New Survey",
 					callback: function(survey_name){
-						survey_name = survey_name.toLowerCase().replaceAll(".csv","") + ".csv";
-						if(typeof(master_json.surveys.user_surveys[survey_name] == "undefined")){
-							var survey_content = survey_HoT.getData();
-							master_json.surveys.user_surveys[survey_name] = JSON.parse(JSON.stringify(survey_content));
-							create_survey_HoT(master_json.surveys.user_surveys[survey_name]);
-							var survey_value   = "user|" + survey_name;
-							$("#survey_select").append($("<option>",{
-								text  : survey_name,
-								value : survey_value,
-								class : "bg-info text-white"
-							}));
-							$("#survey_select").val(survey_value);
-							Collector.custom_alert("<b>"+survey_name+"</b> created succesfully");
-						} else {
-							bootbox.alert("Survey name already exists");
-						}
-					}
+            if(survey_name){
+              survey_name = survey_name.toLowerCase().replaceAll(".csv","") + ".csv";
+              if(typeof(master_json.surveys.user_surveys[survey_name] == "undefined")){
+                var survey_content = survey_HoT.getData();
+                master_json.surveys.user_surveys[survey_name] = JSON.parse(JSON.stringify(survey_content));
+                create_survey_HoT(master_json.surveys.user_surveys[survey_name]);
+                var survey_value   = "user|" + survey_name;
+                $("#survey_select").append($("<option>",{
+                  text  : survey_name,
+                  value : survey_value,
+                  class : "bg-info text-white"
+                }));
+                $("#survey_select").val(survey_value);
+                Collector.custom_alert("<b>"+survey_name+"</b> created succesfully");
+              } else {
+                bootbox.alert("Survey name already exists");
+              }
+            }
+          }
 				});
 			}
 		});
