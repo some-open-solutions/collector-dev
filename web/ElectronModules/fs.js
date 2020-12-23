@@ -1,10 +1,32 @@
 const fs   = require('fs-extra')
 const ipc  = require('electron').ipcMain;
 
+
+/*
+* Detect if a mac device
+*/
+if(process.platform == "darwin"){
+
+  var root_dir = require("os").homedir() + "/Documents/Collector/";
+
+  //make sure there is a Collector folder in documents
+  if(!fs.existsSync(root_dir)){
+    fs.mkdirSync(root_dir);
+  }
+
+  // make User folder if it doesn't exist yet
+  if(!fs.existsSync(root_dir + "/User")){
+    fs.mkdirSync(root_dir + "/User");
+  }
+
+} else {
+  root_dir = "";
+}
+
+
 /*
 * fs functions in alphabetical order
 */
-
 
 ipc.on('fs_delete_experiment', (event,args) => {
 
@@ -18,11 +40,11 @@ ipc.on('fs_delete_experiment', (event,args) => {
     try{
       // delete the file
       fs.unlinkSync(
-        "User/Experiments/" + args["exp_name"] + ".json"
+        root_dir + "User/Experiments/" + args["exp_name"] + ".json"
       );
       // delete the folder
       fs.rmdirSync(
-        "User/Experiments/" + args["exp_name"],
+        root_dir + "User/Experiments/" + args["exp_name"],
          {
            recursive: true
          }
@@ -39,10 +61,10 @@ ipc.on('fs_delete_experiment', (event,args) => {
 ipc.on('fs_delete_file', (event,args) => {
   if(args["file_path"].indexOf("../") !== -1){
     event.returnValue = "This attempt to delete a file looked dangerous, so hasn't been completed";
-  } else if(!fs.existsSync("User/" + args["file_path"])){
+  } else if(!fs.existsSync(root_dir + "User/" + args["file_path"])){
     event.returnValue = "This file doesn't appear to exist, so could not be deleted on your computer (but also doesn't need to be deleted either.)";
   } else {
-    fs.unlink("User/" + args["file_path"]);
+    fs.unlink(root_dir + "User/" + args["file_path"]);
     event.returnValue = "success";
   }
 });
@@ -57,7 +79,7 @@ ipc.on('fs_delete_survey', (event,args) => {
     event.returnValue = "This request could be insecure, and was blocked";
   } else {
     try{
-      var content = fs.unlinkSync("User/Surveys/" +
+      var content = fs.unlinkSync(root_dir + "User/Surveys/" +
                                   args["survey_name"].replace(".csv","") +
                                   ".csv");
       event.returnValue = "success";
@@ -79,7 +101,7 @@ ipc.on('fs_delete_trialtype', (event,args) => {
     event.returnValue = "This request could be insecure, and was blocked";
   } else {
     try{
-      var content = fs.unlinkSync("User/Trialtypes/" +
+      var content = fs.unlinkSync(root_dir + "User/Trialtypes/" +
                                   args["trialtype_name"] +
                                   ".html");
       event.returnValue = "success";
@@ -96,7 +118,7 @@ ipc.on('fs_list_trialtypes', (event,args) => {
   * list all files in "Trialtypes" folder
   */
   event.returnValue = JSON.stringify(
-    fs.readdirSync("User/Trialtypes")
+    fs.readdirSync(root_dir + "User/Trialtypes")
   );
 });
 
@@ -138,23 +160,23 @@ ipc.on('fs_read_file', (event,args) => {
     if(!fs.existsSync("User")){
       fs.mkdirSync("User");
     }
-    if(!fs.existsSync("User/Data")){
-      fs.mkdirSync("User/Data");
+    if(!fs.existsSync(root_dir + "User/Data")){
+      fs.mkdirSync(root_dir + "User/Data");
     }
-    if(!fs.existsSync("User/Experiments")){
-      fs.mkdirSync("User/Experiments");
+    if(!fs.existsSync(root_dir + "User/Experiments")){
+      fs.mkdirSync(root_dir + "User/Experiments");
     }
-    if(!fs.existsSync("User/Pathway")){
-      fs.mkdirSync("User/Pathway");
+    if(!fs.existsSync(root_dir + "User/Pathway")){
+      fs.mkdirSync(root_dir + "User/Pathway");
     }
-    if(!fs.existsSync("User/Stimuli")){
-      fs.mkdirSync("User/Stimuli");
+    if(!fs.existsSync(root_dir + "User/Stimuli")){
+      fs.mkdirSync(root_dir + "User/Stimuli");
     }
-    if(!fs.existsSync("User/Surveys")){
-      fs.mkdirSync("User/Surveys");
+    if(!fs.existsSync(root_dir + "User/Surveys")){
+      fs.mkdirSync(root_dir + "User/Surveys");
     }
-    if(!fs.existsSync("User/Trialtypes")){
-      fs.mkdirSync("User/Trialtypes");
+    if(!fs.existsSync(root_dir + "User/Trialtypes")){
+      fs.mkdirSync(root_dir + "User/Trialtypes");
     }
 
     try{
@@ -179,23 +201,23 @@ ipc.on('fs_write_data', (event,args) => {
   if(!fs.existsSync("User")){
     fs.mkdirSync("User");
   }
-  if(!fs.existsSync("User/Data")){
-    fs.mkdirSync("User/Data");
+  if(!fs.existsSync(root_dir + "User/Data")){
+    fs.mkdirSync(root_dir + "User/Data");
   }
-  if(!fs.existsSync("User/Experiments")){
-    fs.mkdirSync("User/Experiments");
+  if(!fs.existsSync(root_dir + "User/Experiments")){
+    fs.mkdirSync(root_dir + "User/Experiments");
   }
-  if(!fs.existsSync("User/Pathway")){
-    fs.mkdirSync("User/Pathway");
+  if(!fs.existsSync(root_dir + "User/Pathway")){
+    fs.mkdirSync(root_dir + "User/Pathway");
   }
-  if(!fs.existsSync("User/Stimuli")){
-    fs.mkdirSync("User/Stimuli");
+  if(!fs.existsSync(root_dir + "User/Stimuli")){
+    fs.mkdirSync(root_dir + "User/Stimuli");
   }
-  if(!fs.existsSync("User/Surveys")){
-    fs.mkdirSync("User/Surveys");
+  if(!fs.existsSync(root_dir + "User/Surveys")){
+    fs.mkdirSync(root_dir + "User/Surveys");
   }
-  if(!fs.existsSync("User/Trialtypes")){
-    fs.mkdirSync("User/Trialtypes");
+  if(!fs.existsSync(root_dir + "User/Trialtypes")){
+    fs.mkdirSync(root_dir + "User/Trialtypes");
   }
 
 
@@ -215,15 +237,15 @@ ipc.on('fs_write_data', (event,args) => {
       */
 
       if(!fs.existsSync(
-          "User/Data/" + args["experiment_folder"]
+          root_dir + "User/Data/" + args["experiment_folder"]
         )
       ){
         fs.mkdirSync(
-          "User/Data/" + args["experiment_folder"]
+          root_dir + "User/Data/" + args["experiment_folder"]
         )
       }
       var content = fs.writeFileSync(
-        "User/Data/" + args["experiment_folder"] + "/" +
+        root_dir + "User/Data/" + args["experiment_folder"] + "/" +
         args["this_file"]   ,
         args["file_content"],
         'utf8'
@@ -252,7 +274,7 @@ ipc.on('fs_write_experiment', (event,args) => {
       * save JSON
       */
       fs.writeFileSync(
-        "User/Experiments/" +
+        root_dir + "User/Experiments/" +
          args["this_experiment"] + ".json",
          args["file_content"],
          'utf8'
@@ -262,11 +284,11 @@ ipc.on('fs_write_experiment', (event,args) => {
       * Create folder if it doesn't exist
       */
       if(!fs.existsSync(
-          "User/Experiments/" + args["this_experiment"]
+          root_dir + "User/Experiments/" + args["this_experiment"]
         )
       ){
         fs.mkdirSync(
-          "User/Experiments/" + args["this_experiment"]
+          root_dir + "User/Experiments/" + args["this_experiment"]
         )
       }
 
@@ -276,7 +298,7 @@ ipc.on('fs_write_experiment', (event,args) => {
       parsed_contents = JSON.parse(args["file_content"]);
 
       fs.writeFileSync(
-        "User/Experiments/" +
+        root_dir + "User/Experiments/" +
           args["this_experiment"] + "/" +
           "conditions.csv",
          parsed_contents["conditions_csv"],
@@ -285,7 +307,7 @@ ipc.on('fs_write_experiment', (event,args) => {
 
        Object.keys(parsed_contents.procs_csv).forEach(function(this_proc){
          fs.writeFileSync(
-           "User/Experiments/" +
+           root_dir + "User/Experiments/" +
             args["this_experiment"] + "/" +
             this_proc,
             parsed_contents.procs_csv[this_proc]
@@ -294,7 +316,7 @@ ipc.on('fs_write_experiment', (event,args) => {
 
        Object.keys(parsed_contents.stims_csv).forEach(function(this_stim){
          fs.writeFileSync(
-           "User/Experiments/" +
+           root_dir + "User/Experiments/" +
             args["this_experiment"] + "/" +
             this_stim,
             parsed_contents.stims_csv[this_stim]
@@ -320,7 +342,7 @@ ipc.on('fs_write_file', (event,args) => {
     var content = "This request could be insecure, and was blocked";
   } else {
     try{
-      var content = fs.writeFileSync("User/" +
+      var content = fs.writeFileSync(root_dir + "User/" +
                                        args["user_folder"] + "/" +
                                        args["this_file"]   + "/",
                                        args["file_content"],
