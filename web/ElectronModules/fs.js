@@ -132,7 +132,7 @@ ipc.on('fs_read_default', (event,args) => {
     var content = "This request could be insecure, and was blocked";
   } else {
     try{
-      var content = fs.readFileSync("Default/Default" +
+      var content = fs.readFileSync(root_dir + "Default/Default" +
                                       args["user_folder"] + "/" +
                                       args["this_file"]   + "/",
                                     'utf8');
@@ -157,8 +157,8 @@ ipc.on('fs_read_file', (event,args) => {
     /*
     * create User folder if it doesn't exist (and all the relevant subfolders)
     */
-    if(!fs.existsSync("User")){
-      fs.mkdirSync("User");
+    if(!fs.existsSync(root_dir + "User")){
+      fs.mkdirSync(root_dir + "User");
     }
     if(!fs.existsSync(root_dir + "User/Data")){
       fs.mkdirSync(root_dir + "User/Data");
@@ -180,7 +180,7 @@ ipc.on('fs_read_file', (event,args) => {
     }
 
     try{
-      var content = fs.readFileSync("User"                + "/" +
+      var content = fs.readFileSync(root_dir + "User"                + "/" +
                                       args["user_folder"] + "/" +
                                       args["this_file"],
                                     'utf8');
@@ -198,8 +198,8 @@ ipc.on('fs_write_data', (event,args) => {
   /*
   * Making sure the relevant folders exist
   */
-  if(!fs.existsSync("User")){
-    fs.mkdirSync("User");
+  if(!fs.existsSync(root_dir + "User")){
+    fs.mkdirSync(root_dir + "User");
   }
   if(!fs.existsSync(root_dir + "User/Data")){
     fs.mkdirSync(root_dir + "User/Data");
