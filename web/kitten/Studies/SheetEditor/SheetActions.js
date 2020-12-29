@@ -732,7 +732,8 @@ $("#save_btn").on("click", function(){
               var write_response = Collector.electron.fs.write_file(
                 "",
       					"master.json",
-      					JSON.stringify(master_json, null, 2));
+      					JSON.stringify(master_json, null, 2)
+							);
       			  if(write_response !== "success"){
       					bootbox.alert(response);
       				} else {

@@ -344,7 +344,7 @@ ipc.on('fs_write_file', (event,args) => {
     try{
       var content = fs.writeFileSync(root_dir + "User/" +
                                        args["user_folder"] + "/" +
-                                       args["this_file"]   + "/",
+                                       args["this_file"],
                                        args["file_content"],
                                      'utf8');
       event.returnValue = "success";
