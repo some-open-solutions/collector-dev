@@ -168,6 +168,22 @@ window.onload=function(){
               }
             )
           },
+          set_email: function(email){
+            return ipc.sendSync(
+              'git_set_email',
+              {
+                email: email
+              }
+            )
+          },
+          set_username: function(username){
+            return ipc.sendSync(
+              'git_set_username',
+              {
+                username: username
+              }
+            )
+          },
           switch_repo: function(repo_info){
             return ipc.sendSync(
               'git_switch_repo',

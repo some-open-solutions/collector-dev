@@ -838,18 +838,11 @@ encrypt_obj = {
   },
   change_password:function(){
     bootbox.dialog({
-      title:"Delete old password",
-      message:"Do you want to delete the old password keys? WARNING IF YOU DO THIS YOU WILL NEVER BE ABLE TO DECRYPT ANY DATA ASSOCIATED WITH THIS PASSWORD AGAIN. If you don't want to delete the old password, but still want a new one, select <b>No</b>",
+      title:"Are you sure you want to update your password?",
+      message: "We will still try to decrypt data that was encrypted with your old password, but make sure to use your new password to decrypt new data.",
       buttons:{
         yes: {
-          label: "Yes",
-          className: 'btn-danger',
-          callback: function(){
-            encrypt_obj.generate_keys();
-          }
-        },
-        no: {
-          label: "No",
+          label: "Okay",
           className: 'btn-primary',
           callback: function(){
             encrypt_obj.archive_keys();

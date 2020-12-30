@@ -25,20 +25,14 @@ if(process.platform == "darwin"){
 * Github management
 */
 const ipc  = require('electron').ipcMain;
-
 const { Octokit }     = require("@octokit/rest");
 const simpleGit       = require('simple-git');
+
 /*
 * var git = simpleGit(); has to be called in individual functions to make sure it's fresh rather than has carrying over information from previous calls
 */
-
 var commandExistsSync = require('command-exists').sync;
-
-
-
 const git_token_location = root_dir + "repositories/Private/github_token.txt";
-
-
 
 /*
 * In alphabetical order
@@ -235,9 +229,31 @@ ipc.on('git_delete_repo', (event,args) => {
   }
 });
 
+/*
+* Expanding git_exists to check if there is a valid user or not
+*/
 ipc.on('git_exists', (event,args) => {
   if(commandExistsSync('git')){
-    event.returnValue = "success"
+    var git = simpleGit();
+    git.listConfig().then(function(result){
+      var username = result.values[".git/config"]["user.name"];
+      var useremail = result.values[".git/config"]["user.email"];
+      console.log(username);
+      console.log(useremail);
+      if(typeof(username) !== "undefined" && username !== ""){
+        var valid_username = "true";
+      } else {
+        var valid_username = "false";
+      }
+
+      if(typeof(useremail) !== "undefined" && useremail !== ""){
+        var valid_email = "true";
+      } else {
+        var valid_email = "false";
+      }
+      event.returnValue = valid_username + "-" + valid_email;
+    });
+
   } else {
     event.returnValue = "Git is not yet installed. Please go to https://git-scm.com/ to download and install it so that you can do online research.";
   }
@@ -476,6 +492,19 @@ ipc.on('git_save_master', (event,args) => {
     args["git_master_json"],
     'utf8'
   );
+  event.returnValue = "success";
+});
+
+ipc.on('git_set_email', (event, args) => {
+  var git = simpleGit();
+      git.addConfig("user.email", args["email"]);
+  event.returnValue = "success";
+});
+
+ipc.on('git_set_username', (event, args) => {
+  var git = simpleGit();
+      git.addConfig("user.name", args["username"]);
+
   event.returnValue = "success";
 });
 
