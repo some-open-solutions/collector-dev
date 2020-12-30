@@ -160,8 +160,8 @@ ipc.on('fs_read_file', (event,args) => {
     if(!fs.existsSync(root_dir + "User")){
       fs.mkdirSync(root_dir + "User");
     }
-    if(!fs.existsSync(root_dir + "User/Data")){
-      fs.mkdirSync(root_dir + "User/Data");
+    if(!fs.existsSync(root_dir + "Data")){
+      fs.mkdirSync(root_dir + "Data");
     }
     if(!fs.existsSync(root_dir + "User/Experiments")){
       fs.mkdirSync(root_dir + "User/Experiments");
@@ -201,8 +201,8 @@ ipc.on('fs_write_data', (event,args) => {
   if(!fs.existsSync(root_dir + "User")){
     fs.mkdirSync(root_dir + "User");
   }
-  if(!fs.existsSync(root_dir + "User/Data")){
-    fs.mkdirSync(root_dir + "User/Data");
+  if(!fs.existsSync(root_dir + "Data")){
+    fs.mkdirSync(root_dir + "Data");
   }
   if(!fs.existsSync(root_dir + "User/Experiments")){
     fs.mkdirSync(root_dir + "User/Experiments");
@@ -237,15 +237,15 @@ ipc.on('fs_write_data', (event,args) => {
       */
 
       if(!fs.existsSync(
-          root_dir + "User/Data/" + args["experiment_folder"]
+          root_dir + "Data/" + args["experiment_folder"]
         )
       ){
         fs.mkdirSync(
-          root_dir + "User/Data/" + args["experiment_folder"]
+          root_dir + "Data/" + args["experiment_folder"]
         )
       }
       var content = fs.writeFileSync(
-        root_dir + "User/Data/" + args["experiment_folder"] + "/" +
+        root_dir + "Data/" + args["experiment_folder"] + "/" +
         args["this_file"]   ,
         args["file_content"],
         'utf8'

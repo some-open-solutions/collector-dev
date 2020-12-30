@@ -11,6 +11,7 @@ Collector.exe
 /Updater/build
 /Updater/dist
 /Updater/UpdateCollector.spec
+/web/Data
 /web/dist
 /web/repositories
 /web/User/Data
