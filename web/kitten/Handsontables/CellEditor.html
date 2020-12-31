@@ -141,9 +141,14 @@ cell_editor.getSession().on('change', function(){
   //insert content from ace editor into iframe
   var cell_contents = cell_editor.getValue();
 
-  if(Collector.is_exe){
+
+	if(Collector.electron.fs.home_dir() !== ""){
+		cell_contents = cell_contents.replaceAll("\.\./User", Collector.electron.fs.home_dir() + "/User");
+	} else if(Collector.is_exe){
     cell_contents = cell_contents.replaceAll("\.\./User","../../../User");
   }
+
+
 
 	if($("#cell_auto_preview_on").hasClass("btn-primary")){
 		doc = document.getElementById('cell_preview_iframe').contentWindow.document;
