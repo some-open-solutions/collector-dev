@@ -113,6 +113,10 @@ ipc.on('fs_delete_trialtype', (event,args) => {
   }
 });
 
+ipc.on('fs_home_dir', (event,args) => {
+  event.returnValue = root_dir;
+});
+
 ipc.on('fs_list_trialtypes', (event,args) => {
   /*
   * list all files in "Trialtypes" folder

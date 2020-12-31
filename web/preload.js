@@ -44,6 +44,9 @@ window.onload=function(){
           list_trialtypes: function(){
             return ipc.sendSync('fs_list_trialtypes');
           },
+          home_dir: function(){
+            return ipc.sendSync('fs_home_dir')
+          },
           read_default: function(
             user_folder,
             this_file

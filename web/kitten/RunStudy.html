@@ -386,11 +386,25 @@ Study = {
     // in case the user forgets
     this_trialtype = this_trialtype.replaceAll("www.dropbox","dl.dropbox");
 
-    if(Study.is_exe){
+    /*
+    * Need to detect whether localhost and on mac
+    */
+    if(
+      typeof(Collector.electron) !== "undefined" &&
+      window.navigator.platform == "MacIntel"
+    ){
+      var home_dir = Collector
+        .electron
+        .fs
+        .home_dir();
+        this_trialtype = this_trialtype.replaceAll(
+          "../User/",
+          home_dir + "/User/"
+        );
+    } else if(Study.is_exe){
       this_trialtype = this_trialtype.replaceAll("User/","../../User/");
 
     }
-
 		return this_trialtype;
 	},
 
