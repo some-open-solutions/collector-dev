@@ -181,13 +181,14 @@ function list_studies(){
   }
 }
 function new_experiment(experiment){
-
   if($("#experiment_list").text().indexOf(experiment) !== -1){
 		bootbox.alert("Name already exists. Please try again.");
 	} else {
 
     //create it first in dropbox, THEN update table with location
-		master_json.exp_mgmt.experiments[experiment] = default_experiment;
+		master_json.exp_mgmt.experiments[experiment] = JSON.parse(
+      JSON.stringify(default_experiment)
+    );
 
 		var this_path = "/Experiments/" + experiment + ".json";
 
