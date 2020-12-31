@@ -390,9 +390,10 @@ Study = {
     /*
     * Need to detect whether localhost and on mac
     */
+
     if(
       typeof(Collector.electron) !== "undefined" &&
-      window.navigator.platform == "MacIntel"
+      window.navigator.platform.toLowerCase().indexOf("mac") !==-1
     ){
       var home_dir = Collector
         .electron

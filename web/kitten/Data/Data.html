@@ -84,7 +84,8 @@ $("#js_decrypt_btn").on("click",function(){
 });
 
 $("#local_data_btn").on("click", function(){
-  Collector.electron.open_folder("Data");
+  var response = Collector.electron.open_folder("Data");
+  console.dir(response);  
 });
 
 switch(Collector.detect_context()){
