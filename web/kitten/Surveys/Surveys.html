@@ -466,17 +466,55 @@ $("#delete_survey_btn").on("click",function(){
 		if(confirmed){
 			var survey_name = $("#survey_select").val().split("|")[1].toLowerCase().replace(".csv","") + ".csv";
 			delete master_json.surveys.user_surveys[survey_name];
-			dbx.filesDelete({path:"/surveys/" + survey_name})
-				.then(function(result){
-					Collector.custom_alert("Succesfully deleted <b>" + survey_name + "</b>");
-					$('#survey_select option[value="' + $("#survey_select").val() + '"]').remove();
-					$("#survey_select").val("default|demographics.csv");
-					create_survey_HoT(master_json.surveys.default_surveys["demographics.csv"]);
-					$("#save_btn").click();
-				})
-				.catch(function(error){
-        	Collector.tests.report_error("problem deleting the survey.", "problem deleting the survey.");
-				});
+
+      //need to use electron to delete here
+      switch(Collector.detect_context()){
+        case "localhost":
+          var response = Collector
+            .electron
+            .fs
+            .delete_survey(
+            survey_name
+          );
+          if(response == "success"){
+            Collector.custom_alert(
+              "Succesfully deleted <b>" +
+              survey_name +
+              "</b>"
+            );
+            $('#survey_select option[value="' +
+              $("#survey_select").val() +
+            '"]').remove();
+            $("#survey_select").val(
+              "default|demographics.csv"
+            );
+            create_survey_HoT(
+              master_json
+                .surveys
+                .default_surveys["demographics.csv"]
+            );
+            $("#save_btn").click();
+          } else {
+            bootbox.alert(response);
+          }
+          break;
+        default:
+          if(typeof(dbx) !== "undefined"){
+            dbx.filesDelete({
+              path:"/surveys/" + survey_name
+            }).then(function(result){
+              Collector.custom_alert("Succesfully deleted <b>" + survey_name + "</b>");
+              $('#survey_select option[value="' + $("#survey_select").val() + '"]').remove();
+              $("#survey_select").val("default|demographics.csv");
+              create_survey_HoT(master_json.surveys.default_surveys["demographics.csv"]);
+              $("#save_btn").click();
+            })
+            .catch(function(error){
+              Collector.tests.report_error("problem deleting the survey.", "problem deleting the survey.");
+            });
+          }
+          break;
+      }
 		}
 	});
 });
@@ -521,16 +559,21 @@ $("#pills-preview-tab").on("click",function(){
 });
 
 $("#rename_survey_btn").on("click",function(){
+  var old_survey_name = $("#survey_select").val().split("|")[1];
   if($("#survey_select").val() == null){
     bootbox.alert("You haven't selected a survey to rename");
   } else if (typeof(master_json.surveys.default_surveys[old_survey_name]) !== "undefined") {
-    bootbox.alert("You can't rename default experiments.");
+    bootbox.alert(
+      "You can't rename default experiments."
+    );
   } else {
-    var old_survey_name = $("#survey_select").val().split("|")[1];
+
     bootbox.prompt(
       "What would you like to call this survey instead?",
       function(new_survey_name){
-        new_survey_name = new_survey_name.toLowerCase();
+        new_survey_name = new_survey_name
+          .toLowerCase()
+          .replace(".csv","") + ".csv";
         if(!new_survey_name){
           // do nothing
         } else if(typeof(master_json.surveys.default_surveys[new_survey_name]) !== "undefined"){
@@ -544,12 +587,16 @@ $("#rename_survey_btn").on("click",function(){
                 "Surveys",
                 new_survey_name,
                 master_json.surveys.user_surveys[old_survey_name]
-              )
+              );
               if(write_response == "success"){
                 master_json.surveys.user_surveys[new_survey_name] = master_json.surveys.user_surveys[old_survey_name];
                 var delete_response = Collector.electron.fs.delete_survey(old_survey_name);
                 if(delete_response !== "success"){
                   bootbox.alert(delete_response);
+                } else {
+                  delete(master_json.surveys.user_surveys[old_survey_name]);
+                  list_surveys();
+                  $("#survey_select").val("user|" + new_survey_name);
                 }
               } else {
                 bootbox.alert(write_response);
@@ -566,6 +613,45 @@ $("#rename_survey_btn").on("click",function(){
 });
 
 $("#save_survey_btn").on("click",function(){
+  var survey_data = survey_HoT.getData();
+
+  /*
+  * Turn headers into lowercase
+  */
+  survey_data[0] = survey_data[0].map(function(item){
+    if(item !== null){
+      return item.toLowerCase();
+    } else {
+      return null;
+    }
+  });
+
+
+  var item_name_index = survey_data[0].indexOf("item_name");
+  var type_index = survey_data[0].indexOf("type");
+  var item_names = [];
+  for(var i = 1; i < survey_data.length; i++){
+    /*
+    * Check there are no repeated item_names within the survey
+    */
+    var this_item_name = survey_data[i][item_name_index];
+    if(item_names.indexOf(this_item_name) == -1){
+      item_names.push(this_item_name);
+    } else {
+      bootbox.alert("<b>" + this_item_name + "</b> appears multiple times in your <b>item_name</b> column. This will result in loss of data unless you fix this");
+    }
+
+    /*
+    * Turn values in the "type" column to lower case
+    */
+    survey_data[i][type_index] = survey_data[i][type_index].toLowerCase();
+  }
+
+
+
+
+  create_survey_HoT(survey_data);
+
 	if($("#survey_select").val() !== null & typeof(survey_HoT) !== "undefined"){
 		var survey_name     = $("#survey_select").val().split("|")[1]
 																									 .replace(".csv","") + ".csv";
