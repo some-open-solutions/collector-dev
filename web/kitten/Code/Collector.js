@@ -92,6 +92,13 @@ Collector = {
 			return "server";
 		}
 	},
+  detect_exe: function(){
+    $.get("../User/master.json",function(result){
+      Collector.is_exe = false;
+    }).catch(function(error){
+      Collector.is_exe = true;
+    });
+  },
 	download_file: function(filename,content,type){
 		var blob = new Blob([content], {type: 'text/' + type});
 		if(window.navigator.msSaveOrOpenBlob) {
@@ -163,6 +170,11 @@ Collector = {
 	},
 	version: "kitten"
 };
+
+/*
+* Need to run this ASAP to have this info available later.
+*/
+Collector.detect_exe();
 
 //////////////////////
 // online solutions //

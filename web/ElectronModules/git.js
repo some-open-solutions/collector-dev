@@ -236,8 +236,11 @@ ipc.on('git_exists', (event,args) => {
   if(commandExistsSync('git')){
     var git = simpleGit();
     git.listConfig().then(function(result){
-      var username = result.values[".git/config"]["user.name"];
-      var useremail = result.values[".git/config"]["user.email"];
+      console.log(result);
+      var config_index = Object.keys(result.values).filter(item => item.indexOf(".gitconfig") !== -1)[0];
+
+      var username = result.values[config_index]["user.name"];
+      var useremail = result.values[config_index]["user.email"];
       console.log(username);
       console.log(useremail);
       if(typeof(username) !== "undefined" && username !== ""){
@@ -252,6 +255,8 @@ ipc.on('git_exists', (event,args) => {
         var valid_email = "false";
       }
       event.returnValue = valid_username + "-" + valid_email;
+    }).catch(function(error){
+      event.returnValue = error;
     });
 
   } else {
