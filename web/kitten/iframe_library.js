@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 
-		Kitten release (2019) author: Dr. Anthony Haffey (team@someopen.solutions)
+		Kitten release (2019-2021) author: Dr. Anthony Haffey (team@someopen.solutions)
 */
 
 var libraries = '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />' +
