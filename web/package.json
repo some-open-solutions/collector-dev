@@ -16,7 +16,7 @@
     "tutorial",
     "demo"
   ],
-  "author": "Mikey Garcia, Dr. Nate Kornell, Tyson Kerr, Dr. Adam Blake, Dr. Anthony Haffey",
+  "author": "Mikey Garcia, Dr. Nate Kornell, Tyson Kerr, Dr. Adam Blake, Dr. Anthony Haffey. Now developed by Scientific Open Solutions <team@sopsols.org>",
   "license": "GNU General Public License",
   "devDependencies": {
     "coffee-script": "~1.6.3",
