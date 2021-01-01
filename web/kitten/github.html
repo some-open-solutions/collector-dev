@@ -464,27 +464,6 @@ $("#select_organization").on("change", function(){
 
       $('#select_repository').val("select a repository");
 
-      /*
-      $("#select_repository").val($("#select_repository option")[0].value);
-
-      // swap the master_json and refresh
-      Collector
-        .electron
-        .git
-        .switch_repo({
-          old_org:      github_json.organization,
-          old_rep:      github_json.repository,
-          repository:   $("#select_repository option")[0].value,
-          organization: $("#select_organization").val()
-        });
-
-      github_json.organization = this_org;
-      master_json
-        .github
-        .repository = $("#select_repository").val();
-      Collector.electron.git.save_master();
-      */
-      //location.reload();
     } else {
       $("#select_organization").val(github_json.organization)
     }

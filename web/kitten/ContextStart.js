@@ -60,42 +60,16 @@ switch(Collector.detect_context()){
           }
         }
         var git_exists = Collector.electron.git.exists();
-        if(git_exists !== "true-true"){
-
-          git_exists = git_exists.split("-");
-          if(git_exists[0] !== "true"){
-            bootbox.prompt(
-              "What github username do you want to use?",
-              function(username){
-                if(Collector.electron.git.set_username(username) == "success"){
-                  //reload the page
-                  location.reload();
-                }
+        if(git_exists !== "true"){
+          bootbox.prompt(
+            "What github email do you want to use?",
+            function(email){
+              if(Collector.electron.git.set_email(email) == "success"){
+                //reload the page
+                location.reload();
               }
-            )
-          }
-          //do the same for email now
-          if(git_exists[1] !== "true"){
-            bootbox.prompt(
-              "What github email do you want to use?",
-              function(email){
-                if(Collector.electron.git.set_email(email) == "success"){
-                  //reload the page
-                  location.reload();
-                }
-              }
-            )
-          }
-
-
-
-
-
-
-
-
-
-
+            }
+          )
           //bootbox.alert(git_exists);
         } else {
           github_json = JSON.parse(

@@ -18,7 +18,7 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     // frame: false,
     title: "Collector: Kitten " + app.getVersion(),
-    icon: __dirname + "/logos/collector.ico",
+    icon: __dirname + "/logos/collector_sized.png",
     webPreferences: {
       //contextIsolation:           true, //has to be false with the way I've designed this
       enableRemoteModule:         true,

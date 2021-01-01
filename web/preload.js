@@ -179,14 +179,6 @@ window.onload=function(){
               }
             )
           },
-          set_username: function(username){
-            return ipc.sendSync(
-              'git_set_username',
-              {
-                username: username
-              }
-            )
-          },
           switch_repo: function(repo_info){
             return ipc.sendSync(
               'git_switch_repo',

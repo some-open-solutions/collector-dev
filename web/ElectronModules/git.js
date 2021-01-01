@@ -3,22 +3,16 @@
 */
 const fs   = require('fs-extra');
 
-if(process.platform == "darwin"){
+var root_dir = require("os").homedir() + "/Documents/Collector/";
 
-  var root_dir = require("os").homedir() + "/Documents/Collector/";
+//make sure there is a Collector folder in documents
+if(!fs.existsSync(root_dir)){
+  fs.mkdirSync(root_dir);
+}
 
-  //make sure there is a Collector folder in documents
-  if(!fs.existsSync(root_dir)){
-    fs.mkdirSync(root_dir);
-  }
-
-  // make User folder if it doesn't exist yet
-  if(!fs.existsSync(root_dir + "/User")){
-    fs.mkdirSync(root_dir + "/User");
-  }
-
-} else {
-  root_dir = "";
+// make User folder if it doesn't exist yet
+if(!fs.existsSync(root_dir + "/User")){
+  fs.mkdirSync(root_dir + "/User");
 }
 
 /*
@@ -108,13 +102,14 @@ ipc.on('git_add_repo', (event,args) => {
       "https://github.com" + "/" +
         args["organization"] + "/" +
         args["repository"],
+      root_dir +
       "repositories"         + "/" +
         args["organization"] + "/" +
         args["repository"]
     ).then(function(result){
       event.returnValue = "success"
     }).catch(function(error){
-      event.returnValue = "failed to clone your existing repository onto your computer"
+      event.returnValue = "error" + error;
     });
   }).catch(function(error){
     console.log("result of repository not existing online:");
@@ -230,35 +225,28 @@ ipc.on('git_delete_repo', (event,args) => {
 });
 
 /*
-* Expanding git_exists to check if there is a valid user or not
+* Expanding git_exists to check if there is a valid email
 */
 ipc.on('git_exists', (event,args) => {
   if(commandExistsSync('git')){
     var git = simpleGit();
     git.listConfig().then(function(result){
       console.log(result);
-      var config_index = Object.keys(result.values).filter(item => item.indexOf(".gitconfig") !== -1)[0];
 
-      var username = result.values[config_index]["user.name"];
-      var useremail = result.values[config_index]["user.email"];
-      console.log(username);
-      console.log(useremail);
-      if(typeof(username) !== "undefined" && username !== ""){
-        var valid_username = "true";
-      } else {
-        var valid_username = "false";
-      }
+      /*
+      * Check all configs for the relevant values
+      */
+      var user_email_valid = "false"
 
-      if(typeof(useremail) !== "undefined" && useremail !== ""){
-        var valid_email = "true";
-      } else {
-        var valid_email = "false";
-      }
-      event.returnValue = valid_username + "-" + valid_email;
+      Object.keys(result.values).forEach(function(item){
+        if(typeof(result.values[item]["user.email"]) !== "undefined" && result.values[item]["user.email"] !== ""){
+          user_email_valid = "true";
+        }
+      });
+      event.returnValue = user_email_valid;
     }).catch(function(error){
       event.returnValue = error;
     });
-
   } else {
     event.returnValue = "Git is not yet installed. Please go to https://git-scm.com/ to download and install it so that you can do online research.";
   }
@@ -501,15 +489,9 @@ ipc.on('git_save_master', (event,args) => {
 });
 
 ipc.on('git_set_email', (event, args) => {
+  console.log(args["email"]);
   var git = simpleGit();
       git.addConfig("user.email", args["email"]);
-  event.returnValue = "success";
-});
-
-ipc.on('git_set_username', (event, args) => {
-  var git = simpleGit();
-      git.addConfig("user.name", args["username"]);
-
   event.returnValue = "success";
 });
 
@@ -542,6 +524,7 @@ ipc.on('git_switch_repo', (event, args) => {
         fs.copySync(
           root_dir +
           "User",
+          root_dir +
           "repositories"    + "/" +
             args["old_org"] + "/" +
             args["old_rep"] + "/" +
@@ -570,6 +553,7 @@ ipc.on('git_switch_repo', (event, args) => {
         args["repository"]   + "/" +
         "web"                + "/" +
         "User",
+      root_dir +
       "User", {
         recursive: true
       }

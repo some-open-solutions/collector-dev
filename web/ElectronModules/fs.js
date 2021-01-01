@@ -2,25 +2,16 @@ const fs   = require('fs-extra')
 const ipc  = require('electron').ipcMain;
 
 
-/*
-* Detect if a mac device
-*/
-if(process.platform == "darwin"){
+var root_dir = require("os").homedir() + "/Documents/Collector/";
 
-  var root_dir = require("os").homedir() + "/Documents/Collector/";
+//make sure there is a Collector folder in documents
+if(!fs.existsSync(root_dir)){
+  fs.mkdirSync(root_dir);
+}
 
-  //make sure there is a Collector folder in documents
-  if(!fs.existsSync(root_dir)){
-    fs.mkdirSync(root_dir);
-  }
-
-  // make User folder if it doesn't exist yet
-  if(!fs.existsSync(root_dir + "/User")){
-    fs.mkdirSync(root_dir + "/User");
-  }
-
-} else {
-  root_dir = "";
+// make User folder if it doesn't exist yet
+if(!fs.existsSync(root_dir + "/User")){
+  fs.mkdirSync(root_dir + "/User");
 }
 
 
