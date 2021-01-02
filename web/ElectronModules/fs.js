@@ -4,6 +4,8 @@ const ipc  = require('electron').ipcMain;
 
 var root_dir = require("os").homedir() + "/Documents/Collector/";
 
+root_dir = root_dir.replaceAll("\\","\/");
+
 //make sure there is a Collector folder in documents
 if(!fs.existsSync(root_dir)){
   fs.mkdirSync(root_dir);
@@ -128,10 +130,12 @@ ipc.on('fs_read_default', (event,args) => {
     var content = "This request could be insecure, and was blocked";
   } else {
     try{
-      var content = fs.readFileSync(root_dir + "Default/Default" +
-                                      args["user_folder"] + "/" +
-                                      args["this_file"]   + "/",
-                                    'utf8');
+      var content = fs.readFileSync(
+        "Default/Default"     +
+          args["user_folder"] + "/" +
+          args["this_file"]   + "/",
+        'utf8'
+      );
       event.returnValue = content;
     } catch(error){
       //to trigger an attempt to load a trialtype from the master_json

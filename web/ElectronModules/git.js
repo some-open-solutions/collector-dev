@@ -397,11 +397,16 @@ ipc.on('git_pull', (event,args) => {
         remote,
         'master'
       ).then(function(result){
-        console.log("response to pull request");
-        console.log(result);
-        //copy and replace the "User" folder
 
-        console.log(JSON.stringify(args));
+        /*
+        * delete User folder before copying over it
+        */
+        fs.rmdirSync(
+          root_dir +
+          "User", {
+            recursive: true
+          }
+        )
 
         try{
           fs.copySync(

@@ -139,6 +139,9 @@ function load_default_surveys(){
 <script>
 var survey_HoT;
 
+/*
+* Survey functions
+*/
 function create_survey_HoT(this_survey){
   var container = document.getElementById('survey_HoT');
 	$("#survey_HoT").html("");
@@ -386,8 +389,12 @@ function preview_survey(this_survey){
         "Trialtypes",
         "survey.html"
       );
-      survey_template = survey_template.replace('"{{survey}}"',
-                                                JSON.stringify(this_survey));
+      survey_template = survey_template.replace(
+        '"{{survey}}"',
+        JSON.stringify(
+          this_survey
+        )
+      );
 
       doc = document.getElementById('survey_preview').contentWindow.document;
   		doc.open();
@@ -455,11 +462,9 @@ function synch_surveys(){
 	},2000);
 };
 
-
-
-//////////////////////
-// element triggers //
-//////////////////////
+/*
+* Survey actions (i.e. element triggers)
+*/
 
 $("#delete_survey_btn").on("click",function(){
 	bootbox.confirm("Are you sure you want to delete this survey?",function(confirmed){
@@ -567,7 +572,6 @@ $("#rename_survey_btn").on("click",function(){
       "You can't rename default experiments."
     );
   } else {
-
     bootbox.prompt(
       "What would you like to call this survey instead?",
       function(new_survey_name){
@@ -591,6 +595,7 @@ $("#rename_survey_btn").on("click",function(){
               if(write_response == "success"){
                 master_json.surveys.user_surveys[new_survey_name] = master_json.surveys.user_surveys[old_survey_name];
                 var delete_response = Collector.electron.fs.delete_survey(old_survey_name);
+
                 if(delete_response !== "success"){
                   bootbox.alert(delete_response);
                 } else {

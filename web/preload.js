@@ -28,7 +28,7 @@ window.onload=function(){
             survey_name,
             file_action
           ){
-            delete_response = ipc.sendSync('fs_delete_survey',{
+            return ipc.sendSync('fs_delete_survey',{
               "survey_name" : survey_name
             });
           },
