@@ -342,59 +342,65 @@ $("#rename_exp_btn").on("click",function(){
 
 $("#rename_proc_button").on("click",function(){
 	bootbox.prompt("What do you want to rename this <b>Procedure</b> sheet to?",function(new_proc_name){
-		var experiment = $("#experiment_list").val();
-		var this_exp   = master_json.exp_mgmt.experiments[experiment];
-		var current_procs = Object.keys(this_exp.all_procs);
-		var current_proc = $("#proc_select").val();
-		    current_procs.splice(current_procs.indexOf(current_proc), 1);
-		var current_proc_sheet = this_exp.all_procs[current_proc];
+    if(new_proc_name){
+      new_proc_name = new_proc_name.toLowerCase();
+  		var experiment = $("#experiment_list").val();
+  		var this_exp   = master_json.exp_mgmt.experiments[experiment];
+  		var current_procs = Object.keys(this_exp.all_procs);
+  		var current_proc = $("#proc_select").val();
+  		    current_procs.splice(current_procs.indexOf(current_proc), 1);
+  		var current_proc_sheet = this_exp.all_procs[current_proc];
 
-		if(current_procs.indexOf(new_proc_name) !== -1){
-			bootbox.alert("You already have a procedure sheet with that name");
-		} else {
-			new_proc_name = new_proc_name.replace(".csv","") + ".csv";
-			master_json.exp_mgmt.experiments[experiment].all_procs[new_proc_name] = current_proc_sheet;
+  		if(current_procs.indexOf(new_proc_name) !== -1){
+  			bootbox.alert("You already have a procedure sheet with that name");
+  		} else {
+  			new_proc_name = new_proc_name.replace(".csv","") + ".csv";
+  			master_json.exp_mgmt.experiments[experiment].all_procs[new_proc_name] = current_proc_sheet;
 
-			delete(master_json.exp_mgmt.experiments[experiment].all_procs[current_proc]);
-      $("#proc_select").append($('<option>', {
-				text : new_proc_name
-			}));
-			$("#proc_select").val(new_proc_name);
-			$('#proc_select option[value="' + current_proc + '"]').remove();
-			createExpEditorHoT(this_exp.all_procs[new_proc_name],"procedure",new_proc_name);
-		}
+  			delete(master_json.exp_mgmt.experiments[experiment].all_procs[current_proc]);
+        $("#proc_select").append($('<option>', {
+  				text : new_proc_name
+  			}));
+  			$("#proc_select").val(new_proc_name);
+  			$('#proc_select option[value="' + current_proc + '"]').remove();
+  			createExpEditorHoT(this_exp.all_procs[new_proc_name],"procedure",new_proc_name);
+  		}
+    }
 	});
 });
 
 $("#rename_stim_button").on("click",function(){
 	bootbox.prompt("What do you want to rename this <b>Stimuli</b> sheet to?",function(new_sheet_name){
-		var experiment = $("#experiment_list").val();
-		var this_exp   = master_json.exp_mgmt.experiments[experiment];
+    if(new_sheet_name){
+      new_sheet_name = new_sheet_name.toLowerCase();
+      var experiment = $("#experiment_list").val();
+  		var this_exp   = master_json.exp_mgmt.experiments[experiment];
 
-		var current_stims = Object.keys(this_exp.all_stims);
-		var current_stim = $("#stim_select").val();
-		current_stims.splice(current_stims.indexOf(current_stim), 1);
+  		var current_stims = Object.keys(this_exp.all_stims);
+  		var current_stim = $("#stim_select").val();
+  		current_stims.splice(current_stims.indexOf(current_stim), 1);
 
-		var current_stim_sheet = this_exp.all_stims[current_stim];
+  		var current_stim_sheet = this_exp.all_stims[current_stim];
 
-		if(current_stims.indexOf(new_sheet_name) !== -1){
-			bootbox.alert("You already have a <b>Stimuli</b> sheet with that name");
-		} else {
-			new_sheet_name = new_sheet_name.replace(".csv","") + ".csv";
+  		if(current_stims.indexOf(new_sheet_name) !== -1){
+  			bootbox.alert("You already have a <b>Stimuli</b> sheet with that name");
+  		} else {
+  			new_sheet_name = new_sheet_name.replace(".csv","") + ".csv";
 
-			master_json.exp_mgmt.experiments[experiment].all_stims[new_sheet_name] = current_stim_sheet;
+  			master_json.exp_mgmt.experiments[experiment].all_stims[new_sheet_name] = current_stim_sheet;
 
-			delete(master_json.exp_mgmt.experiments[experiment].all_stims[current_stim]);
+  			delete(master_json.exp_mgmt.experiments[experiment].all_stims[current_stim]);
 
-			$("#stim_select").append($('<option>', {
-				text : new_sheet_name
-			}));
-			$("#stim_select").val(new_sheet_name);
+  			$("#stim_select").append($('<option>', {
+  				text : new_sheet_name
+  			}));
+  			$("#stim_select").val(new_sheet_name);
 
-			$('#stim_select option[value="' + current_stim + '"]').remove();
+  			$('#stim_select option[value="' + current_stim + '"]').remove();
 
-			createExpEditorHoT(this_exp.all_stims[new_sheet_name],"stimuli",new_sheet_name);	//sheet_name
-		}
+  			createExpEditorHoT(this_exp.all_stims[new_sheet_name],"stimuli",new_sheet_name);
+  		}
+    }
 	});
 });
 
