@@ -40,9 +40,6 @@
         }
       ]
     },
-    "directories": {
-      "buildResources": "resources"
-    },
     "extraFiles": [
       "Default"
     ],
