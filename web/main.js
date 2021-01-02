@@ -17,7 +17,7 @@ function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     // frame: false,
-    title: "Collector: Kitten " + app.getVersion(),
+    title: "Collector: Cat " + app.getVersion(),
     icon: __dirname + "/logos/collector_sized.png",
     webPreferences: {
       //contextIsolation:           true, //has to be false with the way I've designed this
@@ -30,7 +30,7 @@ function createWindow () {
   mainWindow.maximize()
 
   // and load the index.html of the app.
-  mainWindow.loadFile(__dirname +'/kitten/index_local.html')
+  mainWindow.loadFile(__dirname +'/cat/index_local.html')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

@@ -35,19 +35,19 @@ const git_token_location = root_dir + "repositories/Private/github_token.txt";
 ipc.on('git_add_changes', (event, args) => {
 
   /*
-  * Update the kitten folder using the local folder if in powershell/npm mode
+  * Update the cat folder using the local folder if in powershell/npm mode
   */
   if(fs.existsSync(
-    "kitten"
+    "cat"
   )){
     fs.copySync(
-      "kitten",
+      "cat",
       root_dir +
       "repositories"         + "/" +
         args["organization"] + "/" +
         args["repository"]   + "/" +
         "web"                + "/" +
-        "kitten",
+        "cat",
       {
         recursive: true
       }
