@@ -24,6 +24,7 @@ $("#default_experiments_select").on("change",function(){
 });
 
 $("#delete_exp_btn").on("click",function(){
+
 	var exp_name = $("#experiment_list").val();
 	if(exp_name == null){
 		bootbox.alert("You need to select a study to delete it");
@@ -37,7 +38,7 @@ $("#delete_exp_btn").on("click",function(){
 						.then(function(response) {
               $('#experiment_list option:contains('+ exp_name +')')[0].remove();
 							if(document.getElementById('experiment_list').options[0] !== undefined){
-								$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
+								$("#experiment_list").val(document.getElementById('experiment_list').options[1].value);
 							}
 							Collector.custom_alert(exp_name + " succesfully deleted");
 							update_master_json();
@@ -49,7 +50,7 @@ $("#delete_exp_btn").on("click",function(){
 						});
 				} else {
 					$('#experiment_list option:contains('+ exp_name +')')[0].remove();
-					$("#experiment_list").val(document.getElementById('experiment_list').options[0].value);
+					$("#experiment_list").val(document.getElementById('experiment_list').options[1].value);
 					Collector.custom_alert(exp_name +" succesfully deleted");
 					update_master_json();
 					update_handsontables();

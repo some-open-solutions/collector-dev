@@ -61,6 +61,7 @@ ipc.on('fs_delete_file', (event,args) => {
 });
 
 ipc.on('fs_delete_survey', (event,args) => {
+  console.log("howdy hardy hidi");
 
   /*
   * Security checks - should probably have more

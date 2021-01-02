@@ -310,18 +310,28 @@ Study = {
       case "github":
 				online_data_obj.save_queue_add(
 					function(){
-						online_save(Study.get_vars.location,
-												$("#participant_code").val(),
-												$("#completion_code").val(),
-												$("#prehashed_code").val(),
-												JSON.stringify(encrypt(exp_json.public_key,
-																							 JSON.stringify([exp_json.responses[exp_json.responses.length - 1]]))), //data
-												exp_json.storage_scripts,
-												function(){
+						online_save(
+              Study.get_vars.location,
+              $("#participant_code").val(),
+              $("#completion_code").val(),
+              $("#prehashed_code").val(),
+              JSON.stringify(
+                encrypt(
+                  exp_json.public_key,
+                  JSON.stringify(
+                    [exp_json.responses[
+                      exp_json.responses.length - 1
+                    ]]
+                  )
+                )
+              ), //data
+              exp_json.storage_scripts,
+							function(){
 
-												},
-												"trial",
-												exp_json.responses.length - 1);
+							},
+              "trial",
+              exp_json.responses.length - 1
+            );
 				});
         break
       case "preview":
@@ -1224,13 +1234,13 @@ function process_welcome(){
 			$("#researcher_message").html(exp_json.this_condition.start_message);
 		} else {
 			def_start_msg = "<h1 class='text-primary'> Collector</h1>"+
-											"<br><br>" +
-											"<h4>It's very important to read the following before starting!</h1>" +
-											"<div class='text-danger'>If you complete multiple Collector experiments at the same time, your completion codes may be messed up. Please do not do this!</div>" +
-											"<br>" +
-											"<div class='text-danger'>If you participate in this experiment, your progress in it will be stored on your local machine to avoid you losing your progress if the window or tab closes or freezes. This data will be cleared from your computer once you have completed the task. <b>However, if you do not want this website to store your progress on your computer, DO NOT PROCEED.</b></div>"+
-											"<br>" +
-											"<div class='text-danger'>If the experiment freezes, try pressing <b>CTRL-S</b> to save your data so far. </div>";
+        "<br><br>" +
+        "<h4>It's very important to read the following before starting!</h1>" +
+        "<div class='text-danger'>If you complete multiple Collector experiments at the same time, your completion codes may be messed up. Please do not do this!</div>" +
+        "<br>" +
+        "<div class='text-danger'>If you participate in this experiment, your progress in it will be stored on your local machine to avoid you losing your progress if the window or tab closes or freezes. This data will be cleared from your computer once you have completed the task. <b>However, if you do not want this website to store your progress on your computer, DO NOT PROCEED.</b></div>"+
+				"<br>" +
+				"<div class='text-danger'>If the experiment freezes, try pressing <b>CTRL-S</b> to save your data so far. </div>";
 			$("#researcher_message").html(def_start_msg);
 		}
 	}
@@ -1241,7 +1251,7 @@ function requestFullScreen(element) {
     var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
 
     if (requestMethod) { // Native full screen.
-        requestMethod.call(element);
+      requestMethod.call(element);
     } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
         var wscript = new ActiveXObject("WScript.Shell");
         if (wscript !== null) {
