@@ -344,30 +344,24 @@ $("#rename_proc_button").on("click",function(){
 	bootbox.prompt("What do you want to rename this <b>Procedure</b> sheet to?",function(new_proc_name){
 		var experiment = $("#experiment_list").val();
 		var this_exp   = master_json.exp_mgmt.experiments[experiment];
-
 		var current_procs = Object.keys(this_exp.all_procs);
 		var current_proc = $("#proc_select").val();
-		current_procs.splice(current_procs.indexOf(current_proc), 1);
-
+		    current_procs.splice(current_procs.indexOf(current_proc), 1);
 		var current_proc_sheet = this_exp.all_procs[current_proc];
 
 		if(current_procs.indexOf(new_proc_name) !== -1){
 			bootbox.alert("You already have a procedure sheet with that name");
 		} else {
 			new_proc_name = new_proc_name.replace(".csv","") + ".csv";
-
 			master_json.exp_mgmt.experiments[experiment].all_procs[new_proc_name] = current_proc_sheet;
 
 			delete(master_json.exp_mgmt.experiments[experiment].all_procs[current_proc]);
-
-			$("#proc_select").append($('<option>', {
+      $("#proc_select").append($('<option>', {
 				text : new_proc_name
 			}));
 			$("#proc_select").val(new_proc_name);
-
-			$('#stim_select option[value="' + current_proc + '"]').remove();
-
-			createExpEditorHoT(this_exp.all_procs[new_proc_name],"procedure",new_proc_name);	//sheet_name
+			$('#proc_select option[value="' + current_proc + '"]').remove();
+			createExpEditorHoT(this_exp.all_procs[new_proc_name],"procedure",new_proc_name);
 		}
 	});
 });
