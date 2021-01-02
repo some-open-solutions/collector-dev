@@ -33,7 +33,7 @@
   },
 	"participant_id":{
     "subtitle":"Participants give their ID",
-    "text":"By default, participants will give a <b>participant id</b> (e.g. a Prolific Academic or MTurk ID) at the start of the experiment. Change this setting to either <b>random</b> (recommended) to generate a unique and randomised id for the user, or <b>off</b> (not recommended) for the participant to have the id 'notUnique'. The participant_id influences the name of their data file. If the participant does not put in an ID, they will skip the <b>start_message</b>."
+    "text":"By default this will be set to <b>on</b> and participants will give a <b>participant id</b> (e.g. a Prolific Academic or MTurk ID) at the start of the experiment. Change this setting to either <b>random</b> (recommended) to generate a unique and randomised id for the user, or <b>off</b> (not recommended) for the participant to have the id 'notUnique'. The participant_id influences the name of their data file. If the participant does not put in an ID, they will skip the <b>start_message</b>."
   },
 	"end_message":{
     "subtitle":"A message at the very end",
