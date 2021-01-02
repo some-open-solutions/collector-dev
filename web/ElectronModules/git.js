@@ -42,6 +42,7 @@ ipc.on('git_add_changes', (event, args) => {
   )){
     fs.copySync(
       "kitten",
+      root_dir +
       "repositories"         + "/" +
         args["organization"] + "/" +
         args["repository"]   + "/" +
@@ -132,6 +133,7 @@ ipc.on('git_add_repo', (event,args) => {
       var git = simpleGit();
       git.clone(
         "https://github.com/some-open-solutions/collector",
+        root_dir +
         "repositories"         + "/" +
           args["organization"] + "/" +
           args["repository"]
@@ -345,7 +347,8 @@ ipc.on('git_pull', (event,args) => {
       "https://github.com"   + "/" +
         args["organization"] + "/" +
         args["repository"],
-      root_dir + "repositories"         + "/" +
+      root_dir +
+        "repositories"       + "/" +
         args["organization"] + "/" +
         args["repository"]
     )
@@ -386,6 +389,7 @@ ipc.on('git_pull', (event,args) => {
     try{
       var git = simpleGit();
       git.cwd(
+        root_dir +
         "repositories"      + "/" +
         args["organization"] + "/" +
         args["repository"]
@@ -459,6 +463,7 @@ ipc.on('git_push', (event,args) => {
                   args["repository"]   + ".git";
   var git = simpleGit();
   git.cwd(
+    root_dir +
     "repositories"       + "/" +
     args["organization"] + "/" +
     args["repository"]
