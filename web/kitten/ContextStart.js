@@ -76,13 +76,15 @@ switch(Collector.detect_context()){
           );
           //lazy way of preventing the following slowing down the starting up of Collector
           setTimeout(function(){
-            if(Collector.electron.git.status({
+            var commits_behind = Collector.electron.git.status({
               organization: github_json.organization,
               repository: github_json.repository
-            }) !== 0){
-              bootbox.alert("The repository on your computer is behind the repository online. Be careful about pushing or pulling changes.");
+            });
+            if(commits_behind !== 0)
+            {
+              bootbox.alert("You are behind by " + commits_behind + " commits (or you'll have just seen an error message). Be careful about pushing or pulling changes until your local repository is synched up with the online repository");
             };
-          },2000);
+          },1000);
         }
         Collector.start();
       }
