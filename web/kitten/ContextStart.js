@@ -70,11 +70,19 @@ switch(Collector.detect_context()){
               }
             }
           )
-          //bootbox.alert(git_exists);
         } else {
           github_json = JSON.parse(
             Collector.electron.git.load_master()
           );
+          //lazy way of preventing the following slowing down the starting up of Collector
+          setTimeout(function(){
+            if(Collector.electron.git.status({
+              organization: github_json.organization,
+              repository: github_json.repository
+            }) !== 0){
+              bootbox.alert("The repository on your computer is behind the repository online. Be careful about pushing or pulling changes.");
+            };
+          },2000);
         }
         Collector.start();
       }

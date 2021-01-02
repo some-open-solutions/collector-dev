@@ -500,6 +500,21 @@ ipc.on('git_set_email', (event, args) => {
   event.returnValue = "success";
 });
 
+ipc.on('git_status', (event, args) =>{
+  var git = simpleGit();
+
+  git.cwd(
+    root_dir +
+    "repositories"      + "/" +
+    args["organization"] + "/" +
+    args["repository"]
+  ).fetch().status().then(function(result){
+    event.returnValue = result.behind;
+  }).catch(function(error){
+    event.returnValue = error;
+  });
+});
+
 ipc.on('git_switch_repo', (event, args) => {
   try{
     /*
