@@ -436,7 +436,7 @@ $("#run_btn").on("click",function(){
 							master_json.exp_mgmt.exp_condition = $("#select_condition").val();
 
 							var this_url = window.location.href.split("/" + Collector.version)[0] +
-																												"/" + Collector.version + "/";
+																												"/App/";
 							window.open(this_url  	+ "RunStudy.html?platform=github&" +
 													"location=" + $("#experiment_list").val() + "&" +
 													"name="     + master_json.exp_mgmt.exp_condition + "&" +
@@ -485,11 +485,12 @@ $("#run_btn").on("click",function(){
                         ".github.io"           + "/" +
                         github_json.repository + "/" +
                         "web"                  + "/" +
-                        Collector.version      + "/" +  "RunStudy.html?platform=github&"    +
+                        "App"                  + "/" +
+                        "RunStudy.html?platform=github&"    +
 												"location="                         +
                           $("#experiment_list").val() + "&" +
 												"name="                             +
-                          master_json.exp_mgmt.exp_condition;
+                          conditions[0].name;
 
 
 			bootbox.dialog({

@@ -128,7 +128,7 @@ Collector = {
 		mod_html = split_trialtype.join("{{");
 		return variables;
 	},
-	PapaParsed(content){
+	PapaParsed: function(content){
 		//check if parsed stylesheet
 		if(typeof(content) == "object"){
 			post_parsed = Papa.parse(Papa.unparse(content),{
@@ -153,6 +153,18 @@ Collector = {
 				skipEmptyLines:true
 			}).data;
 		}
+    /*
+    * remove blank row(s)
+    */
+    post_parsed = post_parsed.filter(function(row){
+      var not_empty = 0;
+      Object.keys(row).forEach(function(key){
+        if(row[key] !== ""){
+          not_empty++;
+        }
+      });
+      return not_empty > 0;
+    });
 		return post_parsed;
 	},
 	save_data: function(filename, data) {

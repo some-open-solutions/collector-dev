@@ -38,16 +38,16 @@ ipc.on('git_add_changes', (event, args) => {
   * Update the cat folder using the local folder if in powershell/npm mode
   */
   if(fs.existsSync(
-    "cat"
+    "App"
   )){
     fs.copySync(
-      "cat",
+      "App",
       root_dir +
       "repositories"         + "/" +
         args["organization"] + "/" +
         args["repository"]   + "/" +
         "web"                + "/" +
-        "cat",
+        "App",
       {
         recursive: true
       }
