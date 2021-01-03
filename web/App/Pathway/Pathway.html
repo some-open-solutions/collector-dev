@@ -72,7 +72,7 @@ function list_pathways(){
   console.dir("typeof(master_json.pathway_mgmt.pathways)");
   console.dir(typeof(master_json.pathway_mgmt.pathways));
   if(typeof(master_json.pathway_mgmt.pathways) == "undefined"){
-    master_json.pathway_mgmt.pathways = [];
+    master_json.pathway_mgmt.pathways = {};
   }
   var pathways = Object.keys(master_json.pathway_mgmt.pathways)
       pathways = pathways.sort();
@@ -276,9 +276,20 @@ $("#save_pathway_btn").on("click", function(){
           JSON.stringify(
             master_json.pathway_mgmt.pathways[
               master_json.pathway_mgmt.current
-            ]
-          , null, 2)
-        )
+            ],
+            null,
+            2
+          )
+        );
+        Collector.electron.fs.write_file(
+          "",
+          "master.json",
+          JSON.stringify(
+            master_json,
+            null,
+            2
+          )
+        );
         break;
     };
   }

@@ -408,12 +408,13 @@ $("#run_btn").on("click",function(){
 	var experiment = $("#experiment_list").val();
 	var exp_json = master_json.exp_mgmt.experiments[experiment];
 	var select_html = '<select id="select_condition" class="custom-select">';
-	if(typeof(exp_json.conditions) == "undefined"){
-		exp_json.conditions = exp_json.conditions.filter(function(condition){
+  var conditions = Collector.PapaParsed(exp_json.conditions);
+	if(typeof(conditions) == "undefined"){
+		conditions = conditions.filter(function(condition){
 			return condition.name !== "";
 		});
 	}
-	exp_json.conditions.forEach(function(condition){
+	conditions.forEach(function(condition){
 		select_html += "<option>" + condition.name + "</option>";
 	});
 	select_html += "</select>";
@@ -848,6 +849,7 @@ $("#save_btn").on("click", function(){
       switch(Collector.detect_context()){
         case "localhost":
           var git_json_response = Collector.electron.git.save_master();
+
           var write_response = Collector.electron.fs.write_file(
             "",
             "master.json",

@@ -262,9 +262,11 @@ function bind_unpublish_btn(){
 	});
 }
 
-function publish_experiment(this_exp,                                   // object with location
-														experiment,																	// experiment name
-														register_url){
+function publish_experiment(
+  this_exp,
+  experiment,
+  register_url
+){
   var this_pub_exp = this_exp;
 	$.post( register_url,{
 				  location:               this_exp.location,
@@ -375,13 +377,14 @@ function bind_publish_btn(){
 							var github_user_org = github_json.username;
 						}
 
-						this_exp.location = github_user_org +
-																"/" +
-																github_json.repository;
-
-						publish_experiment(this_exp,                                // object with location
-															 experiment,															// experiment name
-															 register_url);
+						this_exp.location = github_user_org        + "/" +
+																github_json.repository + "/" +
+                                experiment;
+						publish_experiment(
+              this_exp,
+              experiment,
+              register_url
+            );
 					}
 					break;
 			}
