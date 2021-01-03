@@ -63,7 +63,7 @@ ipc.on('fs_delete_file', (event,args) => {
 });
 
 ipc.on('fs_delete_survey', (event,args) => {
-  
+
   /*
   * Security checks - should probably have more
   */
@@ -291,13 +291,14 @@ ipc.on('fs_write_experiment', (event,args) => {
         )
       }
 
+
       parsed_contents = JSON.parse(args["file_content"]);
 
       /*
       * save specific csvs
       * - first need to parse each csv here
       */
-      var conditions_csv = Papa.unparse(parsed_contents.conditions);
+      var conditions_csv = parsed_contents.conditions;
 
       fs.writeFileSync(
         root_dir + "User/Experiments/" +
@@ -307,21 +308,23 @@ ipc.on('fs_write_experiment', (event,args) => {
          "utf-8"
        );
 
-       Object.keys(parsed_contents.procs_csv).forEach(function(this_proc){
+
+
+       Object.keys(parsed_contents.all_procs).forEach(function(this_proc){
          fs.writeFileSync(
            root_dir + "User/Experiments/" +
             args["this_experiment"] + "/" +
             this_proc,
-            parsed_contents.procs_csv[this_proc]
+            parsed_contents.all_procs[this_proc]
           );
        });
 
-       Object.keys(parsed_contents.stims_csv).forEach(function(this_stim){
+       Object.keys(parsed_contents.all_stims).forEach(function(this_stim){
          fs.writeFileSync(
            root_dir + "User/Experiments/" +
             args["this_experiment"] + "/" +
             this_stim,
-            parsed_contents.stims_csv[this_stim]
+            parsed_contents.all_stims[this_stim]
           );
        });
       event.returnValue = "success";

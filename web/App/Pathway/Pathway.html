@@ -62,44 +62,15 @@
 </div>
 
 <script>
-$("#add_pathway_study_btn").on("click", function(){
-  $("#pathway_study_modal").modal();
-});
-
-$("#add_study_to_pathway_btn").on("click", function(){
-  master_json.pathway_mgmt.pathways[master_json.pathway_mgmt.current].order.push(
-    $("#add_study_pathway_select").val()
-  );
-  var conditions_array = [];
-  var conditions_list = master_json.exp_mgmt.experiments[$("#add_study_pathway_select").val()].conditions.map(row => row.name);
-  conditions_list.forEach(function(item){
-    conditions_array.push({
-      text: item,
-      value: item
-    });
-  });
-  bootbox.prompt({
-    title: "What condition do you want to use?",
-    inputType: "select",
-    inputOptions: conditions_array,
-    value: conditions_array[0].value,
-    callback: function(this_condition){
-      master_json
-        .pathway_mgmt
-        .pathways[master_json.pathway_mgmt.current]
-        .items[$("#add_study_pathway_select").val()] = {
-          "name" : this_condition
-        }
-      list_pathway_studies();
-    }
-  });
-});
-
-
+/*
+* Functions
+*/
 function list_pathways(){
   if(typeof(master_json.pathway_mgmt) == "undefined"){
     master_json.pathway_mgmt = {};
   }
+  console.dir("typeof(master_json.pathway_mgmt.pathways)");
+  console.dir(typeof(master_json.pathway_mgmt.pathways));
   if(typeof(master_json.pathway_mgmt.pathways) == "undefined"){
     master_json.pathway_mgmt.pathways = [];
   }
@@ -179,6 +150,49 @@ function list_pathway_studies(){
   });
 }
 
+/*
+* Triggers
+*/
+
+
+$("#add_pathway_study_btn").on("click", function(){
+  $("#pathway_study_modal").modal();
+});
+
+$("#add_study_to_pathway_btn").on("click", function(){
+  master_json.pathway_mgmt.pathways[master_json.pathway_mgmt.current].order.push(
+    $("#add_study_pathway_select").val()
+  );
+  var conditions_array = [];
+  var conditions_list = Collector.PapaParsed(master_json.exp_mgmt.experiments[
+    $("#add_study_pathway_select").val()
+  ].conditions).map(row => row.name);
+  conditions_list.forEach(function(item){
+    conditions_array.push({
+      text: item,
+      value: item
+    });
+  });
+  bootbox.prompt({
+    title: "What condition do you want to use?",
+    inputType: "select",
+    inputOptions: conditions_array,
+    value: conditions_array[0].value,
+    callback: function(this_condition){
+      master_json
+        .pathway_mgmt
+        .pathways[master_json.pathway_mgmt.current]
+        .items[$("#add_study_pathway_select").val()] = {
+          "name" : this_condition
+        }
+      list_pathway_studies();
+    }
+  });
+});
+
+
+
+
 $("#add_pathway_rule_btn").on("click", function(){
   bootbox.alert("This functionality is not yet available. Ask Anthony for help with it if you're interested in using this.");
 });
@@ -257,8 +271,8 @@ $("#save_pathway_btn").on("click", function(){
         Collector.electron.fs.write_file(
           "Pathway",
           $("#pathway_select").val()
-                             .toLowerCase()
-                             .replace(".json","") + ".json",
+                              .toLowerCase()
+                              .replace(".json","") + ".json",
           JSON.stringify(
             master_json.pathway_mgmt.pathways[
               master_json.pathway_mgmt.current

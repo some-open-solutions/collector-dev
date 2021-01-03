@@ -1,4 +1,4 @@
-<image style="margin:5px; width:30px; height:30px" id='version_logo'>
+<image style="margin:5px; width:30px; height:30px" id='version_logo' title="click here to open the location of your Collector files">
 <script>
 var possible_versions = ["antelope","cat","cat","puppy"];
 
@@ -8,27 +8,23 @@ version = possible_versions.filter(function(version){
   }
 });
 
-
 $("#version_logo")[0].src   = "../logos/cat_white.png";
-$("#version_logo")[0].title = "This is the " + version + " release of Collector";
 
-if(version == "antelope"){
-	$("#version_logo").hover(function(){
-		bootbox.alert("This version will be deprecated in favour of the cat and cat releases. Please e-mail a.haffey@reading.ac.uk if you have any questions about this migration.");
-	});
-} else {
-	var orig_filter = $("#version_logo").css("filter");
-	$("#version_logo").on("load",function(){
-		$("#version_logo").css("filter",'grayscale(100%)');
+var orig_filter = $("#version_logo").css("filter");
+$("#version_logo").on("load",function(){
+	$("#version_logo").css("filter",'grayscale(100%)');
+	setTimeout(function(){
 		setTimeout(function(){
 			setTimeout(function(){
-				setTimeout(function(){
-					$("#version_logo").css("filter",orig_filter);
-				}, 400);
-				$("#version_logo").css("filter",'grayscale(100%)');
+				$("#version_logo").css("filter",orig_filter);
 			}, 400);
-			$("#version_logo").css("filter",orig_filter);
+			$("#version_logo").css("filter",'grayscale(100%)');
 		}, 400);
-	});
-}
+		$("#version_logo").css("filter",orig_filter);
+	}, 400);
+});
+
+$("#version_logo").on("click", function(){
+  Collector.electron.open_folder("");
+});
 </script>

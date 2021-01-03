@@ -555,14 +555,50 @@ $("#save_btn").on("click", function(){
     } catch(error){
       //do nothing yet
     } finally {
+      var parsed_conditions = Collector.PapaParsed(this_exp.conditions);
+      parsed_conditions.map(function(row){
+        row.name = row.name.replaceAll(" ","_")
+        row.name = row.name.replaceAll(" ","_");
+      	row.name = row.name.replaceAll("-","_");
+      	row.name = row.name.replaceAll("@","_at_");
+      	row.name = row.name.replaceAll(".","_dot_");
+      	row.name = row.name.replaceAll("/","_forward_slash_");
+      	row.name = row.name.replaceAll("\\","_back_slash");
+      	row.name = row.name.replaceAll("'","_single_quote_");
+      	row.name = row.name.replaceAll('"',"_double_quote_");
+      	row.name = row.name.replaceAll('|',"_pipe_");
+      	row.name = row.name.replaceAll('?',"_question_");
+      	row.name = row.name.replaceAll('#',"_hash_");
+      	row.name = row.name.replaceAll(',',"_comma_");
+      	row.name = row.name.replaceAll('[',"_square_open_");
+      	row.name = row.name.replaceAll(']',"_square_close_");
+      	row.name = row.name.replaceAll('(',"_bracket_open_");
+      	row.name = row.name.replaceAll(')',"_bracket_close_");
+      	row.name = row.name.replaceAll('*',"__");
+      	row.name = row.name.replaceAll('^',"__");
+        row.name = row.name.replaceAll(':',"__");
+      	row.name = row.name.replaceAll(';',"__");
+      	row.name = row.name.replaceAll('%',"__");
+      	row.name = row.name.replaceAll('$',"__");
+      	row.name = row.name.replaceAll('£',"__");
+      	row.name = row.name.replaceAll('!',"__");
+      	row.name = row.name.replaceAll('`',"__");
+      	row.name = row.name.replaceAll('+',"__");
+      	row.name = row.name.replaceAll('=',"__");
+      	row.name = row.name.replaceAll('<',"__");
+      	row.name = row.name.replaceAll('>',"__");
+      	row.name = row.name.replaceAll('~',"__");
 
+        return row;
+      });
+      this_exp.conditions = Papa.unparse(parsed_conditions);
       return this_exp;
     };
   }
 
-  function process_parsed_procs(this_exp){
-    Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
-      this_proc = this_exp.parsed_procs[proc_name];
+  function process_procs(this_exp){
+    Object.keys(this_exp.all_procs).forEach(function(proc_name){
+      this_proc = Collector.PapaParsed(this_exp.all_procs[proc_name]);
       this_proc.forEach(function(proc_row){
         proc_row = Collector.clean_obj_keys(proc_row);
         // survey check
@@ -612,14 +648,15 @@ $("#save_btn").on("click", function(){
   }
   function process_trialtypes(this_exp){
     var trialtypes = [];
-    Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
+    Object.keys(this_exp.all_procs).forEach(function(proc_name){
+      var this_proc = Collector.PapaParsed(this_exp.all_procs[proc_name]);
       var cleaned_parsed_proc = [];
-      this_exp.parsed_procs[proc_name].forEach(function(row){
+      this_proc.forEach(function(row){
         if(Object.values(row).join("") !== ""){
           cleaned_parsed_proc.push(row);
         }
       });
-      this_exp.parsed_procs[proc_name] = cleaned_parsed_proc.map(function(row,row_index){
+      this_proc = cleaned_parsed_proc.map(function(row,row_index){
         var cleaned_row = Collector.clean_obj_keys(row);
         if(trialtypes.indexOf(cleaned_row["trial type"]) == -1){
           trialtypes.push(cleaned_row["trial type"].toLowerCase());
@@ -655,6 +692,7 @@ $("#save_btn").on("click", function(){
         }
         return cleaned_row;
       });
+      this_exp.all_procs[proc_name] = Papa.unparse(this_proc);
     });
     trialtypes = trialtypes.filter(Boolean); //remove blanks
     if(typeof(this_exp.trialtypes) == "undefined"){
@@ -706,17 +744,34 @@ $("#save_btn").on("click", function(){
 
       delete(this_exp.stimuli);
       delete(this_exp.stims_csv);
-      
+
+      /*
+      * converting procs and stims to csv rather than json formats
+      */
 
       if(typeof(this_exp) !== "undefined"){
         this_exp.public_key   = master_json.keys.public_key;
       }
       //parse procs for survey saving next
       if($("#experiment_list").val() !== null) {
-        this_exp.parsed_procs = {};
-        var procs = Object.keys(this_exp.all_procs);
-        procs.forEach(function(proc){
-          this_exp.parsed_procs[proc] = Papa.parse(Papa.unparse(this_exp.all_procs[proc]),{header:true}).data;
+        Object.keys(this_exp.all_procs).forEach(function(proc){
+          try{
+            this_exp.all_procs[proc] = Papa.unparse(
+              this_exp.all_procs[proc]
+            );
+          } catch(error) {
+
+          }
+        });
+
+        Object.keys(this_exp.all_stims).forEach(function(stim){
+          try{
+            this_exp.all_stims[stim] = Papa.unparse(
+              this_exp.all_stims[stim]
+            );
+          } catch(error){
+
+          }
         });
 
         //add surveys to experiment
@@ -725,7 +780,7 @@ $("#save_btn").on("click", function(){
         }
 
         this_exp = process_conditions(this_exp);
-        this_exp = process_parsed_procs(this_exp);
+        this_exp = process_procs(this_exp);
         this_exp = process_trialtypes(this_exp);
 
         switch(Collector.detect_context()){
@@ -733,13 +788,6 @@ $("#save_btn").on("click", function(){
             this_exp.procs_csv = {};
   					this_exp.stims_csv = {};
 
-  					Object.keys(this_exp.all_procs).forEach(function(this_proc){
-              this_exp.procs_csv[this_proc] = Papa.unparse(this_exp.all_procs[this_proc]);
-            });
-
-  					Object.keys(this_exp.all_stims).forEach(function(this_stim){
-              this_exp.stims_csv[this_stim] = Papa.unparse(this_exp.all_stims[this_stim]);
-            });
   					this_exp = JSON.stringify(this_exp, null, 2);
   					Collector
   						.electron
