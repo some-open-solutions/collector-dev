@@ -51,14 +51,21 @@ function check_trialtypes_in_proc(procedure,post_trialtype){
 }
 function clean_conditions(){
   exp_json = master_json.exp_mgmt.experiments[$("#experiment_list").val()];
-  console.dir(exp_json);
-	exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
-  exp_json.conditions = exp_json.conditions.filter(row => row.procedure !== "");
-  exp_json.conditions.forEach(function(row){
+
+  var parsed_conditions = Collector.PapaParsed(exp_json.conditions);
+  parsed_conditions = parsed_conditions.filter(row => row.procedure !== "");
+  parsed_conditions = parsed_conditions.map(function(row){
+    row.name = row.name.replaceAll(" ","_");
+    /*
     if(row.name.indexOf(" ") !== -1){
       bootbox.alert("You have a space in your condition: " + row.name + ". Please change the name to not have any spaces");
     }
+    */
+    return row;
   });
+
+  exp_json.conditions = Papa.unparse(parsed_conditions);
+
   update_handsontables();
 }
 function createExpEditorHoT(sheet,selected_handsonTable, sheet_name) {
@@ -76,7 +83,11 @@ function createExpEditorHoT(sheet,selected_handsonTable, sheet_name) {
 	}
 	area.html("<span class='sheet_name' style='display: none'>" + sheet_name + "</span>");
 	var container = $("<div>").appendTo(area)[0];
-	window[table_name] = createHoT(container, JSON.parse(JSON.stringify(sheet)),sheet_name);
+  window[table_name] = createHoT(
+    container,
+    Papa.parse(sheet).data,
+    sheet_name
+  );
 }
 function get_HoT_data(current_sheet) { // needs to be adjusted for
     console.dir(current_sheet);
@@ -324,13 +335,14 @@ function update_handsontables(){
 														sheet_name,
 													  exp_mgmt_location,
 														sheet_content){
-		if(sheet_content.split(",").length > 1){
-			createExpEditorHoT(Papa.parse(sheet_content).data,
+    console.dir("sheet_content");
+    console.dir(sheet_content);
+    if(sheet_content.split(",").length > 1){
+      createExpEditorHoT(sheet_content,
 												 sheet_type,
 												 sheet_name);
 		} else {
-			var experiment = sheet_content; //focusing on loading from master_json
-			var sheet_json = master_json.exp_mgmt
+      var sheet_json = master_json.exp_mgmt
 																	.experiments[experiment]
 																	[exp_mgmt_location];
 			createExpEditorHoT(sheet_json,
@@ -344,7 +356,7 @@ function update_handsontables(){
 				var conditions_sheet = Collector.electron.fs.read_file(
           "Experiments/"  + $("#experiment_list").val(),
 				  "conditions.csv"
-        )
+        );
 
 			 if(conditions_sheet == ""){
 				 conditions_sheet = Papa.unparse(
@@ -352,14 +364,16 @@ function update_handsontables(){
              .exp_mgmt
              .experiments
              [$("#experiment_list").val()]
-             .cond_array
+             .conditions
          );
 			 }
-       load_spreadsheet($("#experiment_list").val(),
-											 "Conditions",
-											 "conditions.csv",
-											 "cond_array",
-										   conditions_sheet);
+       load_spreadsheet(
+         $("#experiment_list").val(),
+				 "Conditions",
+				 "conditions.csv",
+				 "conditions",
+				 conditions_sheet
+      );
 
 	    var stim_sheet = Collector.electron.fs.read_file(
         "Experiments/" + $("#experiment_list").val(),

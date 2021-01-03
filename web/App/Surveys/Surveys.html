@@ -650,11 +650,10 @@ $("#save_survey_btn").on("click",function(){
       /*
       * Turn values in the "type" column to lower case
       */
-      survey_data[i][type_index] = survey_data[i][type_index].toLowerCase();
+      if(typeof(survey_data[i][type_index]) !== "undefined"){
+        survey_data[i][type_index] = survey_data[i][type_index].toLowerCase();
+      }
     }
-
-
-
 
     create_survey_HoT(survey_data);
 

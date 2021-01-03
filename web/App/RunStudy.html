@@ -1261,8 +1261,7 @@ function requestFullScreen(element) {
 }
 
 function select_condition(){
-  exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
-
+  
   exp_json.this_condition = exp_json.conditions.filter(function(row){
     return row.name == Study.get_vars.name;
   })[0];

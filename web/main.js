@@ -30,7 +30,7 @@ function createWindow () {
   mainWindow.maximize()
 
   // and load the index.html of the app.
-  mainWindow.loadFile(__dirname +'/cat/index_local.html')
+  mainWindow.loadFile(__dirname +'/App/index_local.html')
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

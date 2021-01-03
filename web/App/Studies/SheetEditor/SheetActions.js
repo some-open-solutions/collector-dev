@@ -409,7 +409,6 @@ $("#run_btn").on("click",function(){
 	var exp_json = master_json.exp_mgmt.experiments[experiment];
 	var select_html = '<select id="select_condition" class="custom-select">';
 	if(typeof(exp_json.conditions) == "undefined"){
-		exp_json.conditions = Collector.PapaParsed(exp_json.cond_array);
 		exp_json.conditions = exp_json.conditions.filter(function(condition){
 			return condition.name !== "";
 		});
@@ -547,6 +546,20 @@ $("#save_btn").attr("previousValue","");
 
 $("#save_btn").on("click", function(){
 
+  function process_conditions(this_exp){
+    /*
+    * detect if conditions needs to be unparsed
+    */
+    try{
+      this_exp.conditions = Papa.unparse(this_exp.conditions);
+    } catch(error){
+      //do nothing yet
+    } finally {
+
+      return this_exp;
+    };
+  }
+
   function process_parsed_procs(this_exp){
     Object.keys(this_exp.parsed_procs).forEach(function(proc_name){
       this_proc = this_exp.parsed_procs[proc_name];
@@ -648,8 +661,9 @@ $("#save_btn").on("click", function(){
       this_exp.trialtypes = {};
     }
 
-    // First loop is to make sure the experiment has all the trialtypes
-    ///////////////////////////////////////////////////////////////////
+    /*
+    * First loop is to make sure the experiment has all the trialtypes
+    */
     trialtypes.forEach(function(trialtype){
       if(typeof(master_json.trialtypes.user_trialtypes[trialtype]) == "undefined"){
         this_exp.trialtypes[trialtype] = master_json.trialtypes.default_trialtypes[trialtype];
@@ -660,7 +674,7 @@ $("#save_btn").on("click", function(){
     return this_exp;
   }
 
-  try{
+  //try{
     $("#save_trial_type_button").click();
     $("#save_survey_btn").click();
     $("#save_snip_btn").click();
@@ -677,15 +691,28 @@ $("#save_btn").on("click", function(){
     */
     if(typeof(experiment) !== "undefined" &
        experiment !== null){
+
       var this_exp 	 = master_json.exp_mgmt.experiments[experiment];
+
+      /*
+      * Cleaning the exp_json of deprecated properties
+      */
+      delete(this_exp.conditions_csv);
+      delete(this_exp.cond_array);
+
+      delete(this_exp.parsed_procs);
+      delete(this_exp.procedure);
+      delete(this_exp.procs_csv);
+
+      delete(this_exp.stimuli);
+      delete(this_exp.stims_csv);
+      
 
       if(typeof(this_exp) !== "undefined"){
         this_exp.public_key   = master_json.keys.public_key;
       }
       //parse procs for survey saving next
       if($("#experiment_list").val() !== null) {
-        console.dir('$("#experiment_list").val()');
-        console.dir($("#experiment_list").val());
         this_exp.parsed_procs = {};
         var procs = Object.keys(this_exp.all_procs);
         procs.forEach(function(proc){
@@ -697,19 +724,16 @@ $("#save_btn").on("click", function(){
           this_exp.surveys = {};
         }
 
-
+        this_exp = process_conditions(this_exp);
         this_exp = process_parsed_procs(this_exp);
-        this_exp = process_trialtypes(this_exp)
+        this_exp = process_trialtypes(this_exp);
 
         switch(Collector.detect_context()){
           case "localhost":
             this_exp.procs_csv = {};
   					this_exp.stims_csv = {};
 
-  					this_exp.conditions_csv = Papa.unparse(
-  						this_exp.cond_array
-  					);
-            Object.keys(this_exp.all_procs).forEach(function(this_proc){
+  					Object.keys(this_exp.all_procs).forEach(function(this_proc){
               this_exp.procs_csv[this_proc] = Papa.unparse(this_exp.all_procs[this_proc]);
             });
 
@@ -794,11 +818,13 @@ $("#save_btn").on("click", function(){
     Collector.tests.pass("studies",
                          "save_at_start");
 
+  /*
   }  catch (error){
     Collector.tests.fail("studies",
                          "save_at_start",
                          error);
   }
+  */
 });
 
 $("#stim_select").on("change",function(){

@@ -1,6 +1,6 @@
 const fs   = require('fs-extra')
 const ipc  = require('electron').ipcMain;
-
+const Papa = require('papaparse');
 
 var root_dir = require("os").homedir() + "/Documents/Collector/";
 
@@ -63,8 +63,7 @@ ipc.on('fs_delete_file', (event,args) => {
 });
 
 ipc.on('fs_delete_survey', (event,args) => {
-  console.log("howdy hardy hidi");
-
+  
   /*
   * Security checks - should probably have more
   */
@@ -292,16 +291,19 @@ ipc.on('fs_write_experiment', (event,args) => {
         )
       }
 
+      parsed_contents = JSON.parse(args["file_content"]);
+
       /*
       * save specific csvs
+      * - first need to parse each csv here
       */
-      parsed_contents = JSON.parse(args["file_content"]);
+      var conditions_csv = Papa.unparse(parsed_contents.conditions);
 
       fs.writeFileSync(
         root_dir + "User/Experiments/" +
           args["this_experiment"] + "/" +
           "conditions.csv",
-         parsed_contents["conditions_csv"],
+          conditions_csv,
          "utf-8"
        );
 

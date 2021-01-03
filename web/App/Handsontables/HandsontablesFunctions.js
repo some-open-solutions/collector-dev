@@ -140,36 +140,43 @@ function createHoT(container, data,sheet_name) {
 					}
 				}
 			}
-			for (var k=0; k<this.countCols()-1; k++){																										// go through each column
-				if(k >= this.countCols()){  																											        // if the loop has gone past the last column
-					break;                                                                                  // then stop looping through the columns
+      // go through each column
+			for (var k=0; k<this.countCols()-1; k++){
+        // if the loop has gone past the last column then stop looping through the columns
+        if(k >= this.countCols()){
+					break;
 				}
 
-				if(this.getDataAtCell(0,k).toLowerCase()=="item"){      																	// checking for invalid item number (i.e. one)
-					for(m = 0; m < this.countRows(); m++){                																	// loop through each row
-						if(this.getDataAtCell(m,k) == 1){                																			// if the value in the row is one
-							bootbox.alert("Warning v1: 1 does not refer to any row in the Stimuli sheet!" +     // warn the user
-														"The first row is row 2 (as row 1 is the header). Fix row " + (m+1) +
-														"in your Procedure's Item column.");
+        // checking for invalid item number (i.e. one)
+				if(this.getDataAtCell(0,k).toLowerCase()=="item"){
+          // loop through each row
+          for(m = 0; m < this.countRows(); m++){
+            // if the value in the row is one
+						if(this.getDataAtCell(m,k) == 1){
+							bootbox.alert("Warning: 1 does not refer to any row in the Stimuli sheet! The first row is row 2 (as row 1 is the header). Fix row " + (m+1) + "in your Procedure's Item column.");
 						}
-						if(this.getDataAtCell(m,k) !== null){                                                 // if the value is something
-							if(this.getDataAtCell(m,k).indexOf(":") !== -1){																		// check if the user is using a ":" (deprecated)
-								this.setDataAtCell(m,k,this.getDataAtCell(m,k).replace(":"," to "));              // and then replace the colon with " to "
+            // if the value is something
+						if(this.getDataAtCell(m,k) !== null){
+              // check if the user is using a ":" (deprecated)
+							if(this.getDataAtCell(m,k).indexOf(":") !== -1){
+								this.setDataAtCell(m,k,this.getDataAtCell(m,k).replace(":"," to "));
 							}
 						}
 					}
 				}
-
-				if(this.isEmptyCol(k)){																																		// if this is an empty middle column
-					this.alter("remove_col",k);																															// remove this empty middle column
-					k--;																																										// and then check this column number again
+        // if this is an empty middle column
+				if(this.isEmptyCol(k)){
+          // remove this empty middle column
+					this.alter("remove_col",k);
+          // and then check this column number again
+					k--;
 				}
 			}
-
-			for (var k=0; k<this.countRows()-1; k++){																										// go through each row
-
-				if(k >= this.countRows()){  																											        // if the loop has gone past the last row
-					break;                                                                                  // then stop looping through the rows
+      // go through each row
+			for (var k=0; k<this.countRows()-1; k++){
+        // if the loop has gone past the last row then stop looping through the rows
+        if(k >= this.countRows()){
+					break;
 				}
 
 				if (this.isEmptyRow(k)){																																	// if the row is empty
@@ -182,7 +189,7 @@ function createHoT(container, data,sheet_name) {
 			var this_exp   = master_json.exp_mgmt.experiments[experiment];
 
 			if(sheet_name.toLowerCase() == "conditions.csv"){
-				this_exp.cond_array = this.getData();
+				this_exp.conditions = this.getData();
 			} else {
 				if(typeof(this_exp.all_stims[sheet_name]) !== "undefined"){
 					this_exp.all_stims[sheet_name] = this.getData();

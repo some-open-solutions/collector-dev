@@ -233,7 +233,7 @@ ipc.on('git_exists', (event,args) => {
   if(commandExistsSync('git')){
     var git = simpleGit();
     git.listConfig().then(function(result){
-      console.log(result);
+      //console.log(result);
 
       /*
       * Check all configs for the relevant values

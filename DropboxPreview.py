@@ -8,4 +8,4 @@ import shutil
 
 
 eel.init('web') #allowed_extensions=[".js",".html"]
-eel.start('cat/index.html', port=8000)
+eel.start('App/index.html', port=8000)
